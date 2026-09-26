@@ -11,7 +11,7 @@ export default function LoginLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-svh w-full overflow-x-hidden bg-nocta-night text-foreground">
+    <div className="min-h-svh w-full overflow-x-hidden bg-nocta-paper text-foreground">
       {children}
     </div>
   );

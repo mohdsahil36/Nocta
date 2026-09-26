@@ -4,6 +4,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Brief window while toggling theme — enables smooth color swaps without always-on * transitions. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    color 300ms ease,
+    fill 300ms ease,
+    stroke 300ms ease,
+    box-shadow 300ms ease !important;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -43,6 +57,7 @@
   --color-card: var(--card);
   --color-nocta-glow: var(--nocta-glow);
   --color-nocta-paper: var(--nocta-paper);
+  --color-nocta-canvas: var(--nocta-canvas);
   --color-nocta-ink: var(--nocta-ink);
   --color-nocta-night: var(--nocta-night);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -79,9 +94,10 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  /* Nocta colors */
+  /* Nocta colors — light canvas: soft pearl-stone (not warm beige) */
   --nocta-glow: oklch(0.58 0.09 195);
-  --nocta-paper: oklch(0.955 0.01 230);
+  --nocta-paper: oklch(0.99 0.004 240);
+  --nocta-canvas: oklch(0.97 0.006 240);
   --nocta-ink: oklch(0.17 0.028 250);
   --nocta-night: oklch(0.15 0.03 250);
   --sidebar: oklch(0.985 0 0);
@@ -95,41 +111,43 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Dashboard charcoal dark — login shares these tokens */
+  --background: oklch(0.08 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.16 0 0);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.98 0 0);
+  --primary-foreground: oklch(0.12 0 0);
+  --secondary: oklch(0.22 0 0);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.68 0 0);
+  --accent: oklch(0.22 0 0);
+  --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.55 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --nocta-glow: oklch(0.74 0.09 195);
-  --nocta-paper: oklch(0.16 0.028 250);
-  --nocta-ink: oklch(0.94 0.01 230);
-  --nocta-night: oklch(0.13 0.032 250);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --nocta-glow: oklch(0.72 0.08 195);
+  --nocta-paper: oklch(0.16 0 0);
+  --nocta-canvas: oklch(0.08 0 0);
+  --nocta-ink: oklch(0.98 0 0);
+  --nocta-night: oklch(0.08 0 0);
+  --sidebar: oklch(0.16 0 0);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.72 0.08 195);
+  --sidebar-primary-foreground: oklch(0.12 0 0);
+  --sidebar-accent: oklch(0.22 0 0);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.55 0 0);
 }
 
 @layer base {
@@ -305,5 +323,114 @@ html.lenis.lenis-stopped {
     inset 0 1px 0 rgb(255 255 255 / 0.06),
     0 0 0 1px color-mix(in oklab, var(--nocta-glow) 35%, transparent),
     0 12px 28px rgb(0 0 0 / 0.35) !important;
+}
+
+/* Dashboard chrome — moderate radius, clear light/dark contrast */
+.nocta-sidebar,
+.nocta-panel {
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 14%, transparent);
+  background: oklch(0.995 0.004 230);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, white 80%, transparent),
+    0 8px 24px color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.nocta-sidebar {
+  overflow: hidden;
+}
+.nocta-navbar {
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 14%, transparent);
+  /* Atmosphere image + washes live in the component; keep shell transparent */
+  background: transparent;
+  box-shadow:
+    0 1px 0 color-mix(in oklab, white 80%, transparent),
+    0 8px 24px color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  overflow: hidden;
+}
+.dark .nocta-sidebar,
+.dark .nocta-panel {
+  border-color: var(--border);
+  background: var(--card);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.dark .nocta-navbar {
+  border-color: var(--border);
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Nav pills — light soft wash; dark glow wash */
+.nocta-nav-pill {
+  color: var(--muted-foreground);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+.nocta-nav-pill .nocta-nav-icon {
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+.nocta-nav-pill:hover {
+  background-color: color-mix(in oklab, var(--nocta-ink) 5%, white);
+  color: var(--nocta-ink);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 6%, transparent);
+}
+.dark .nocta-nav-pill:hover {
+  background-color: color-mix(in oklab, var(--nocta-glow) 18%, transparent);
+  color: var(--nocta-ink);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 32%, transparent),
+    0 6px 16px color-mix(in oklab, var(--nocta-glow) 12%, transparent);
+}
+.nocta-nav-pill[data-active="true"] {
+  background-color: var(--nocta-ink);
+  color: var(--nocta-paper);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 18%, transparent);
+}
+.nocta-nav-pill[data-active="true"]:hover {
+  background-color: var(--nocta-ink);
+  color: var(--nocta-paper);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 18%, transparent);
+}
+
+/*
+ * Collapsed rail: clip shows only the icon column. Put active/hover on the
+ * size-9 icon chip so it matches the brand moon square — not a cut-off row pill.
+ */
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill,
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover,
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"],
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"]:hover {
+  background-color: transparent;
+  box-shadow: none;
+  color: var(--muted-foreground);
+}
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover .nocta-nav-icon {
+  background-color: color-mix(in oklab, var(--nocta-ink) 5%, white);
+  color: var(--nocta-ink);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 6%, transparent);
+}
+.dark .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover .nocta-nav-icon {
+  background-color: color-mix(in oklab, var(--nocta-glow) 18%, transparent);
+  color: var(--nocta-ink);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 32%, transparent),
+    0 6px 16px color-mix(in oklab, var(--nocta-glow) 12%, transparent);
+}
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"] .nocta-nav-icon,
+.nocta-sidebar[data-collapsed="true"]
+  .nocta-nav-pill[data-active="true"]:hover
+  .nocta-nav-icon {
+  background-color: var(--nocta-ink);
+  color: var(--nocta-paper);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 18%, transparent);
 }
 
