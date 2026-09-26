@@ -71,7 +71,10 @@ export const loginContent = {
     title: "Tonight, do one thing that matters",
     body: "Open Nocta after work, see the score, and choose a single action before you sleep.",
     cta: "Get started",
-    trust: "Built by a developer job-hunting after work",
+  },
+  footer: {
+    copyright: "© 2026 Nocta. All rights reserved.",
+    credit: "Built by Mohd Sahil Siddiqui",
   },
   auth: {
     panelTitle: "One meaningful action, every night.",

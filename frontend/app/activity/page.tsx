@@ -14,7 +14,7 @@ export default function ActivityPage() {
     <main className="mx-auto w-full max-w-6xl px-5 py-5">
       <div>
         <Link
-          href="/"
+          href="/dashboard"
           className="inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" />

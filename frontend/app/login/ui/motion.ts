@@ -45,4 +45,25 @@ export const sectionReveal: Variants = {
   },
 };
 
+/** Ghost wordmark — from nothing into soft focus */
+export const watermarkReveal: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 28,
+    filter: "blur(20px)",
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 1.8,
+      ease: easeOut,
+      delay: 0.25,
+      opacity: { duration: 2, ease: easeOut, delay: 0.15 },
+      filter: { duration: 2.1, ease: easeOut, delay: 0.1 },
+    },
+  },
+};
+
 export const SHELL = "mx-auto w-full max-w-xl px-4 sm:max-w-2xl sm:px-6";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Moon, Sun, XIcon } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { PixelScenery } from "@/components/illustrations/pixel-scenery";
 import { loginContent } from "./content";
 import {
+  AFTER_AUTH_PATH,
   loginWithEmail,
   loginWithGoogle,
   signupWithEmail,
@@ -34,7 +36,7 @@ import {
   SHELL,
   stagger,
 } from "./ui/motion";
-import { useIsDark, writeTheme } from "./ui/theme";
+import { useIsDark, writeTheme } from "@/lib/theme";
 import { usePageScroll } from "./ui/use-page-scroll";
 import { WhyBuiltSection } from "./ui/why-built-section";
 
@@ -42,6 +44,7 @@ const AUTH_INPUT_CLASS =
   "auth-input h-10 rounded-xl border px-3.5 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0";
 
 export default function LoginPage() {
+  const router = useRouter();
   const reduceMotion = useReducedMotion();
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
@@ -77,11 +80,18 @@ export default function LoginPage() {
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (authMode === "login") {
-      await loginWithEmail({ email, password });
-      return;
+    try {
+      if (authMode === "login") {
+        await loginWithEmail({ email, password });
+      } else {
+        await signupWithEmail({ name, email, password, confirmPassword });
+      }
+      router.push(AFTER_AUTH_PATH);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong. Try again.";
+      window.alert(message);
     }
-    await signupWithEmail({ name, email, password, confirmPassword });
   };
 
   return (
@@ -293,13 +303,19 @@ export default function LoginPage() {
 
         <motion.section
           id="close"
-          className="relative z-10 bg-nocta-paper py-20 sm:py-28"
+          className="relative z-10 overflow-hidden bg-nocta-paper pt-20 sm:pt-28"
           variants={sectionReveal}
           initial={reduceMotion ? false : "hidden"}
           whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
+          viewport={{ once: true, amount: 0.2 }}
         >
-          <div className={`${SHELL} text-center`}>
+          <motion.div
+            className={`${SHELL} relative z-10 text-center`}
+            variants={stagger}
+            initial={reduceMotion ? false : "hidden"}
+            whileInView="show"
+            viewport={{ once: true, amount: 0.35 }}
+          >
             <motion.h2
               variants={fadeUp}
               className="font-serif text-3xl tracking-[-0.03em] text-foreground sm:text-4xl"
@@ -321,13 +337,44 @@ export default function LoginPage() {
                 {loginContent.close.cta}
               </Button>
             </motion.div>
-            <motion.p
-              variants={fadeUp}
-              className="mt-7 text-xs text-muted-foreground/80"
-            >
-              {loginContent.close.trust}
-            </motion.p>
-          </div>
+          </motion.div>
+
+          <footer className="relative z-10 mx-auto mt-14 w-full max-w-6xl px-4 pb-14 sm:mt-16 sm:px-6 sm:pb-16 lg:max-w-7xl">
+            <div className="relative grid grid-cols-1 items-baseline gap-6 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-8">
+              <p className="order-2 text-center text-sm leading-none text-muted-foreground sm:order-1 sm:text-left">
+                {loginContent.footer.copyright}
+              </p>
+
+              <motion.p
+                aria-hidden
+                className="order-1 justify-self-center select-none font-sans text-[clamp(4.5rem,16vw,11rem)] leading-none font-bold tracking-tighter text-nocta-ink/10 sm:order-2 dark:text-white/15"
+                initial={
+                  reduceMotion
+                    ? false
+                    : { opacity: 0, y: 32, filter: "blur(24px)" }
+                }
+                whileInView={
+                  reduceMotion
+                    ? undefined
+                    : { opacity: 1, y: 0, filter: "blur(0px)" }
+                }
+                transition={{
+                  duration: 2,
+                  ease: easeOut,
+                  delay: 0.2,
+                  opacity: { duration: 2.2, ease: easeOut, delay: 0.15 },
+                  filter: { duration: 2.4, ease: easeOut, delay: 0.05 },
+                }}
+                viewport={{ once: true, amount: 0.55 }}
+              >
+                {loginContent.brand}
+              </motion.p>
+
+              <p className="order-3 text-center text-sm leading-none text-muted-foreground sm:text-right">
+                {loginContent.footer.credit}
+              </p>
+            </div>
+          </footer>
         </motion.section>
       </main>
 
@@ -344,7 +391,7 @@ export default function LoginPage() {
         <DialogContent
           showCloseButton={false}
           overlayClassName="bg-nocta-night/70 duration-200 supports-backdrop-filter:backdrop-blur-md"
-          className="flex h-[min(48rem,94svh)] w-[calc(100%-1.5rem)] max-w-[60rem] flex-col gap-0 overflow-hidden rounded-2xl border-0 bg-nocta-night p-0 text-zinc-900 shadow-[0_24px_64px_rgba(0,0,0,0.4)] ring-1 ring-white/12 sm:max-w-[60rem] sm:rounded-3xl"
+          className="flex h-[min(48rem,94svh)] w-[calc(100%-1.5rem)] max-w-240 flex-col gap-0 overflow-hidden rounded-2xl border-0 bg-nocta-night p-0 text-zinc-900 shadow-[0_24px_64px_rgba(0,0,0,0.4)] ring-1 ring-white/12 sm:max-w-240 sm:rounded-3xl"
         >
           <div className="relative h-full min-h-0 w-full overflow-hidden">
             {/* Full-bleed night image */}
@@ -372,12 +419,12 @@ export default function LoginPage() {
                   </p>
                 </div>
                 <p className="text-[11px] text-white/45">
-                  {loginContent.close.trust}
+                  {loginContent.footer.credit}
                 </p>
               </div>
 
               {/* Right form */}
-              <div className="flex h-full min-h-0 w-full shrink-0 justify-end p-5 sm:p-6 md:w-[30rem] lg:w-[32rem]">
+              <div className="flex h-full min-h-0 w-full shrink-0 justify-end p-5 sm:p-6 md:w-120 lg:w-lg">
                 <div className="nocta-auth-form relative flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-2xl">
                   <button
                     type="button"
@@ -433,7 +480,7 @@ export default function LoginPage() {
                     </div>
 
                     <DialogHeader className="mt-5 shrink-0 gap-1.5 text-left">
-                      <div className="relative min-h-[3.5rem]">
+                      <div className="relative min-h-14">
                         <AnimatePresence mode="wait" initial={false}>
                           <motion.div
                             key={authMode}
@@ -442,9 +489,7 @@ export default function LoginPage() {
                             }
                             animate={{ opacity: 1, y: 0 }}
                             exit={
-                              reduceMotion
-                                ? undefined
-                                : { opacity: 0, y: -4 }
+                              reduceMotion ? undefined : { opacity: 0, y: -4 }
                             }
                             transition={{ duration: 0.2, ease: easeOut }}
                             className="absolute inset-x-0 top-0 flex flex-col gap-1.5"
@@ -471,7 +516,15 @@ export default function LoginPage() {
                     >
                       <button
                         type="button"
-                        onClick={() => void loginWithGoogle()}
+                        onClick={() => {
+                          void loginWithGoogle().catch((err) => {
+                            const message =
+                              err instanceof Error
+                                ? err.message
+                                : "Something went wrong. Try again.";
+                            window.alert(message);
+                          });
+                        }}
                         className="auth-input inline-flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border text-sm font-medium transition-colors hover:bg-(--auth-muted)"
                       >
                         <GoogleMark />

@@ -1,16 +1,32 @@
 # OS
 .DS_Store
 
-# IDE / AI tools
+# IDE / AI tools — never commit
 .cursor/
+.claude/
+.vscode/
 CLAUDE.md
 AGENTS.md
+.idea/
+
+# Local design docs — never commit (agents update in-session)
+docs/design/
 
 # Dependencies (any package root)
 node_modules/
 
-# Graphify generated knowledge graph
+# Graphify / knowledge-graph outputs — never commit
 graphify-out/
+.graphify/
+GRAPH_REPORT.md
+graph.html
+graph.json
+graph.svg
+graph.graphml
+manifest.json
+**/GRAPH_REPORT.md
+**/graph.html
+**/graph.json
 
 # Frontend
 frontend/node_modules/
@@ -46,3 +62,4 @@ coverage/
 
 # Misc
 *.pem
+cache/
