@@ -18,8 +18,7 @@
   },
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
-    "build": "prisma generate && tsc",
-    "start": "node dist/server.js",
-    "postinstall": "prisma generate"
+    "build": "npx prisma generate && npx tsc",
+    "start": "node dist/server.js"
   }
 }
