@@ -1,5 +1,8 @@
 {
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "@prisma/client": "6.19.3",
     "@types/cors": "^2.8.19",
@@ -18,7 +21,7 @@
   },
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
-    "build": "node ./node_modules/prisma/build/index.js generate && node ./node_modules/typescript/lib/tsc.js",
+    "build": "npm install && prisma generate && tsc",
     "start": "node dist/server.js"
   }
 }
