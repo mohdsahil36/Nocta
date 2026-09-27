@@ -7,7 +7,8 @@ const app = express();
 
 app.use("/api", routes);
 
-const PORT = 3001;
+// Local default; Render injects PORT at runtime — do not put PORT in .env.
+const PORT = Number(process.env.PORT) || 3001;
 
 app.get("/health", async (req, res) => {
   try {
