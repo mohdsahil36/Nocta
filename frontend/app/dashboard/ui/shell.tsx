@@ -21,7 +21,7 @@ type DashboardShellProps = {
 export function DashboardShell({ children }: DashboardShellProps) {
   const reduceMotion = useReducedMotion();
   const [fromAuth] = useState(() => consumeAuthEnter());
-  const [pinned, setPinned] = useState(true);
+  const [pinned, setPinned] = useState(false);
   const [hoverExpand, setHoverExpand] = useState(false);
   const suppressHoverRef = useRef(false);
   const expanded = pinned || hoverExpand;
