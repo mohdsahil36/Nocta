@@ -118,7 +118,7 @@ export function DashboardSidebar({
       <div
         className={cn(
           "hidden shrink-0 transition-[width] duration-300 ease-out md:block",
-          pinned ? "w-[15.5rem]" : "w-14",
+          pinned ? "w-62" : "w-14",
         )}
         aria-hidden
       />
@@ -219,10 +219,7 @@ export function DashboardSidebar({
           </p>
 
           <nav
-            className={cn(
-              "flex flex-1 flex-col gap-1",
-              expanded && "px-2",
-            )}
+            className={cn("flex flex-1 flex-col gap-1", expanded && "px-2")}
             aria-label="Primary"
           >
             {NAV.map((item) => {

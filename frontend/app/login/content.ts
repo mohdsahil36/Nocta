@@ -87,8 +87,14 @@ export const loginContent = {
     passwordPlaceholder: "Your password",
     showPassword: "Show password",
     hidePassword: "Hide password",
+    handoff: "Opening your night…",
     // Auth later
     close: "Close",
+    error: {
+      title: "Couldn't continue",
+      dismiss: "Try again",
+      fallback: "Something went wrong. Try again.",
+    },
     login: {
       tab: "Sign in",
       title: "Welcome back",

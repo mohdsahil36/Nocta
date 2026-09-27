@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import { ThemeSync } from "@/app/store/themeStore";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,11 +22,15 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Cadence",
-  description: "Engineering activity intelligence",
+  applicationName: "Nocta",
+  title: {
+    default: "Nocta",
+    template: "%s · Nocta",
+  },
+  description: "One meaningful action, every night.",
 };
 
-/** Apply stored / evening-aware theme before paint (inline — not next/script). */
+/** Apply stored / evening-aware theme before paint. */
 const themeBoot = `(function(){try{var s=localStorage.getItem("nocta-theme");var h=new Date().getHours();var dark=s==="dark"||(s!=="light"&&(h>=17||h<7));var c=dark?"#0a0a0a":"#f4f5f8";document.documentElement.classList.toggle("dark",dark);document.documentElement.style.backgroundColor=c;var b=document.body;if(b)b.style.backgroundColor=c;}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -34,13 +40,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
-      </head>
       <body
         suppressHydrationWarning
         className="min-h-full flex flex-col font-sans"
       >
+        <Script
+          id="nocta-theme-boot"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeBoot }}
+        />
+        <ThemeSync />
         {children}
       </body>
     </html>

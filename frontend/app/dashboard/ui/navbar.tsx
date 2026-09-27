@@ -17,8 +17,7 @@ import {
   BEFORE_AUTH_PATH,
   logout,
 } from "@/app/login/functions/auth";
-import { useIsDark, writeTheme } from "@/lib/theme";
-import { cn } from "cn";
+import useThemeStore from "@/app/store/themeStore";
 import { dashboardContent } from "../content";
 import {
   getDisplayName,
@@ -54,13 +53,14 @@ function CommitsButton({ className }: { className?: string }) {
 /**
  * Floating glass navbar — greeting left; commits + theme + logout right on md+.
  * Theme-matched scenery across the navbar: night lake (dark) / sunlit hills (light).
+ * Scenery/icons use `dark:` CSS so they follow themeBoot on `<html>` (no hydration mismatch).
  */
 export function DashboardNavbar({
   sidebarPinned,
   onOpenSidebar,
 }: DashboardNavbarProps) {
   const router = useRouter();
-  const dark = useIsDark();
+  const toggleTheme = useThemeStore((s) => s.toggle);
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const [timeGreeting] = useState(() => greetingForHour(new Date().getHours()));
@@ -98,36 +98,18 @@ export function DashboardNavbar({
         {/* Theme-matched scenery — night lake (dark) / sunlit hills (light) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          key={dark ? "night" : "day"}
-          src={
-            dark
-              ? "/nocta-navbar-scenery.jpg"
-              : "/nocta-navbar-scenery-light.jpg"
-          }
+          src="/nocta-navbar-scenery.jpg"
           alt=""
-          className={cn(
-            "absolute inset-0 h-full w-full min-w-full object-cover",
-            dark
-              ? "object-[center_35%] opacity-85 brightness-[0.72] contrast-105 saturate-75"
-              : "object-[center_40%] opacity-55 brightness-110 saturate-75",
-          )}
+          className="absolute inset-0 hidden h-full w-full min-w-full object-cover object-[center_35%] opacity-85 brightness-[0.72] contrast-105 saturate-75 dark:block"
         />
-        <div
-          className={cn(
-            "absolute inset-0",
-            dark
-              ? "bg-linear-to-r from-black/20 via-transparent to-black/15"
-              : "bg-linear-to-r from-nocta-canvas/25 via-transparent to-nocta-canvas/20",
-          )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/nocta-navbar-scenery-light.jpg"
+          alt=""
+          className="absolute inset-0 block h-full w-full min-w-full object-cover object-[center_40%] opacity-55 brightness-110 saturate-75 dark:hidden"
         />
-        <div
-          className={cn(
-            "absolute inset-0",
-            dark
-              ? "bg-linear-to-b from-card/35 via-card/15 to-transparent"
-              : "bg-linear-to-b from-nocta-canvas/55 via-nocta-canvas/25 to-transparent",
-          )}
-        />
+        <div className="absolute inset-0 bg-linear-to-r from-nocta-canvas/25 via-transparent to-nocta-canvas/20 dark:from-black/20 dark:to-black/15" />
+        <div className="absolute inset-0 bg-linear-to-b from-nocta-canvas/55 via-nocta-canvas/25 to-transparent dark:from-card/35 dark:via-card/15" />
         <div className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-b from-transparent to-nocta-canvas" />
       </div>
 
@@ -152,14 +134,11 @@ export function DashboardNavbar({
           <ChromeButton
             iconOnly
             className="size-8 shrink-0 rounded-lg bg-background/80 backdrop-blur-sm"
-            aria-label={
-              dark
-                ? dashboardContent.actions.themeLight
-                : dashboardContent.actions.themeDark
-            }
-            onClick={() => writeTheme(!dark)}
+            aria-label={dashboardContent.actions.themeDark}
+            onClick={toggleTheme}
           >
-            {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            <Sun className="size-4 hidden dark:block" />
+            <Moon className="size-4 dark:hidden" />
           </ChromeButton>
 
           <ChromeButton

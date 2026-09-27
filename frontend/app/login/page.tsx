@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -27,6 +28,7 @@ import { DynamicLine } from "./ui/dynamic-line";
 import { FeatureCell } from "./ui/feature-cell";
 import { GoogleMark } from "./ui/google-mark";
 import { PasswordField } from "./ui/password-field";
+import { NoctaLoader } from "@/components/ui/nocta-loader";
 import {
   easeOut,
   fadeUp,
@@ -36,7 +38,12 @@ import {
   SHELL,
   stagger,
 } from "./ui/motion";
-import { useIsDark, writeTheme } from "@/lib/theme";
+import useThemeStore from "@/app/store/themeStore";
+import {
+  AUTH_EXIT_MS,
+  authEaseOut,
+  markAuthEnter,
+} from "@/lib/auth-transition";
 import { usePageScroll } from "./ui/use-page-scroll";
 import { WhyBuiltSection } from "./ui/why-built-section";
 
@@ -54,10 +61,11 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const dark = useIsDark();
+  const [authBusy, setAuthBusy] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [routeLeaving, setRouteLeaving] = useState(false);
+  const toggleTheme = useThemeStore((s) => s.toggle);
   const { scrolled, scrollToId } = usePageScroll(reduceMotion, authOpen);
-
-  const toggleTheme = () => writeTheme(!dark);
 
   const openAuth = (mode: AuthMode = "login") => {
     setAuthMode(mode);
@@ -71,6 +79,7 @@ export default function LoginPage() {
     setName("");
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setAuthError(null);
   };
 
   const switchAuthMode = (mode: AuthMode) => {
@@ -78,24 +87,50 @@ export default function LoginPage() {
     resetAuthFields();
   };
 
+  const enterDashboard = async () => {
+    markAuthEnter();
+    setAuthOpen(false);
+    setRouteLeaving(true);
+    if (!reduceMotion) {
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, AUTH_EXIT_MS);
+      });
+    }
+    router.push(AFTER_AUTH_PATH);
+  };
+
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (authBusy || routeLeaving) return;
+    setAuthBusy(true);
     try {
       if (authMode === "login") {
         await loginWithEmail({ email, password });
       } else {
         await signupWithEmail({ name, email, password, confirmPassword });
       }
-      router.push(AFTER_AUTH_PATH);
+      await enterDashboard();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Something went wrong. Try again.";
-      window.alert(message);
+        err instanceof Error
+          ? err.message
+          : loginContent.auth.error.fallback;
+      setAuthError(message);
+      setAuthBusy(false);
     }
   };
 
   return (
-    <div className="relative isolate min-h-svh w-full bg-nocta-paper text-foreground dark:bg-nocta-paper">
+    <>
+    <motion.div
+      className="relative isolate min-h-svh w-full bg-nocta-paper text-foreground dark:bg-nocta-paper"
+      animate={
+        routeLeaving && !reduceMotion
+          ? { opacity: 0.35, filter: "blur(6px)", scale: 0.99 }
+          : { opacity: 1, filter: "blur(0px)", scale: 1 }
+      }
+      transition={{ duration: AUTH_EXIT_MS / 1000, ease: authEaseOut }}
+    >
       <header className="fixed inset-x-0 top-0 z-40 flex justify-center px-3 pt-3 sm:px-5 sm:pt-4">
         <motion.div
           className="flex w-full justify-center"
@@ -160,12 +195,11 @@ export default function LoginPage() {
                     : "text-white hover:bg-white/15 hover:text-white",
                 ].join(" ")}
                 onClick={toggleTheme}
-                aria-label={
-                  dark ? "Switch to daytime look" : "Switch to evening look"
-                }
-                title={dark ? "Daytime (override)" : "Evening (override)"}
+                aria-label="Toggle theme"
+                title="Toggle theme"
               >
-                {dark ? <Sun /> : <Moon />}
+                <Sun className="hidden dark:block" />
+                <Moon className="dark:hidden" />
               </Button>
               <Button
                 size="default"
@@ -521,8 +555,8 @@ export default function LoginPage() {
                             const message =
                               err instanceof Error
                                 ? err.message
-                                : "Something went wrong. Try again.";
-                            window.alert(message);
+                                : loginContent.auth.error.fallback;
+                            setAuthError(message);
                           });
                         }}
                         className="auth-input inline-flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border text-sm font-medium transition-colors hover:bg-(--auth-muted)"
@@ -700,7 +734,8 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       form="nocta-auth-form"
-                      className="auth-cta inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-xl text-sm font-semibold transition-colors"
+                      disabled={authBusy || routeLeaving}
+                      className="auth-cta inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-xl text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-70"
                     >
                       {authMode === "login"
                         ? loginContent.auth.login.cta
@@ -731,6 +766,44 @@ export default function LoginPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+
+      <Dialog
+        open={authError != null}
+        onOpenChange={(open) => {
+          if (!open) setAuthError(null);
+        }}
+      >
+        <DialogContent
+          showCloseButton={false}
+          overlayClassName="z-[60] bg-nocta-night/55 duration-200 supports-backdrop-filter:backdrop-blur-sm"
+          className="z-[60] w-[calc(100%-2rem)] gap-0 overflow-hidden rounded-2xl border-0 bg-background p-0 text-foreground shadow-[0_20px_48px_rgba(0,0,0,0.35)] ring-1 ring-border sm:max-w-sm"
+        >
+          <DialogHeader className="gap-2 px-5 pt-5 pb-1 sm:px-6 sm:pt-6">
+            <DialogTitle className="font-serif text-xl tracking-[-0.03em]">
+              {loginContent.auth.error.title}
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-6 text-muted-foreground">
+              {authError}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mx-0 mb-0 rounded-none border-border/60 bg-muted/40 px-5 py-4 sm:justify-stretch sm:px-6">
+            <Button
+              type="button"
+              className="w-full cursor-pointer"
+              onClick={() => setAuthError(null)}
+            >
+              {loginContent.auth.error.dismiss}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
+    <NoctaLoader
+      variant="overlay"
+      open={authBusy || routeLeaving}
+      title={loginContent.brand}
+      label={loginContent.auth.handoff}
+    />
+    </>
   );
 }
