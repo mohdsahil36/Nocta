@@ -1,28 +1,36 @@
-import prisma from "../lib/prisma.js"; // bring the created client so that it can communicate with the database
+import { fetchNoctaCommits } from "../lib/github.js";
+import { envConfig } from "../config/envConfig.js";
 
-export async function createRepository() {
-  const repository = await prisma.repository.create({
-    data: {
-      id: "repo_001",
-      name: "merchant-gateway",
-      owner: "mohdsahil36",
-      url: "https://github.com/mohdsahil36/merchant-gateway",
-      user: {
-        connect: {
-          id: "user_001",
-        },
-      },
-    },
+export async function fetchNoctaCommitHistory() {
+  const commits = await fetchNoctaCommits();
+  const mappedData = commits.map((c) => {
+    const committedAt = new Date(
+      c.commit.author?.date ?? new Date().toISOString(),
+    );
+    const message = c.commit.message.split("\n")[0];
+    const isMerge =
+      (c.parents?.length ?? 0) > 1 || /^merge\b/i.test(message);
+
+    return {
+      id: c.sha,
+      sha: c.sha.slice(0, 7),
+      message,
+      repository: envConfig.NOCTA_GITHUB_REPO,
+      date: committedAt.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      time: committedAt.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      }),
+      url: c.html_url,
+      isMerge,
+    };
   });
-
-  return repository;
-}
-
-export async function createUser() {
-  const user = await prisma.user.create({
-    data: {
-      id: "user_001",
-      email: "sahil@test.con",
-    },
-  });
+  return {
+    count: mappedData.length,
+    commits: mappedData,
+  };
 }

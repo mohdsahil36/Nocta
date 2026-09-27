@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowUpRight,
-  Flame,
-  LogOut,
-  Moon,
-  PanelLeft,
-  Sun,
-} from "lucide-react";
+import { ArrowUpRight, Flame, LogOut, PanelLeft } from "lucide-react";
 
 import { ChromeButton } from "@/components/ui/chrome-button";
 import { activityStats } from "@/app/data/activity";
@@ -17,13 +10,7 @@ import {
   BEFORE_AUTH_PATH,
   logout,
 } from "@/app/login/functions/auth";
-import useThemeStore from "@/app/store/themeStore";
 import { dashboardContent } from "../content";
-import {
-  getDisplayName,
-  greetingForHour,
-  welcomeMessage,
-} from "../functions/dashboard";
 import { GreetingHeader } from "./greeting-header";
 
 type DashboardNavbarProps = {
@@ -51,28 +38,16 @@ function CommitsButton({ className }: { className?: string }) {
 }
 
 /**
- * Floating glass navbar — greeting left; commits + theme + logout right on md+.
- * Theme-matched scenery across the navbar: night lake (dark) / sunlit hills (light).
- * Scenery/icons use `dark:` CSS so they follow themeBoot on `<html>` (no hydration mismatch).
+ * Floating glass navbar — greeting on scenery left; commits + logout right.
+ * Theme lives in the sidebar. Scenery uses `dark:` so it follows themeBoot.
  */
 export function DashboardNavbar({
   sidebarPinned,
   onOpenSidebar,
 }: DashboardNavbarProps) {
   const router = useRouter();
-  const toggleTheme = useThemeStore((s) => s.toggle);
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
-  const [timeGreeting] = useState(() => greetingForHour(new Date().getHours()));
-  const [welcome, setWelcome] = useState(
-    welcomeMessage(dashboardContent.greeting.fallbackName),
-  );
-
-  useEffect(() => {
-    void getDisplayName().then((name) => {
-      setWelcome(welcomeMessage(name));
-    });
-  }, []);
 
   async function handleLogout() {
     if (loggingOut) return;
@@ -90,7 +65,7 @@ export function DashboardNavbar({
   }
 
   return (
-    <header className="nocta-navbar relative top-0 z-30 flex w-full flex-col gap-3 overflow-hidden px-4 py-3 sm:px-5 sm:py-3.5">
+    <header className="nocta-navbar relative top-0 z-30 flex w-full flex-col gap-3 overflow-hidden px-4 py-4 sm:px-5 sm:py-5">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden rounded-[inherit]"
@@ -108,38 +83,28 @@ export function DashboardNavbar({
           alt=""
           className="absolute inset-0 block h-full w-full min-w-full object-cover object-[center_40%] opacity-55 brightness-110 saturate-75 dark:hidden"
         />
-        <div className="absolute inset-0 bg-linear-to-r from-nocta-canvas/25 via-transparent to-nocta-canvas/20 dark:from-black/20 dark:to-black/15" />
-        <div className="absolute inset-0 bg-linear-to-b from-nocta-canvas/55 via-nocta-canvas/25 to-transparent dark:from-card/35 dark:via-card/15" />
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-b from-transparent to-nocta-canvas" />
+        <div className="absolute inset-0 bg-linear-to-r from-nocta-canvas/40 via-nocta-canvas/10 to-transparent dark:from-black/35 dark:via-black/10 dark:to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-b from-nocta-canvas/30 via-transparent to-transparent dark:from-card/25" />
+        <div className="absolute inset-x-0 bottom-0 h-14 bg-linear-to-b from-transparent to-nocta-canvas" />
       </div>
 
-      <div className="relative z-10 flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
+      <div className="relative z-10 flex items-start justify-between gap-3 sm:items-center">
+        <div className="flex min-w-0 flex-1 items-start gap-2.5 sm:items-center">
           {!sidebarPinned ? (
             <ChromeButton
               iconOnly
-              className="size-8 shrink-0 rounded-lg bg-background/70 backdrop-blur-sm"
+              className="mt-0.5 size-8 shrink-0 rounded-lg bg-background/70 backdrop-blur-sm sm:mt-0"
               aria-label={dashboardContent.actions.openSidebar}
               onClick={onOpenSidebar}
             >
               <PanelLeft className="size-4" />
             </ChromeButton>
           ) : null}
-          <GreetingHeader timeGreeting={timeGreeting} welcome={welcome} />
+          <GreetingHeader />
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <CommitsButton className="hidden rounded-lg bg-background/70 backdrop-blur-sm md:inline-flex" />
-
-          <ChromeButton
-            iconOnly
-            className="size-8 shrink-0 rounded-lg bg-background/80 backdrop-blur-sm"
-            aria-label={dashboardContent.actions.themeDark}
-            onClick={toggleTheme}
-          >
-            <Sun className="size-4 hidden dark:block" />
-            <Moon className="size-4 dark:hidden" />
-          </ChromeButton>
 
           <ChromeButton
             iconOnly

@@ -12,6 +12,9 @@ AGENTS.md
 # Local design docs — never commit (agents update in-session)
 docs/design/
 
+# Local feature scratchpad — never commit
+docs/todo-features.md
+
 # Dependencies (any package root)
 node_modules/
 
@@ -28,21 +31,32 @@ manifest.json
 **/graph.html
 **/graph.json
 
+# Next.js build output (any location — including accidental repo-root `.next`)
+.next/
+**/.next/
+out/
+build/
+
+# Accidental npm install at monorepo root (no root package.json)
+/package-lock.json
+
 # Frontend
 frontend/node_modules/
 frontend/.next/
 frontend/out/
 frontend/build/
+frontend/frontend/
 
 # Backend
 backend/node_modules/
 backend/dist/
 backend/src/generated/prisma/
 
-# Environment variables
+# Environment variables / secrets
 .env
 .env.*
 !.env.example
+*.pem
 
 # Logs
 *.log
@@ -61,5 +75,4 @@ coverage/
 .vercel/
 
 # Misc
-*.pem
 cache/
