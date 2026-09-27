@@ -27,6 +27,8 @@ export const dashboardContent = {
     closeSidebar: "Close sidebar",
     themeLight: "Switch to light mode",
     themeDark: "Switch to dark mode",
+    themeLightShort: "Light mode",
+    themeDarkShort: "Dark mode",
   },
   tonight: {
     eyebrow: "Tonight",

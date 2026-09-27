@@ -10,11 +10,13 @@ import {
   PanelLeftClose,
   Pin,
   Sparkles,
+  Sun,
   Target,
 } from "lucide-react";
 
 import { cn } from "cn";
 import { ChromeButton } from "@/components/ui/chrome-button";
+import useThemeStore, { useIsDark } from "@/app/store/themeStore";
 import { dashboardContent } from "../content";
 
 /** Collapsed rail = icon column. Must stay in sync. */
@@ -79,6 +81,8 @@ export function DashboardSidebar({
   onHoverExpandChange,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const toggleTheme = useThemeStore((s) => s.toggle);
+  const isDark = useIsDark();
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -253,11 +257,45 @@ export function DashboardSidebar({
             })}
           </nav>
 
-          <div
-            className={cn("mt-auto pt-3", expanded ? "px-2" : "px-0")}
-            style={expanded ? undefined : { paddingLeft: ICON_COL }}
-          >
-            <div className="rounded-lg border border-border bg-muted/40 px-3 py-2.5">
+          <div className={cn("mt-auto flex flex-col gap-2 pt-3", expanded && "px-2")}>
+            <button
+              type="button"
+              title={
+                isDark
+                  ? dashboardContent.actions.themeLight
+                  : dashboardContent.actions.themeDark
+              }
+              aria-label={
+                isDark
+                  ? dashboardContent.actions.themeLight
+                  : dashboardContent.actions.themeDark
+              }
+              onClick={toggleTheme}
+              className="nocta-nav-pill grid h-10 items-center rounded-lg"
+              style={{
+                gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
+              }}
+            >
+              <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-lg">
+                <Sun className="size-3.5 shrink-0 hidden dark:block" aria-hidden />
+                <Moon className="size-3.5 shrink-0 dark:hidden" aria-hidden />
+              </span>
+              <span className="flex items-center truncate pr-3 text-sm leading-none">
+                <span className="hidden dark:inline">
+                  {dashboardContent.actions.themeLightShort}
+                </span>
+                <span className="dark:hidden">
+                  {dashboardContent.actions.themeDarkShort}
+                </span>
+              </span>
+            </button>
+
+            <div
+              className={cn(
+                "rounded-lg border border-border bg-muted/40 px-3 py-2.5",
+                !expanded && "invisible h-0 overflow-hidden border-0 p-0",
+              )}
+            >
               <p className="font-serif text-sm leading-snug tracking-[-0.02em] text-nocta-ink">
                 {dashboardContent.sidebar.tagline}
               </p>

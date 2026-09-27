@@ -2,8 +2,10 @@ import express from "express";
 import "dotenv/config";
 import prisma from "./lib/prisma.js";
 import routes from "./routes/index.js";
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 
 app.use("/api", routes);
 
