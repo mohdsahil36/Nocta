@@ -87,6 +87,7 @@ export const loginContent = {
     passwordPlaceholder: "Your password",
     showPassword: "Show password",
     hidePassword: "Hide password",
+    handoff: "Opening your night…",
     // Auth later
     close: "Close",
     login: {

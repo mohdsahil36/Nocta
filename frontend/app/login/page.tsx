@@ -27,6 +27,7 @@ import { DynamicLine } from "./ui/dynamic-line";
 import { FeatureCell } from "./ui/feature-cell";
 import { GoogleMark } from "./ui/google-mark";
 import { PasswordField } from "./ui/password-field";
+import { AuthHandoff } from "./ui/auth-handoff";
 import {
   easeOut,
   fadeUp,
@@ -37,6 +38,11 @@ import {
   stagger,
 } from "./ui/motion";
 import { useIsDark, writeTheme } from "@/lib/theme";
+import {
+  AUTH_EXIT_MS,
+  authEaseOut,
+  markAuthEnter,
+} from "@/lib/auth-transition";
 import { usePageScroll } from "./ui/use-page-scroll";
 import { WhyBuiltSection } from "./ui/why-built-section";
 
@@ -54,6 +60,8 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [authBusy, setAuthBusy] = useState(false);
+  const [routeLeaving, setRouteLeaving] = useState(false);
   const dark = useIsDark();
   const { scrolled, scrollToId } = usePageScroll(reduceMotion, authOpen);
 
@@ -78,24 +86,48 @@ export default function LoginPage() {
     resetAuthFields();
   };
 
+  const enterDashboard = async () => {
+    markAuthEnter();
+    setAuthOpen(false);
+    setRouteLeaving(true);
+    if (!reduceMotion) {
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, AUTH_EXIT_MS);
+      });
+    }
+    router.push(AFTER_AUTH_PATH);
+  };
+
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (authBusy || routeLeaving) return;
+    setAuthBusy(true);
     try {
       if (authMode === "login") {
         await loginWithEmail({ email, password });
       } else {
         await signupWithEmail({ name, email, password, confirmPassword });
       }
-      router.push(AFTER_AUTH_PATH);
+      await enterDashboard();
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Something went wrong. Try again.";
       window.alert(message);
+      setAuthBusy(false);
     }
   };
 
   return (
-    <div className="relative isolate min-h-svh w-full bg-nocta-paper text-foreground dark:bg-nocta-paper">
+    <>
+    <motion.div
+      className="relative isolate min-h-svh w-full bg-nocta-paper text-foreground dark:bg-nocta-paper"
+      animate={
+        routeLeaving && !reduceMotion
+          ? { opacity: 0.35, filter: "blur(6px)", scale: 0.99 }
+          : { opacity: 1, filter: "blur(0px)", scale: 1 }
+      }
+      transition={{ duration: AUTH_EXIT_MS / 1000, ease: authEaseOut }}
+    >
       <header className="fixed inset-x-0 top-0 z-40 flex justify-center px-3 pt-3 sm:px-5 sm:pt-4">
         <motion.div
           className="flex w-full justify-center"
@@ -700,7 +732,8 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       form="nocta-auth-form"
-                      className="auth-cta inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-xl text-sm font-semibold transition-colors"
+                      disabled={authBusy || routeLeaving}
+                      className="auth-cta inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-xl text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-70"
                     >
                       {authMode === "login"
                         ? loginContent.auth.login.cta
@@ -731,6 +764,8 @@ export default function LoginPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
+    <AuthHandoff open={authBusy || routeLeaving} />
+    </>
   );
 }
