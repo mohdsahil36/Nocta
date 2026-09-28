@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   ArrowRight,
   BatteryFull,
@@ -66,6 +66,19 @@ function useSwap() {
     exit: reduceMotion ? undefined : { opacity: 0, y: -4 },
     transition: { duration: 0.22, ease: easeOut },
   } as const;
+}
+
+/** SSR-safe: false until hydrated so auto-demos match server HTML. */
+function usePrefersMotion(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
 }
 
 /* 01 — evolving nights: encrypted live title · panel shows why it shifted */
@@ -834,7 +847,7 @@ function parseLog(line: string): Parsed {
 
 export function LogParserSection() {
   const c = loginContent.logParser;
-  const reduceMotion = useReducedMotion();
+  const prefersMotion = usePrefersMotion();
   const full = c.input;
   const [line, setLine] = useState("");
   const [parsed, setParsed] = useState<Parsed | null>(null);
@@ -845,7 +858,7 @@ export function LogParserSection() {
   const [manual, setManual] = useState(false);
   const [loop, setLoop] = useState(0);
 
-  const animate = reduceMotion === false && !manual;
+  const animate = prefersMotion && !manual;
   const lineShown = animate ? line : manual ? line : full;
   const parsedShown = animate
     ? parsed

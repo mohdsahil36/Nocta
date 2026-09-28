@@ -13,10 +13,8 @@ type DashboardShellProps = {
 };
 
 /**
- * pinned = manual open/close.
- * hoverExpand = desktop peek only while pointer is over the sidebar hit area.
- * After close, hover peek is suppressed until the pointer leaves the rail
- * (otherwise the click leaves the cursor on the panel and it instantly reopens).
+ * App shell — soft canvas + pastel wash so dashboard/activity match the landing.
+ * Sidebar pin/hover behavior unchanged.
  */
 export function DashboardShell({ children }: DashboardShellProps) {
   const reduceMotion = useReducedMotion();
@@ -30,7 +28,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   return (
     <motion.div
-      className="relative flex min-h-svh w-full gap-2 bg-nocta-canvas p-2 text-nocta-ink transition-[background-color,color] duration-300 ease-out sm:gap-2.5 sm:p-2.5"
+      className="relative flex min-h-svh w-full gap-2.5 bg-nocta-canvas p-2.5 text-nocta-ink transition-[background-color,color] duration-300 ease-out sm:gap-3 sm:p-3"
       initial={playEnter ? { opacity: 0, y: 12, filter: "blur(6px)" } : false}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{
@@ -39,6 +37,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
         delay: playEnter ? 0.04 : 0,
       }}
     >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,color-mix(in_oklab,var(--landing-sky)_70%,transparent),transparent_55%),radial-gradient(ellipse_at_bottom_right,color-mix(in_oklab,var(--landing-peach)_45%,transparent),transparent_50%)]"
+      />
+
       <DashboardSidebar
         pinned={pinned}
         expanded={expanded}
@@ -63,7 +66,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         }}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5 sm:gap-3">
         <DashboardNavbar
           sidebarPinned={pinned}
           onOpenSidebar={() => {

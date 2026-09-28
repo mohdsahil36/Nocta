@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { loginContent } from "../content";
 
 const INPUT_CLASS =
-  "auth-input h-10 rounded-xl border py-0 pr-11 pl-3.5 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0";
+  "auth-input h-11 rounded-xl border py-0 pr-11 pl-3.5 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0";
 
 type PasswordFieldProps = {
   id: string;

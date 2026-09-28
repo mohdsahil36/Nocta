@@ -262,21 +262,66 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   }
 }
 
-/* Auth form card — locked moonlight palette (always light on night shell) */
+/* Auth form card — locked moonlight paper (always light on night shell) */
 .nocta-auth-form {
-  --auth-surface: oklch(0.965 0.014 235);
-  --auth-muted: oklch(0.92 0.018 235);
-  --auth-ink: oklch(0.24 0.035 250);
-  --auth-soft: oklch(0.5 0.028 250);
-  --auth-line: oklch(0.86 0.02 235);
-  --auth-field: oklch(0.985 0.008 235);
-  --auth-glow: oklch(0.55 0.09 195);
-  --auth-night: oklch(0.22 0.035 250);
+  --auth-surface: oklch(0.97 0.01 85);
+  --auth-muted: oklch(0.935 0.014 75);
+  --auth-ink: oklch(0.26 0.02 260);
+  --auth-soft: oklch(0.5 0.02 260);
+  --auth-line: oklch(0.88 0.012 80);
+  --auth-field: oklch(0.99 0.006 90);
+  --auth-glow: oklch(0.52 0.08 230);
+  --auth-night: oklch(0.22 0.03 260);
   background-color: var(--auth-surface);
   color: var(--auth-ink);
+  /* Grid rows: chrome | scroll | footer — minmax(0,1fr) is what makes signup scroll */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   box-shadow:
-    0 16px 48px color-mix(in oklab, var(--auth-night) 28%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--auth-ink) 6%, transparent);
+    0 12px 40px -18px color-mix(in oklab, var(--auth-night) 55%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--auth-ink) 8%, transparent);
+}
+.nocta-auth-form .auth-chrome {
+  border-color: var(--auth-line);
+  background-color: color-mix(in oklab, var(--auth-muted) 70%, var(--auth-surface));
+}
+.nocta-auth-form .auth-traffic {
+  display: block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 0.5px color-mix(in oklab, black 18%, transparent);
+}
+.nocta-auth-form .auth-traffic-close {
+  background-color: #ff5f57;
+}
+.nocta-auth-form .auth-traffic-close:hover {
+  filter: brightness(0.92);
+}
+.nocta-auth-form .auth-traffic-min {
+  background-color: #febc2e;
+}
+.nocta-auth-form .auth-traffic-max {
+  background-color: #28c840;
+}
+.nocta-auth-form .auth-scroll {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+.nocta-auth-form .auth-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.nocta-auth-form .auth-scroll::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--auth-ink) 22%, transparent);
+  border-radius: 9999px;
+}
+.nocta-auth-form .auth-scroll::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 .nocta-auth-form .auth-tabs {
   background-color: var(--auth-muted);
@@ -284,7 +329,7 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 .nocta-auth-form .auth-tab-active {
   background-color: var(--auth-field);
   color: var(--auth-ink);
-  box-shadow: 0 1px 2px color-mix(in oklab, var(--auth-night) 12%, transparent);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--auth-night) 10%, transparent);
 }
 .nocta-auth-form .auth-tab-idle {
   color: var(--auth-soft);
@@ -369,15 +414,13 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   background-color: color-mix(in oklab, var(--nocta-paper) 90%, white) !important;
 }
 
-/* Dashboard chrome — moderate radius, clear light/dark contrast */
+/* App chrome — aligned with landing Mac cards (rounded-2xl, soft border) */
 .nocta-sidebar,
 .nocta-panel {
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 14%, transparent);
-  background: oklch(0.995 0.004 230);
-  box-shadow:
-    0 1px 0 color-mix(in oklab, white 80%, transparent),
-    0 8px 24px color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  border-radius: 1rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 10%, transparent);
+  background: var(--nocta-paper);
+  box-shadow: 0 12px 40px -18px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -385,14 +428,13 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   overflow: hidden;
 }
 .nocta-navbar {
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 14%, transparent);
-  /* Atmosphere image + washes live in the component; keep shell transparent */
-  background: transparent;
-  box-shadow:
-    0 1px 0 color-mix(in oklab, white 80%, transparent),
-    0 8px 24px color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  border-radius: 1rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 10%, transparent);
+  background: color-mix(in oklab, var(--nocta-paper) 72%, transparent);
+  box-shadow: 0 12px 40px -18px rgba(0, 0, 0, 0.28);
   overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .dark .nocta-sidebar,
 .dark .nocta-panel {
@@ -404,7 +446,7 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 }
 .dark .nocta-navbar {
   border-color: var(--border);
-  background: transparent;
+  background: color-mix(in oklab, var(--card) 78%, transparent);
   box-shadow: none;
 }
 

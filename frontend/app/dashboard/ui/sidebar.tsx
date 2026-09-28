@@ -169,7 +169,7 @@ export function DashboardSidebar({
                 <p className="text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   {dashboardContent.sidebar.eyebrow}
                 </p>
-                <p className="mt-1 truncate font-serif text-lg leading-none tracking-[-0.03em] text-nocta-ink">
+                <p className="mt-1 truncate font-sans text-lg leading-none font-semibold tracking-[-0.03em] text-nocta-ink">
                   {dashboardContent.brand}
                 </p>
               </div>

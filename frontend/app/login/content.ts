@@ -440,9 +440,9 @@ export const loginContent = {
   },
   footer: {
     copyright: "© 2026 Nocta. All rights reserved.",
-    credit: "Built by Mohd Sahil Siddiqui",
   },
   auth: {
+    panelEyebrow: "Enter",
     panelTitle: "One meaningful action, every night.",
     panelBody: "The calm way to decide what matters before you sleep.",
     google: "Continue with Google",

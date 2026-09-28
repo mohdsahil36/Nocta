@@ -24,6 +24,10 @@ export function usePageScroll(reduceMotion: boolean | null, authOpen: boolean) {
       wheelMultiplier: 0.95,
       touchMultiplier: 1,
       syncTouch: false,
+      // Nested dialog/form scroll must keep the wheel — don’t let Lenis steal it.
+      prevent: (node) =>
+        node.closest("[data-lenis-prevent]") != null ||
+        node.closest("[data-slot=dialog-content]") != null,
     });
     lenisRef.current = lenis;
 

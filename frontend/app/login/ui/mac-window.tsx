@@ -41,9 +41,9 @@ export function MacWindow({
         ].join(" ")}
       >
         <span aria-hidden className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-full bg-foreground/20" />
-          <span className="size-2.5 rounded-full bg-foreground/15" />
-          <span className="size-2.5 rounded-full bg-foreground/10" />
+          <span className="size-2.5 rounded-full bg-[#FF5F57] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
+          <span className="size-2.5 rounded-full bg-[#FEBC2E] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
+          <span className="size-2.5 rounded-full bg-[#28C840] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
         </span>
         <p className="flex-1 truncate text-center text-xs text-muted-foreground">
           {title}

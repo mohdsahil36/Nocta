@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeSync } from "@/app/store/themeStore";
 import "./globals.css";
@@ -41,9 +40,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <head>
-        <Script
+        {/* Native script — next/script in <head> trips a client console error in App Router */}
+        <script
           id="nocta-theme-boot"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeBoot }}
         />
       </head>
