@@ -9,7 +9,7 @@ export const THEME_KEY = "nocta-theme";
 export type ThemePreference = "dark" | "light" | null;
 
 type ThemeState = {
-  /** Explicit override; `null` = evening-aware auto (5pm–7am dark). */
+  /** Explicit override; `null` = follow the OS color scheme (light fallback). */
   preference: ThemePreference;
   /** False until client rehydrate — keeps SSR and first client paint aligned. */
   hydrated: boolean;
@@ -17,26 +17,27 @@ type ThemeState = {
   toggle: () => void;
 };
 
-/** Dark mode between 5pm and 7am when no explicit preference is stored. */
-export function isLocalEvening(date = new Date()) {
-  const h = date.getHours();
-  return h >= 17 || h < 7;
+const DARK_QUERY = "(prefers-color-scheme: dark)";
+
+export function systemPrefersDark() {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia(DARK_QUERY).matches;
 }
 
 export function resolveIsDark(preference: ThemePreference) {
   if (preference === "dark") return true;
   if (preference === "light") return false;
-  return isLocalEvening();
+  return systemPrefersDark();
 }
 
-/** Toggle the `dark` class on <html>, with a short color transition. */
+/** Toggle the `dark` class on <html>. Surface color comes from `bg-nocta-paper` tokens. */
 export function applyDomTheme(isDark: boolean, { transition = true } = {}) {
   const root = document.documentElement;
   if (transition) root.classList.add("theme-transition");
   root.classList.toggle("dark", isDark);
-  const color = isDark ? "#0a0a0a" : "#f4f5f8";
-  root.style.backgroundColor = color;
-  if (document.body) document.body.style.backgroundColor = color;
+  // Clear legacy inline colors so they cannot disagree with --nocta-paper
+  root.style.backgroundColor = "";
+  if (document.body) document.body.style.backgroundColor = "";
   if (transition) {
     window.setTimeout(() => {
       root.classList.remove("theme-transition");
@@ -113,7 +114,31 @@ export function ThemeSync() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const media = window.matchMedia(DARK_QUERY);
+    const onChange = () => {
+      if (useThemeStore.getState().preference !== null) return;
+      applyDomTheme(media.matches);
+    };
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
   return null;
+}
+
+function useSystemDark() {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const media = window.matchMedia(DARK_QUERY);
+    const sync = () => setDark(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+  return dark;
 }
 
 /**
@@ -124,24 +149,12 @@ export function ThemeSync() {
 export function useIsDark() {
   const preference = useThemeStore((s) => s.preference);
   const hydrated = useThemeStore((s) => s.hydrated);
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    if (!hydrated || preference !== null) return;
-    const id = window.setInterval(() => setNow(Date.now()), 60_000);
-    return () => window.clearInterval(id);
-  }, [hydrated, preference]);
+  const systemDark = useSystemDark();
 
   if (!hydrated) return false;
-
-  const isDark =
-    preference === "dark"
-      ? true
-      : preference === "light"
-        ? false
-        : isLocalEvening(new Date(now));
-
-  return isDark;
+  if (preference === "dark") return true;
+  if (preference === "light") return false;
+  return systemDark;
 }
 
 export default useThemeStore;

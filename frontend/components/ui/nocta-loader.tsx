@@ -151,7 +151,7 @@ export function NoctaLoader({
       {(title || label) && (
         <div className="flex flex-col items-center gap-1.5 text-center">
           {title ? (
-            <p className="font-serif text-2xl tracking-[-0.03em] text-nocta-ink dark:text-foreground">
+            <p className="font-sans text-2xl tracking-[-0.03em] font-semibold text-nocta-ink dark:text-foreground">
               {title}
             </p>
           ) : null}

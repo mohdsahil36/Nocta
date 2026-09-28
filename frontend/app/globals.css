@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  background-color: var(--nocta-paper);
+}
+
 /* Brief window while toggling theme — enables smooth color swaps without always-on * transitions. */
 html.theme-transition,
 html.theme-transition *,
@@ -60,6 +64,12 @@ html.theme-transition *::after {
   --color-nocta-canvas: var(--nocta-canvas);
   --color-nocta-ink: var(--nocta-ink);
   --color-nocta-night: var(--nocta-night);
+  /* Landing soft pastels (scoped vars below; light multi-hue wells) */
+  --color-landing-sky: var(--landing-sky);
+  --color-landing-mint: var(--landing-mint);
+  --color-landing-peach: var(--landing-peach);
+  --color-landing-lavender: var(--landing-lavender);
+  --color-landing-sand: var(--landing-sand);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -201,6 +211,19 @@ html.lenis.lenis-stopped {
   overflow: clip;
 }
 
+/* Login landing — hide native scrollbar; Lenis / wheel still scroll */
+html.nocta-login-scroll,
+html.nocta-login-scroll body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html.nocta-login-scroll::-webkit-scrollbar,
+html.nocta-login-scroll body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 @keyframes cadence-grid-drift {
   from {
     background-position: 0 0;
@@ -239,21 +262,66 @@ html.lenis.lenis-stopped {
   }
 }
 
-/* Auth form card — locked moonlight palette (always light on night shell) */
+/* Auth form card — locked moonlight paper (always light on night shell) */
 .nocta-auth-form {
-  --auth-surface: oklch(0.965 0.014 235);
-  --auth-muted: oklch(0.92 0.018 235);
-  --auth-ink: oklch(0.24 0.035 250);
-  --auth-soft: oklch(0.5 0.028 250);
-  --auth-line: oklch(0.86 0.02 235);
-  --auth-field: oklch(0.985 0.008 235);
-  --auth-glow: oklch(0.55 0.09 195);
-  --auth-night: oklch(0.22 0.035 250);
+  --auth-surface: oklch(0.97 0.01 85);
+  --auth-muted: oklch(0.935 0.014 75);
+  --auth-ink: oklch(0.26 0.02 260);
+  --auth-soft: oklch(0.5 0.02 260);
+  --auth-line: oklch(0.88 0.012 80);
+  --auth-field: oklch(0.99 0.006 90);
+  --auth-glow: oklch(0.52 0.08 230);
+  --auth-night: oklch(0.22 0.03 260);
   background-color: var(--auth-surface);
   color: var(--auth-ink);
+  /* Grid rows: chrome | scroll | footer — minmax(0,1fr) is what makes signup scroll */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   box-shadow:
-    0 16px 48px color-mix(in oklab, var(--auth-night) 28%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--auth-ink) 6%, transparent);
+    0 12px 40px -18px color-mix(in oklab, var(--auth-night) 55%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--auth-ink) 8%, transparent);
+}
+.nocta-auth-form .auth-chrome {
+  border-color: var(--auth-line);
+  background-color: color-mix(in oklab, var(--auth-muted) 70%, var(--auth-surface));
+}
+.nocta-auth-form .auth-traffic {
+  display: block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 0.5px color-mix(in oklab, black 18%, transparent);
+}
+.nocta-auth-form .auth-traffic-close {
+  background-color: #ff5f57;
+}
+.nocta-auth-form .auth-traffic-close:hover {
+  filter: brightness(0.92);
+}
+.nocta-auth-form .auth-traffic-min {
+  background-color: #febc2e;
+}
+.nocta-auth-form .auth-traffic-max {
+  background-color: #28c840;
+}
+.nocta-auth-form .auth-scroll {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+.nocta-auth-form .auth-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.nocta-auth-form .auth-scroll::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--auth-ink) 22%, transparent);
+  border-radius: 9999px;
+}
+.nocta-auth-form .auth-scroll::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 .nocta-auth-form .auth-tabs {
   background-color: var(--auth-muted);
@@ -261,7 +329,7 @@ html.lenis.lenis-stopped {
 .nocta-auth-form .auth-tab-active {
   background-color: var(--auth-field);
   color: var(--auth-ink);
-  box-shadow: 0 1px 2px color-mix(in oklab, var(--auth-night) 12%, transparent);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--auth-night) 10%, transparent);
 }
 .nocta-auth-form .auth-tab-idle {
   color: var(--auth-soft);
@@ -299,7 +367,25 @@ html.lenis.lenis-stopped {
   background-color: var(--auth-surface);
 }
 
+/* Login landing — soft multi-hue wells (time.fyi craft) + dark canvas tweak */
+.nocta-landing {
+  --landing-sky: oklch(0.96 0.018 240);
+  --landing-mint: oklch(0.96 0.028 165);
+  --landing-peach: oklch(0.96 0.03 55);
+  --landing-lavender: oklch(0.96 0.022 290);
+  --landing-sand: oklch(0.97 0.014 90);
+}
+.dark .nocta-landing {
+  --nocta-canvas: oklch(0.14 0 0);
+  --landing-sky: oklch(0.2 0.02 240);
+  --landing-mint: oklch(0.2 0.025 165);
+  --landing-peach: oklch(0.21 0.025 55);
+  --landing-lavender: oklch(0.2 0.022 290);
+  --landing-sand: oklch(0.2 0.012 90);
+}
+
 /* Bento card surface */
+/* Legacy elevated bento (illustrations may still reference) */
 .nocta-bento-card {
   background-color: color-mix(in oklab, var(--nocta-paper) 88%, var(--nocta-ink)) !important;
   box-shadow:
@@ -312,28 +398,29 @@ html.lenis.lenis-stopped {
     inset 0 1px 0 rgb(255 255 255 / 0.04),
     0 0 0 1px rgb(255 255 255 / 0.06) !important;
 }
-.nocta-bento-card:hover {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.4),
-    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 28%, transparent),
-    0 12px 28px color-mix(in oklab, var(--nocta-ink) 8%, transparent) !important;
+
+/* Lattice cells — hairline grid, muted fill, ~150ms hover */
+.nocta-bento-cell {
+  background-color: color-mix(in oklab, var(--nocta-paper) 94%, var(--nocta-ink)) !important;
+  box-shadow: none !important;
 }
-.dark .nocta-bento-card:hover {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.06),
-    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 35%, transparent),
-    0 12px 28px rgb(0 0 0 / 0.35) !important;
+.dark .nocta-bento-cell {
+  background-color: color-mix(in oklab, var(--nocta-paper) 96%, white) !important;
+}
+.nocta-bento-cell:hover {
+  background-color: color-mix(in oklab, var(--nocta-paper) 88%, var(--nocta-ink)) !important;
+}
+.dark .nocta-bento-cell:hover {
+  background-color: color-mix(in oklab, var(--nocta-paper) 90%, white) !important;
 }
 
-/* Dashboard chrome — moderate radius, clear light/dark contrast */
+/* App chrome — aligned with landing Mac cards (rounded-2xl, soft border) */
 .nocta-sidebar,
 .nocta-panel {
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 14%, transparent);
-  background: oklch(0.995 0.004 230);
-  box-shadow:
-    0 1px 0 color-mix(in oklab, white 80%, transparent),
-    0 8px 24px color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  border-radius: 1rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 10%, transparent);
+  background: var(--nocta-paper);
+  box-shadow: 0 12px 40px -18px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -341,14 +428,13 @@ html.lenis.lenis-stopped {
   overflow: hidden;
 }
 .nocta-navbar {
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 14%, transparent);
-  /* Atmosphere image + washes live in the component; keep shell transparent */
-  background: transparent;
-  box-shadow:
-    0 1px 0 color-mix(in oklab, white 80%, transparent),
-    0 8px 24px color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  border-radius: 1rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 12%, transparent);
+  background: var(--nocta-paper);
+  box-shadow: 0 12px 40px -18px rgba(0, 0, 0, 0.22);
   overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .dark .nocta-sidebar,
 .dark .nocta-panel {
@@ -360,8 +446,128 @@ html.lenis.lenis-stopped {
 }
 .dark .nocta-navbar {
   border-color: var(--border);
-  background: transparent;
+  background: var(--card);
   box-shadow: none;
+}
+
+/* Navbar day / night — two layers crossfade on .dark (no data-phase remount) */
+.nocta-navbar-sky-day,
+.nocta-navbar-sky-night {
+  position: absolute;
+  inset: 0;
+  transition: opacity 420ms ease;
+}
+.nocta-navbar-sky-day {
+  opacity: 1;
+  background: radial-gradient(
+    ellipse at 85% 0%,
+    color-mix(in oklab, var(--landing-peach) 45%, transparent),
+    transparent 55%
+  );
+}
+.nocta-navbar-sky-night {
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at 80% 15%,
+    color-mix(in oklab, var(--nocta-glow) 14%, transparent),
+    transparent 55%
+  );
+}
+.dark .nocta-navbar-sky-day {
+  opacity: 0;
+}
+.dark .nocta-navbar-sky-night {
+  opacity: 1;
+}
+.nocta-navbar-veil {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--nocta-paper) 72%, transparent);
+}
+.dark .nocta-navbar-veil {
+  background: color-mix(in oklab, var(--card) 55%, transparent);
+}
+.nocta-navbar-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(32px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.nocta-navbar-sky-day .nocta-navbar-orb-primary {
+  top: -45%;
+  right: 6%;
+  width: 8rem;
+  height: 8rem;
+  background: color-mix(in oklab, var(--landing-peach) 80%, transparent);
+  animation: nocta-navbar-drift 16s ease-in-out infinite;
+}
+.nocta-navbar-sky-day .nocta-navbar-orb-secondary {
+  bottom: -55%;
+  left: 12%;
+  width: 10rem;
+  height: 10rem;
+  background: color-mix(in oklab, var(--landing-sky) 85%, transparent);
+  animation: nocta-navbar-drift 20s ease-in-out infinite reverse;
+}
+.nocta-navbar-sky-night .nocta-navbar-orb-primary {
+  top: -40%;
+  right: 10%;
+  width: 7rem;
+  height: 7rem;
+  background: color-mix(in oklab, var(--nocta-glow) 35%, transparent);
+  animation: nocta-navbar-drift 18s ease-in-out infinite;
+}
+.nocta-navbar-sky-night .nocta-navbar-orb-secondary {
+  bottom: -50%;
+  left: 20%;
+  width: 9rem;
+  height: 9rem;
+  background: color-mix(in oklab, oklch(0.4 0.05 260) 40%, transparent);
+  animation: nocta-navbar-drift 22s ease-in-out infinite reverse;
+}
+.nocta-navbar-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 18% 32%, white, transparent),
+    radial-gradient(1px 1px at 42% 18%, white, transparent),
+    radial-gradient(1.5px 1.5px at 68% 28%, white, transparent),
+    radial-gradient(1px 1px at 82% 55%, white, transparent),
+    radial-gradient(1px 1px at 55% 62%, white, transparent);
+  opacity: 0.45;
+  animation: nocta-navbar-twinkle 6s ease-in-out infinite;
+}
+@keyframes nocta-navbar-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-5%, 6%);
+  }
+}
+@keyframes nocta-navbar-twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nocta-navbar-orb,
+  .nocta-navbar-stars {
+    animation: none !important;
+  }
+  .nocta-navbar-sky-day,
+  .nocta-navbar-sky-night {
+    transition: none;
+  }
+  .nocta-navbar-stars {
+    opacity: 0.4;
+  }
 }
 
 /* Nav pills — light soft wash; dark glow wash */
