@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  background-color: var(--nocta-paper);
+}
+
 /* Brief window while toggling theme — enables smooth color swaps without always-on * transitions. */
 html.theme-transition,
 html.theme-transition *,
@@ -60,6 +64,12 @@ html.theme-transition *::after {
   --color-nocta-canvas: var(--nocta-canvas);
   --color-nocta-ink: var(--nocta-ink);
   --color-nocta-night: var(--nocta-night);
+  /* Landing soft pastels (scoped vars below; light multi-hue wells) */
+  --color-landing-sky: var(--landing-sky);
+  --color-landing-mint: var(--landing-mint);
+  --color-landing-peach: var(--landing-peach);
+  --color-landing-lavender: var(--landing-lavender);
+  --color-landing-sand: var(--landing-sand);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -201,6 +211,19 @@ html.lenis.lenis-stopped {
   overflow: clip;
 }
 
+/* Login landing — hide native scrollbar; Lenis / wheel still scroll */
+html.nocta-login-scroll,
+html.nocta-login-scroll body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html.nocta-login-scroll::-webkit-scrollbar,
+html.nocta-login-scroll body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 @keyframes cadence-grid-drift {
   from {
     background-position: 0 0;
@@ -299,7 +322,25 @@ html.lenis.lenis-stopped {
   background-color: var(--auth-surface);
 }
 
+/* Login landing — soft multi-hue wells (time.fyi craft) + dark canvas tweak */
+.nocta-landing {
+  --landing-sky: oklch(0.96 0.018 240);
+  --landing-mint: oklch(0.96 0.028 165);
+  --landing-peach: oklch(0.96 0.03 55);
+  --landing-lavender: oklch(0.96 0.022 290);
+  --landing-sand: oklch(0.97 0.014 90);
+}
+.dark .nocta-landing {
+  --nocta-canvas: oklch(0.14 0 0);
+  --landing-sky: oklch(0.2 0.02 240);
+  --landing-mint: oklch(0.2 0.025 165);
+  --landing-peach: oklch(0.21 0.025 55);
+  --landing-lavender: oklch(0.2 0.022 290);
+  --landing-sand: oklch(0.2 0.012 90);
+}
+
 /* Bento card surface */
+/* Legacy elevated bento (illustrations may still reference) */
 .nocta-bento-card {
   background-color: color-mix(in oklab, var(--nocta-paper) 88%, var(--nocta-ink)) !important;
   box-shadow:
@@ -312,17 +353,20 @@ html.lenis.lenis-stopped {
     inset 0 1px 0 rgb(255 255 255 / 0.04),
     0 0 0 1px rgb(255 255 255 / 0.06) !important;
 }
-.nocta-bento-card:hover {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.4),
-    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 28%, transparent),
-    0 12px 28px color-mix(in oklab, var(--nocta-ink) 8%, transparent) !important;
+
+/* Lattice cells — hairline grid, muted fill, ~150ms hover */
+.nocta-bento-cell {
+  background-color: color-mix(in oklab, var(--nocta-paper) 94%, var(--nocta-ink)) !important;
+  box-shadow: none !important;
 }
-.dark .nocta-bento-card:hover {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.06),
-    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 35%, transparent),
-    0 12px 28px rgb(0 0 0 / 0.35) !important;
+.dark .nocta-bento-cell {
+  background-color: color-mix(in oklab, var(--nocta-paper) 96%, white) !important;
+}
+.nocta-bento-cell:hover {
+  background-color: color-mix(in oklab, var(--nocta-paper) 88%, var(--nocta-ink)) !important;
+}
+.dark .nocta-bento-cell:hover {
+  background-color: color-mix(in oklab, var(--nocta-paper) 90%, white) !important;
 }
 
 /* Dashboard chrome — moderate radius, clear light/dark contrast */

@@ -9,6 +9,13 @@ export function usePageScroll(reduceMotion: boolean | null, authOpen: boolean) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    document.documentElement.classList.add("nocta-login-scroll");
+    return () => {
+      document.documentElement.classList.remove("nocta-login-scroll");
+    };
+  }, []);
+
+  useEffect(() => {
     if (reduceMotion) return;
 
     const lenis = new Lenis({
@@ -75,7 +82,7 @@ export function usePageScroll(reduceMotion: boolean | null, authOpen: boolean) {
     if (!el) return;
     const lenis = lenisRef.current;
     if (lenis) {
-      lenis.scrollTo(el, { offset: -88, duration: 1.2 });
+      lenis.scrollTo(el, { offset: -64, duration: 1.2 });
       return;
     }
     el.scrollIntoView({ behavior: "smooth", block: "start" });

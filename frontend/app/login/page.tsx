@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Moon, Sun, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PixelScenery } from "@/components/illustrations/pixel-scenery";
 import { loginContent } from "./content";
 import {
   AFTER_AUTH_PATH,
@@ -24,20 +23,28 @@ import {
   signupWithEmail,
   type AuthMode,
 } from "./functions/auth";
-import { DynamicLine } from "./ui/dynamic-line";
-import { FeatureCell } from "./ui/feature-cell";
-import { GoogleMark } from "./ui/google-mark";
-import { PasswordField } from "./ui/password-field";
-import { NoctaLoader } from "@/components/ui/nocta-loader";
+import { FaqSection } from "./ui/faq";
 import {
-  easeOut,
-  fadeUp,
-  navReveal,
-  sceneryReveal,
-  sectionReveal,
-  SHELL,
-  stagger,
-} from "./ui/motion";
+  AiSubGrid,
+  CheckInSection,
+  GoalsSection,
+  LogParserSection,
+  NarrativeBand,
+  RecoverySection,
+  ReflectionSection,
+  ScoringSection,
+} from "./ui/feature-sections";
+import { FooterWordmark } from "./ui/footer-wordmark";
+import { GoogleMark } from "./ui/google-mark";
+import { Hero } from "./ui/hero";
+import { LandingNav } from "./ui/landing-nav";
+import { OptionSwapSection } from "./ui/option-swap";
+import { PasswordField } from "./ui/password-field";
+import { FullRule } from "./ui/section";
+import { FRAME_PAD, Frame } from "./ui/page-frame";
+import { TonightDemo } from "./ui/tonight-demo";
+import { NoctaLoader } from "@/components/ui/nocta-loader";
+import { easeOut } from "./ui/motion";
 import useThemeStore from "@/app/store/themeStore";
 import {
   AUTH_EXIT_MS,
@@ -45,7 +52,6 @@ import {
   markAuthEnter,
 } from "@/lib/auth-transition";
 import { usePageScroll } from "./ui/use-page-scroll";
-import { WhyBuiltSection } from "./ui/why-built-section";
 
 const AUTH_INPUT_CLASS =
   "auth-input h-10 rounded-xl border px-3.5 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0";
@@ -120,93 +126,17 @@ export default function LoginPage() {
 
   return (
     <>
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-5 sm:pt-4">
-        <motion.div
-          className="pointer-events-auto flex w-full justify-center"
-          variants={navReveal}
-          initial={reduceMotion ? false : "hidden"}
-          animate="show"
-        >
-          <motion.div
-            layout
-            transition={{ duration: 0.35, ease: easeOut }}
-            className={[
-              "flex w-full items-center justify-between gap-3 rounded-full border shadow-md backdrop-blur-2xl backdrop-saturate-150 transition-[max-width,padding,background-color,border-color,color] duration-300 ease-out",
-              // Glass nav: white over hero, theme colors after scroll
-              scrolled
-                ? "max-w-3xl border-border/50 bg-background/80 py-3 pr-3 pl-5 text-foreground sm:max-w-4xl sm:py-3.5 sm:pr-3.5 sm:pl-6 dark:border-white/12 dark:bg-background/75"
-                : "max-w-2xl border-white/30 bg-white/25 py-3 pr-3 pl-5 text-white sm:max-w-3xl sm:py-3.5 dark:border-white/15 dark:bg-white/10",
-            ].join(" ")}
-          >
-            <a
-              href="#top"
-              className={[
-                "cursor-pointer font-serif text-lg tracking-[-0.03em] transition-colors duration-300 sm:text-xl",
-                scrolled ? "text-foreground" : "text-white",
-              ].join(" ")}
-            >
-              {loginContent.brand}
-            </a>
-            <nav className="flex items-center gap-0.5 sm:gap-1.5">
-              <Button
-                variant="ghost"
-                size="default"
-                className={[
-                  "hidden cursor-pointer sm:inline-flex",
-                  scrolled
-                    ? "text-foreground/75 hover:bg-foreground/5 hover:text-foreground"
-                    : "text-white/85 hover:bg-white/15 hover:text-white",
-                ].join(" ")}
-                onClick={() => scrollToId("how-it-works")}
-              >
-                {loginContent.nav.howItWorks}
-              </Button>
-              <Button
-                variant="ghost"
-                size="default"
-                className={[
-                  "hidden cursor-pointer md:inline-flex",
-                  scrolled
-                    ? "text-foreground/75 hover:bg-foreground/5 hover:text-foreground"
-                    : "text-white/85 hover:bg-white/15 hover:text-white",
-                ].join(" ")}
-                onClick={() => scrollToId("close")}
-              >
-                {loginContent.nav.about}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={[
-                  "cursor-pointer",
-                  scrolled
-                    ? "text-foreground hover:bg-foreground/5 hover:text-foreground"
-                    : "text-white hover:bg-white/15 hover:text-white",
-                ].join(" ")}
-                onClick={toggleTheme}
-                aria-label="Toggle theme"
-                title="Toggle theme"
-              >
-                <Sun className="hidden dark:block" />
-                <Moon className="dark:hidden" />
-              </Button>
-              <Button
-                size="default"
-                className={[
-                  "cursor-pointer rounded-full px-4 sm:px-5",
-                  scrolled ? "" : "bg-white text-zinc-900 hover:bg-white/90",
-                ].join(" ")}
-                onClick={() => openAuth()}
-              >
-                {loginContent.nav.cta}
-              </Button>
-            </nav>
-          </motion.div>
-        </motion.div>
-      </header>
+      <LandingNav
+        scrolled={scrolled}
+        reduceMotion={reduceMotion}
+        onHowItWorks={() => scrollToId("how-it-works")}
+        onFaq={() => scrollToId("faq")}
+        onOpenAuth={() => openAuth()}
+        onToggleTheme={toggleTheme}
+      />
 
       <motion.div
-        className="relative isolate min-h-svh w-full bg-nocta-paper text-foreground dark:bg-nocta-paper"
+        className="relative isolate w-full bg-nocta-paper text-foreground"
         animate={
           routeLeaving && !reduceMotion
             ? { opacity: 0.35, filter: "blur(6px)", scale: 0.99 }
@@ -215,201 +145,68 @@ export default function LoginPage() {
         transition={{ duration: AUTH_EXIT_MS / 1000, ease: authEaseOut }}
       >
         <main className="relative z-10 w-full">
-          <section
-            id="top"
-            className="relative flex min-h-svh w-full items-center justify-center overflow-hidden bg-nocta-paper"
-          >
-            <motion.div
-              className="absolute inset-0"
-              variants={sceneryReveal}
-              initial={reduceMotion ? false : "hidden"}
-              animate="show"
-            >
-              <PixelScenery className="inset-0" />
-            </motion.div>
+          <Hero
+            reduceMotion={reduceMotion}
+            onOpenAuth={() => openAuth()}
+            onHowItWorks={() => scrollToId("how-it-works")}
+          />
+          <NarrativeBand which="product" />
+          <TonightDemo />
+          <NarrativeBand which="onboarding" />
+          <GoalsSection />
+          <CheckInSection />
+          <NarrativeBand which="process" />
+          <ScoringSection />
+          <AiSubGrid />
+          <OptionSwapSection />
+          <LogParserSection />
+          <RecoverySection />
+          <ReflectionSection />
+          <FaqSection />
 
-            <motion.div
-              className="relative z-10 flex w-full flex-col items-center px-4 pt-28 pb-16"
-              variants={stagger}
-              initial={reduceMotion ? false : "hidden"}
-              animate="show"
-            >
+          <section id="close" className="scroll-mt-16">
+            <FullRule />
+            <Frame>
               <div
-                className={`${SHELL} flex flex-col items-center text-center`}
+                className={[
+                  "mx-auto max-w-2xl pt-28 pb-24 text-center sm:pt-36 sm:pb-28",
+                  FRAME_PAD,
+                ].join(" ")}
               >
-                <motion.h1
-                  variants={fadeUp}
-                  className="font-serif text-4xl leading-tight tracking-[-0.04em] text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.45)] sm:text-5xl lg:text-6xl"
-                >
-                  <span className="whitespace-nowrap">
-                    {loginContent.hero.wordmark}
-                  </span>
-                  <span className="mx-2 font-normal text-white/45 sm:mx-3">
-                    —
-                  </span>
-                  <span className="text-white/90">
-                    {loginContent.hero.title}
-                  </span>
-                </motion.h1>
-
-                <motion.p
-                  variants={fadeUp}
-                  className="mx-auto mt-4 max-w-md text-base font-medium leading-snug text-white/95 drop-shadow-[0_1px_10px_rgba(0,0,0,0.4)] sm:mt-5 sm:max-w-lg sm:text-lg"
-                >
-                  {loginContent.hero.tagline}
-                </motion.p>
-
-                <motion.div
-                  variants={fadeUp}
-                  className="mx-auto mt-3 w-full max-w-lg"
-                >
-                  <DynamicLine lines={loginContent.hero.rotating} />
-                </motion.div>
-
-                <motion.p
-                  variants={fadeUp}
-                  className="mx-auto mt-3 max-w-sm text-sm leading-6 text-white/75 drop-shadow-[0_1px_8px_rgba(0,0,0,0.35)] sm:max-w-md sm:text-[0.95rem]"
-                >
-                  {loginContent.hero.body}
-                </motion.p>
-
-                <motion.div
-                  variants={fadeUp}
-                  className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:mt-9"
-                >
-                  <Button
-                    size="lg"
-                    className="h-12 min-w-40 cursor-pointer rounded-full bg-white px-7 text-sm font-semibold text-zinc-900 shadow-[0_8px_28px_rgba(0,0,0,0.28)] transition-[transform,box-shadow,background-color] duration-200 hover:bg-white hover:shadow-[0_10px_32px_rgba(0,0,0,0.35)] hover:brightness-105 active:scale-[0.98]"
-                    onClick={() => openAuth()}
-                  >
-                    {loginContent.hero.primaryCta}
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-12 min-w-40 cursor-pointer rounded-full border-white/50 bg-white/10 px-7 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(0,0,0,0.18)] backdrop-blur-md transition-[transform,background-color,border-color] duration-200 hover:border-white/70 hover:bg-white/20 hover:text-white active:scale-[0.98]"
-                    onClick={() => scrollToId("how-it-works")}
-                  >
-                    {loginContent.hero.secondaryCta}
-                  </Button>
-                </motion.div>
-              </div>
-            </motion.div>
-          </section>
-
-          <WhyBuiltSection />
-
-          <motion.section
-            id="how-it-works"
-            className="relative z-10 bg-nocta-paper py-16 sm:py-24"
-            variants={sectionReveal}
-            initial={reduceMotion ? false : "hidden"}
-            whileInView="show"
-            viewport={{ once: true, amount: 0.15 }}
-          >
-            <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:max-w-7xl">
-              <motion.h2
-                className="text-center font-serif text-3xl tracking-[-0.03em] text-foreground sm:text-4xl"
-                variants={fadeUp}
-                initial={reduceMotion ? false : "hidden"}
-                whileInView="show"
-                viewport={{ once: true }}
-              >
-                {loginContent.features.title}
-              </motion.h2>
-              <motion.div
-                className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[auto_auto]"
-                variants={stagger}
-                initial={reduceMotion ? false : "hidden"}
-                whileInView="show"
-                viewport={{ once: true, amount: 0.1 }}
-              >
-                {loginContent.features.items.map((feature, index) => (
-                  <FeatureCell
-                    key={feature.id}
-                    feature={feature}
-                    index={index}
-                  />
-                ))}
-              </motion.div>
-            </div>
-          </motion.section>
-
-          <motion.section
-            id="close"
-            className="relative z-10 overflow-hidden bg-nocta-paper pt-20 sm:pt-28"
-            variants={sectionReveal}
-            initial={reduceMotion ? false : "hidden"}
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            <motion.div
-              className={`${SHELL} relative z-10 text-center`}
-              variants={stagger}
-              initial={reduceMotion ? false : "hidden"}
-              whileInView="show"
-              viewport={{ once: true, amount: 0.35 }}
-            >
-              <motion.h2
-                variants={fadeUp}
-                className="font-serif text-3xl tracking-[-0.03em] text-foreground sm:text-4xl"
-              >
-                {loginContent.close.title}
-              </motion.h2>
-              <motion.p
-                variants={fadeUp}
-                className="mx-auto mt-5 max-w-md text-base leading-7 text-muted-foreground"
-              >
-                {loginContent.close.body}
-              </motion.p>
-              <motion.div variants={fadeUp}>
+                <h2 className="font-sans text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-foreground">
+                  {loginContent.close.title}
+                </h2>
+                <p className="mx-auto mt-5 max-w-md text-base leading-7 text-muted-foreground sm:text-lg">
+                  {loginContent.close.body}
+                </p>
                 <Button
                   size="lg"
-                  className="mt-9 h-11 min-w-36 cursor-pointer rounded-full px-6"
-                  onClick={() => openAuth()}
+                  className="mt-10 h-12 min-w-40 rounded-full px-8 text-sm font-semibold"
+                  onClick={() => openAuth("signup")}
                 >
                   {loginContent.close.cta}
                 </Button>
-              </motion.div>
-            </motion.div>
-
-            <footer className="relative z-10 mx-auto mt-14 w-full max-w-6xl px-4 pb-14 sm:mt-16 sm:px-6 sm:pb-16 lg:max-w-7xl">
-              <div className="relative grid grid-cols-1 items-baseline gap-6 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-8">
-                <p className="order-2 text-center text-sm leading-none text-muted-foreground sm:order-1 sm:text-left">
-                  {loginContent.footer.copyright}
-                </p>
-
-                <motion.p
-                  aria-hidden
-                  className="order-1 justify-self-center select-none font-sans text-[clamp(4.5rem,16vw,11rem)] leading-none font-bold tracking-tighter text-nocta-ink/10 sm:order-2 dark:text-white/15"
-                  initial={
-                    reduceMotion
-                      ? false
-                      : { opacity: 0, y: 32, filter: "blur(24px)" }
-                  }
-                  whileInView={
-                    reduceMotion
-                      ? undefined
-                      : { opacity: 1, y: 0, filter: "blur(0px)" }
-                  }
-                  transition={{
-                    duration: 2,
-                    ease: easeOut,
-                    delay: 0.2,
-                    opacity: { duration: 2.2, ease: easeOut, delay: 0.15 },
-                    filter: { duration: 2.4, ease: easeOut, delay: 0.05 },
-                  }}
-                  viewport={{ once: true, amount: 0.55 }}
-                >
-                  {loginContent.brand}
-                </motion.p>
-
-                <p className="order-3 text-center text-sm leading-none text-muted-foreground sm:text-right">
-                  {loginContent.footer.credit}
+                <p className="mt-5 text-xs text-muted-foreground">
+                  {loginContent.close.trust}
                 </p>
               </div>
-            </footer>
-          </motion.section>
+            </Frame>
+
+            <FullRule />
+            <Frame>
+              <footer
+                className={["bg-landing-sand pt-10 pb-12 sm:pt-12 sm:pb-14", FRAME_PAD].join(
+                  " ",
+                )}
+              >
+                <FooterWordmark />
+                <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-foreground/10 pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center">
+                  <p>{loginContent.footer.copyright}</p>
+                  <p>{loginContent.footer.credit}</p>
+                </div>
+              </footer>
+            </Frame>
+          </section>
         </main>
 
         <Dialog
