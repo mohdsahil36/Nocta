@@ -18,7 +18,7 @@ export function FullRule({ className = "" }: { className?: string }) {
         " ",
       )}
     >
-      <div className="pointer-events-none absolute inset-0 mx-auto max-w-[1080px]">
+      <div className="pointer-events-none absolute inset-0 mx-auto max-w-270">
         <span className="absolute top-1/2 left-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/25" />
         <span className="absolute top-1/2 right-0 size-1.5 translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/25" />
       </div>
@@ -142,7 +142,9 @@ function CopyBlock({
                 className="mt-2 size-1.5 shrink-0 rounded-full bg-nocta-glow/80"
               />
               <div>
-                <p className="text-sm font-semibold text-foreground">{p.title}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {p.title}
+                </p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   {p.body}
                 </p>
@@ -201,7 +203,11 @@ export function TextBand({
 }) {
   return (
     <SectionShell id={id}>
-      <div className={[CARD, "bg-nocta-paper px-6 py-12 sm:px-10 sm:py-14"].join(" ")}>
+      <div
+        className={[CARD, "bg-nocta-paper px-6 py-12 sm:px-10 sm:py-14"].join(
+          " ",
+        )}
+      >
         <SectionHeader
           index={index}
           eyebrow={eyebrow}
@@ -260,7 +266,13 @@ export function DeepDive({
     return (
       <SectionShell id={id}>
         <div className={[CARD, "grid", COL_SPLIT].join(" ")}>
-          <div className={[panelPad, t.panel, "border-b border-foreground/10 md:border-r md:border-b-0"].join(" ")}>
+          <div
+            className={[
+              panelPad,
+              t.panel,
+              "border-b border-foreground/10 md:border-r md:border-b-0",
+            ].join(" ")}
+          >
             <div className="w-full">{children}</div>
           </div>
           <CopyBlock
