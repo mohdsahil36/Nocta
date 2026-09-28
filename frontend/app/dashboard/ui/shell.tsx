@@ -62,7 +62,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             return;
           }
           suppressHoverRef.current = false;
-          setHoverExpand(false);
+          if (!pinned) setHoverExpand(false);
         }}
       />
 

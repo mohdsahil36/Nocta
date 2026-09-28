@@ -16,16 +16,43 @@ export function welcomeMessage(name: string): string {
 
 /** Resolve a short display name from the current Supabase session. */
 export async function getDisplayName(): Promise<string> {
+  const profile = await getSessionProfile();
+  return profile.name;
+}
+
+export type SessionProfile = {
+  name: string;
+  email: string | null;
+  initials: string;
+};
+
+/** Name + email for the sidebar profile chip. */
+export async function getSessionProfile(): Promise<SessionProfile> {
+  const fallback = dashboardContent.greeting.fallbackName;
   const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) return dashboardContent.greeting.fallbackName;
+  if (error || !data.user) {
+    return { name: fallback, email: null, initials: initialsFrom(fallback) };
+  }
 
   const meta = data.user.user_metadata as { name?: string } | undefined;
   const fromMeta = meta?.name?.trim();
-  if (fromMeta) return fromMeta.split(" ")[0] ?? fromMeta;
+  const email = data.user.email?.trim() ?? null;
+  const name =
+    fromMeta?.split(" ")[0] ??
+    email?.split("@")[0] ??
+    fallback;
 
-  const email = data.user.email?.trim();
-  if (email)
-    return email.split("@")[0] ?? dashboardContent.greeting.fallbackName;
+  return {
+    name,
+    email,
+    initials: initialsFrom(fromMeta || name),
+  };
+}
 
-  return dashboardContent.greeting.fallbackName;
+function initialsFrom(value: string): string {
+  const parts = value.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
+  }
+  return (parts[0] ?? "N").slice(0, 2).toUpperCase();
 }

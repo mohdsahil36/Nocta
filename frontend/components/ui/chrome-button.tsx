@@ -14,6 +14,7 @@ type Shared = {
   className?: string;
   /** Accessible name — required when the visible label is icon-only. */
   "aria-label"?: string;
+  title?: string;
 };
 
 type AsButton = Shared & {
@@ -60,6 +61,7 @@ export function ChromeButton({
         href={href}
         className={classes}
         aria-label={rest["aria-label"]}
+        title={rest.title}
       >
         {children}
       </Link>
@@ -71,6 +73,7 @@ export function ChromeButton({
     onClick,
     disabled,
     "aria-label": ariaLabel,
+    title,
   } = rest as AsButton;
 
   return (
@@ -79,6 +82,7 @@ export function ChromeButton({
       disabled={disabled}
       onClick={onClick}
       aria-label={ariaLabel}
+      title={title}
       className={classes}
     >
       {children}

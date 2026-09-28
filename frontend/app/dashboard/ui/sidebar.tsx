@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, type ComponentType } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from "react";
 import { usePathname } from "next/navigation";
 import {
   Activity,
@@ -10,21 +15,27 @@ import {
   PanelLeftClose,
   Pin,
   Sparkles,
-  Sun,
   Target,
 } from "lucide-react";
 
 import { cn } from "cn";
 import { ChromeButton } from "@/components/ui/chrome-button";
-import useThemeStore, { useIsDark } from "@/app/store/themeStore";
 import { dashboardContent } from "../content";
+import {
+  getSessionProfile,
+  type SessionProfile,
+} from "../functions/dashboard";
 
 /** Collapsed rail = icon column. Must stay in sync. */
 const ICON_COL = "3.5rem";
+const SIDEBAR_H = "h-[calc(100svh-1rem)]";
 /** Full class strings — Tailwind won't emit `md:${var}` template classes. */
 const EXPANDED_W = "w-[15.5rem] translate-x-0";
 const COLLAPSED_W =
   "max-md:w-[15.5rem] max-md:-translate-x-[calc(100%+0.5rem)] md:w-14 md:translate-x-0";
+
+/** Collapse only after the pointer has really left (avoids width-flap jitter). */
+const HOVER_LEAVE_MS = 280;
 
 type NavItem = {
   href: string;
@@ -32,7 +43,7 @@ type NavItem = {
   icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 };
 
-const NAV: NavItem[] = [
+const PRIMARY_NAV: NavItem[] = [
   {
     href: "/dashboard",
     label: dashboardContent.nav.tonight,
@@ -48,12 +59,13 @@ const NAV: NavItem[] = [
     label: dashboardContent.nav.reflect,
     icon: BookOpen,
   },
-  {
-    href: "/activity",
-    label: dashboardContent.nav.activity,
-    icon: Activity,
-  },
 ];
+
+const PLATFORM_NAV: NavItem = {
+  href: "/activity",
+  label: dashboardContent.nav.activity,
+  icon: Activity,
+};
 
 type DashboardSidebarProps = {
   pinned: boolean;
@@ -69,9 +81,43 @@ function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function NavLink({
+  item,
+  pathname,
+  onNavigate,
+}: {
+  item: NavItem;
+  pathname: string;
+  onNavigate: () => void;
+}) {
+  const active = isNavActive(pathname, item.href);
+  const Icon = item.icon;
+
+  return (
+    <Link
+      href={item.href}
+      title={item.label}
+      onClick={onNavigate}
+      className="nocta-nav-pill grid h-10 shrink-0 items-center rounded-lg"
+      style={{
+        gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
+      }}
+      data-active={active ? "true" : undefined}
+    >
+      <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-lg">
+        <Icon className="size-3.5 shrink-0" aria-hidden />
+      </span>
+      <span className="flex items-center truncate pr-3 text-sm leading-none">
+        {item.label}
+      </span>
+    </Link>
+  );
+}
+
 /**
- * Clip-expand sidebar. Every row is `icon-col | content` so a `w-14` clip
- * shows only centered icons. Shell suppresses hover-reopen right after close.
+ * Fixed viewport sidebar. Hover peeks overlay content — spacer only follows
+ * pin, so main content never shifts (that was the jitter).
+ * Grid rows keep Platform + profile pinned to the bottom on every route.
  */
 export function DashboardSidebar({
   pinned,
@@ -81,8 +127,22 @@ export function DashboardSidebar({
   onHoverExpandChange,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const toggleTheme = useThemeStore((s) => s.toggle);
-  const isDark = useIsDark();
+  const leaveTimerRef = useRef<number | null>(null);
+  const [profile, setProfile] = useState<SessionProfile>(() => ({
+    name: dashboardContent.greeting.fallbackName,
+    email: null,
+    initials: "N",
+  }));
+
+  useEffect(() => {
+    let cancelled = false;
+    void getSessionProfile().then((next) => {
+      if (!cancelled) setProfile(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -94,14 +154,40 @@ export function DashboardSidebar({
     };
   }, [pinned]);
 
+  useEffect(() => {
+    return () => {
+      if (leaveTimerRef.current != null) {
+        window.clearTimeout(leaveTimerRef.current);
+      }
+    };
+  }, []);
+
+  const clearLeaveTimer = () => {
+    if (leaveTimerRef.current != null) {
+      window.clearTimeout(leaveTimerRef.current);
+      leaveTimerRef.current = null;
+    }
+  };
+
   const startHover = () => {
     if (window.matchMedia("(max-width: 767px)").matches) return;
+    clearLeaveTimer();
     onHoverExpandChange(true);
   };
 
   const endHover = () => {
     if (window.matchMedia("(max-width: 767px)").matches) return;
-    onHoverExpandChange(false);
+    clearLeaveTimer();
+    leaveTimerRef.current = window.setTimeout(() => {
+      leaveTimerRef.current = null;
+      onHoverExpandChange(false);
+    }, HOVER_LEAVE_MS);
+  };
+
+  const closeIfMobile = () => {
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      onPinClose();
+    }
   };
 
   return (
@@ -118,10 +204,10 @@ export function DashboardSidebar({
         onClick={onPinClose}
       />
 
-      {/* Reserves layout width — must animate with the panel or content jitters */}
+      {/* Spacer follows pin only — hover peek overlays, does not shove page content */}
       <div
         className={cn(
-          "hidden shrink-0 transition-[width] duration-300 ease-out md:block",
+          "hidden shrink-0 md:block",
           pinned ? "w-62" : "w-14",
         )}
         aria-hidden
@@ -129,22 +215,26 @@ export function DashboardSidebar({
 
       <div
         className={cn(
-          "z-50",
-          "fixed inset-y-2 left-2 md:absolute md:inset-y-2 md:left-2",
-          "overflow-hidden transition-[width,transform] duration-300 ease-out",
+          "fixed top-2 left-2 z-50",
+          SIDEBAR_H,
+          "overflow-hidden transition-[width,transform,box-shadow] duration-300 ease-out",
           expanded ? EXPANDED_W : COLLAPSED_W,
-          !pinned && expanded && "md:z-60",
+          !pinned && expanded && "shadow-lg",
         )}
         onMouseEnter={startHover}
         onMouseLeave={endHover}
       >
         <aside
           className={cn(
-            "nocta-sidebar flex h-full min-h-[calc(100svh-1rem)] w-62 flex-col py-3 md:min-h-full",
-            !pinned && expanded && "md:shadow-lg",
+            "nocta-sidebar grid w-62 py-3",
+            SIDEBAR_H,
           )}
+          style={{
+            gridTemplateRows: "auto auto auto minmax(0, 1fr) auto",
+          }}
           data-collapsed={expanded ? undefined : "true"}
         >
+          {/* Brand */}
           <div
             className="mb-4 grid items-center"
             style={{ gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)` }}
@@ -154,11 +244,7 @@ export function DashboardSidebar({
                 href="/dashboard"
                 className="flex size-8 items-center justify-center rounded-lg bg-nocta-ink text-nocta-paper shadow-sm"
                 aria-label={dashboardContent.brand}
-                onClick={() => {
-                  if (window.matchMedia("(max-width: 767px)").matches) {
-                    onPinClose();
-                  }
-                }}
+                onClick={closeIfMobile}
               >
                 <Moon className="size-3.5" aria-hidden />
               </Link>
@@ -202,6 +288,7 @@ export function DashboardSidebar({
             </div>
           </div>
 
+          {/* Rule */}
           <div
             className="mb-3 grid items-center"
             style={{ gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)` }}
@@ -215,6 +302,7 @@ export function DashboardSidebar({
             </div>
           </div>
 
+          {/* Nav label */}
           <p
             className="mb-2 truncate pr-3 text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase"
             style={{ paddingLeft: ICON_COL }}
@@ -222,86 +310,69 @@ export function DashboardSidebar({
             {dashboardContent.sidebar.navLabel}
           </p>
 
+          {/* Primary nav — only this row scrolls */}
           <nav
-            className={cn("flex flex-1 flex-col gap-1", expanded && "px-2")}
+            className={cn(
+              "flex min-h-0 flex-col gap-1 overflow-y-auto overscroll-contain",
+              expanded && "px-2",
+            )}
             aria-label="Primary"
           >
-            {NAV.map((item) => {
-              const active = isNavActive(pathname, item.href);
-              const Icon = item.icon;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={item.label}
-                  onClick={() => {
-                    if (window.matchMedia("(max-width: 767px)").matches) {
-                      onPinClose();
-                    }
-                  }}
-                  className="nocta-nav-pill grid h-10 items-center rounded-lg"
-                  style={{
-                    gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
-                  }}
-                  data-active={active ? "true" : undefined}
-                >
-                  <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-lg">
-                    <Icon className="size-3.5 shrink-0" aria-hidden />
-                  </span>
-                  <span className="flex items-center truncate pr-3 text-sm leading-none">
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            })}
+            {PRIMARY_NAV.map((item) => (
+              <NavLink
+                key={item.href}
+                item={item}
+                pathname={pathname}
+                onNavigate={closeIfMobile}
+              />
+            ))}
           </nav>
 
-          <div className={cn("mt-auto flex flex-col gap-2 pt-3", expanded && "px-2")}>
-            <button
-              type="button"
-              title={
-                isDark
-                  ? dashboardContent.actions.themeLight
-                  : dashboardContent.actions.themeDark
-              }
-              aria-label={
-                isDark
-                  ? dashboardContent.actions.themeLight
-                  : dashboardContent.actions.themeDark
-              }
-              onClick={toggleTheme}
-              className="nocta-nav-pill grid h-10 items-center rounded-lg"
+          {/* Footer — always last grid row, never clipped by page length */}
+          <div
+            className={cn(
+              "flex flex-col gap-2 border-t border-border/70 pt-3",
+              expanded && "px-2",
+            )}
+          >
+            <p
+              className={cn(
+                "px-1 text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase",
+                !expanded && "pointer-events-none invisible h-0 overflow-hidden p-0",
+              )}
+            >
+              {dashboardContent.sidebar.workspaceLabel}
+            </p>
+
+            <NavLink
+              item={PLATFORM_NAV}
+              pathname={pathname}
+              onNavigate={closeIfMobile}
+            />
+
+            <div
+              className="grid h-12 items-center rounded-xl border border-border bg-muted/35 px-0"
               style={{
                 gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
               }}
+              title={profile.email ?? profile.name}
             >
-              <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-lg">
-                <Sun className="size-3.5 shrink-0 hidden dark:block" aria-hidden />
-                <Moon className="size-3.5 shrink-0 dark:hidden" aria-hidden />
+              <span className="flex size-8 items-center justify-center justify-self-center rounded-lg bg-nocta-ink text-[11px] font-semibold tracking-wide text-nocta-paper">
+                {profile.initials}
               </span>
-              <span className="flex items-center truncate pr-3 text-sm leading-none">
-                <span className="hidden dark:inline">
-                  {dashboardContent.actions.themeLightShort}
+              <span
+                className={cn(
+                  "min-w-0 pr-2",
+                  !expanded && "pointer-events-none invisible",
+                )}
+              >
+                <span className="block truncate text-sm leading-tight font-medium text-nocta-ink">
+                  {profile.name}
                 </span>
-                <span className="dark:hidden">
-                  {dashboardContent.actions.themeDarkShort}
+                <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted-foreground">
+                  {profile.email ?? dashboardContent.sidebar.profileLabel}
                 </span>
               </span>
-            </button>
-
-            <div
-              className={cn(
-                "rounded-lg border border-border bg-muted/40 px-3 py-2.5",
-                !expanded && "invisible h-0 overflow-hidden border-0 p-0",
-              )}
-            >
-              <p className="font-serif text-sm leading-snug tracking-[-0.02em] text-nocta-ink">
-                {dashboardContent.sidebar.tagline}
-              </p>
-              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-                {dashboardContent.sidebar.taglineSupport}
-              </p>
             </div>
           </div>
         </aside>

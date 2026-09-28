@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import { DashboardShell } from "../dashboard/ui/shell";
 
 export const metadata: Metadata = {
-  title: "Activity",
-  description: "Platform commits and coding activity.",
+  title: "Platform activity",
+  description: "Platform commits and coding activity from the Nocta repo.",
 };
 
 export default function ActivityLayout({ children }: { children: ReactNode }) {

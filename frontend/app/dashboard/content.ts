@@ -3,6 +3,8 @@ export const dashboardContent = {
   sidebar: {
     eyebrow: "Nightly focus",
     navLabel: "Navigate",
+    workspaceLabel: "Workspace",
+    profileLabel: "Signed in",
     tagline: "One meaningful action",
     taglineSupport: "Score what matters. Close the night with clarity.",
   },
@@ -10,7 +12,7 @@ export const dashboardContent = {
     tonight: "Tonight",
     goals: "Goals",
     reflect: "Reflect",
-    activity: "Activity",
+    activity: "Platform activity",
   },
   greeting: {
     morning: "Good morning",
@@ -21,7 +23,8 @@ export const dashboardContent = {
     fallbackName: "there",
   },
   actions: {
-    platformCommits: "Platform commits",
+    platformCommits: "Platform activity",
+    backToDashboard: "Dashboard",
     logout: "Log out",
     openSidebar: "Open sidebar",
     closeSidebar: "Close sidebar",

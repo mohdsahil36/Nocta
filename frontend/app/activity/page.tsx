@@ -1,13 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import {
+  ArrowLeft,
   ArrowUpRight,
   Flame,
   GitCommit,
   GitMerge,
   Trophy,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { Commit } from "../data/activity";
 import { activityStats } from "../data/activity";
@@ -68,30 +70,35 @@ export default function ActivityPage() {
   const todayLabel = formatActivityDate();
   const todayCommits = commits.filter((c) => c.date === todayLabel).length;
 
+  const grouped = useMemo(() => groupCommitsByDate(commits), [commits]);
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 py-2 sm:gap-8 sm:px-2 sm:py-4">
       <header className="nocta-panel relative flex flex-wrap items-end justify-between gap-4 overflow-hidden p-5 sm:p-7">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-landing-peach/30 dark:bg-transparent"
+          className="pointer-events-none absolute inset-0 bg-landing-peach/25 dark:bg-transparent"
         />
         <div className="relative">
-          <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-            <span className="mr-2 text-nocta-glow tabular-nums">11</span>
-            Platform
-          </p>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase transition-colors hover:text-nocta-ink"
+          >
+            <ArrowLeft className="size-3.5" aria-hidden />
+            Dashboard
+          </Link>
           <h1 className="mt-3 font-sans text-3xl font-semibold tracking-[-0.03em] text-nocta-ink sm:text-4xl">
-            Activity
+            Platform activity
           </h1>
           <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Platform commits from the Nocta repo.
+            Commits landing in the Nocta repo — merges and pushes from the team.
           </p>
         </div>
         <button
           type="button"
           onClick={() => void loadCommits({ sync: true })}
           disabled={syncing || loading}
-          className="relative inline-flex h-10 cursor-pointer items-center rounded-full border border-foreground/10 bg-nocta-paper px-5 text-sm font-semibold text-nocta-ink transition-colors hover:bg-muted/40 disabled:cursor-wait disabled:opacity-50"
+          className="relative inline-flex h-10 cursor-pointer items-center rounded-xl border border-foreground/10 bg-nocta-paper px-5 text-sm font-semibold text-nocta-ink transition-colors hover:bg-muted/40 disabled:cursor-wait disabled:opacity-50"
         >
           {syncing ? "Syncing…" : "Sync"}
         </button>
@@ -132,7 +139,7 @@ export default function ActivityPage() {
         <div className="flex min-w-0 flex-col gap-3">
           <div className="flex h-8 items-end justify-between gap-3">
             <h2 className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-              Commits
+              Feed
             </h2>
             <span className="text-sm tabular-nums text-muted-foreground">
               {loading ? "…" : `${totalCommits} total`}
@@ -141,7 +148,7 @@ export default function ActivityPage() {
 
           {loading ? (
             <div className="nocta-panel flex min-h-56 items-center justify-center px-4 py-12">
-              <NoctaLoader size="sm" label="Loading commits…" />
+              <NoctaLoader size="sm" label="Loading activity…" />
             </div>
           ) : error ? (
             <div className="nocta-panel px-4 py-12 text-center">
@@ -156,21 +163,46 @@ export default function ActivityPage() {
             </div>
           ) : commits.length === 0 ? (
             <p className="nocta-panel px-4 py-12 text-center text-sm text-muted-foreground">
-              No commits yet.
+              No platform activity yet.
             </p>
           ) : (
-            <ul className="nocta-panel divide-y divide-foreground/10 overflow-hidden">
-              {commits.map((commit) => (
-                <li key={commit.id}>
-                  <CommitItem commit={commit} />
-                </li>
+            <div className="flex flex-col gap-4">
+              {grouped.map((group) => (
+                <section key={group.date} className="nocta-panel overflow-hidden">
+                  <header className="flex items-center justify-between gap-3 border-b border-foreground/10 px-4 py-3 sm:px-5">
+                    <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                      {group.date === todayLabel ? "Today" : group.date}
+                    </p>
+                    <p className="text-xs tabular-nums text-muted-foreground">
+                      {group.items.length}{" "}
+                      {group.items.length === 1 ? "event" : "events"}
+                    </p>
+                  </header>
+                  <ul className="flex flex-col gap-2 p-3 sm:p-4">
+                    {group.items.map((commit) => (
+                      <li key={commit.id}>
+                        <CommitItem commit={commit} />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </div>
     </div>
   );
+}
+
+function groupCommitsByDate(commits: Commit[]) {
+  const map = new Map<string, Commit[]>();
+  for (const commit of commits) {
+    const list = map.get(commit.date) ?? [];
+    list.push(commit);
+    map.set(commit.date, list);
+  }
+  return Array.from(map.entries()).map(([date, items]) => ({ date, items }));
 }
 
 function MetricRow({
@@ -220,56 +252,59 @@ function CommitItem({ commit }: { commit: Commit }) {
   const isMerge = Boolean(commit.isMerge);
 
   return (
-    <article
+    <a
+      href={commit.url}
+      target="_blank"
+      rel="noopener noreferrer"
       className={cn(
-        "flex gap-3 px-4 py-3.5 transition-colors duration-150 hover:bg-foreground/3 sm:gap-4 sm:px-5",
-        isMerge && "bg-nocta-glow/5",
+        "group flex items-start gap-3 rounded-xl border border-foreground/8 bg-muted/25 px-3.5 py-3 transition-colors duration-150",
+        "hover:border-foreground/15 hover:bg-muted/45",
+        isMerge && "border-nocta-glow/20 bg-nocta-glow/5 hover:bg-nocta-glow/10",
       )}
     >
-      <div
+      <span
         className={cn(
-          "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+          "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg",
           isMerge
             ? "bg-nocta-glow/15 text-nocta-glow"
-            : "bg-muted text-muted-foreground",
+            : "bg-background text-muted-foreground dark:bg-nocta-paper/10",
         )}
       >
         {isMerge ? (
-          <GitMerge className="h-4 w-4" aria-hidden />
+          <GitMerge className="size-3.5" aria-hidden />
         ) : (
-          <GitCommit className="h-4 w-4" aria-hidden />
+          <GitCommit className="size-3.5" aria-hidden />
         )}
-      </div>
+      </span>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="truncate text-sm font-medium text-nocta-ink sm:text-base">
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="truncate font-sans text-sm font-medium text-nocta-ink sm:text-[0.95rem]">
             {commit.message}
-          </h3>
+          </span>
           {isMerge ? (
-            <span className="shrink-0 rounded-full bg-nocta-glow/10 px-2 py-0.5 text-[11px] font-medium text-nocta-glow">
+            <span className="shrink-0 rounded-md bg-nocta-glow/15 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-nocta-glow uppercase">
               merge
             </span>
           ) : null}
-        </div>
-        <p className="mt-1 text-sm text-muted-foreground">
-          <span className="font-mono text-xs">{commit.sha}</span>
-          <span className="mx-1.5 text-border" aria-hidden>
-            ·
-          </span>
-          {commit.date} · {commit.time}
-        </p>
-      </div>
+        </span>
+        <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          <code className="rounded-md bg-background/80 px-1.5 py-0.5 font-mono text-[11px] tabular-nums dark:bg-background/40">
+            {commit.sha}
+          </code>
+          <span>{commit.time}</span>
+          {commit.repository ? (
+            <span className="truncate text-muted-foreground/80">
+              {commit.repository}
+            </span>
+          ) : null}
+        </span>
+      </span>
 
-      <a
-        href={commit.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex h-8 shrink-0 items-center gap-1 self-center rounded-full px-2.5 text-sm text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-nocta-ink"
-      >
-        View
-        <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
-      </a>
-    </article>
+      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors group-hover:bg-background/60 group-hover:text-nocta-ink">
+        <ArrowUpRight className="size-4" aria-hidden />
+        <span className="sr-only">View on GitHub</span>
+      </span>
+    </a>
   );
 }
