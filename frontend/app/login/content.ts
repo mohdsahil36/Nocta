@@ -214,7 +214,6 @@ export const loginContent = {
     title: "AI Action Generator, Time-Fit Adapter & Recommendation Reasoning",
     body: "The step you see is not from a canned list. It rewrites itself from tonight's score, your recent finishes, rest days and which of your goals needs attention.",
     liveEyebrow: "Tonight writes",
-    replay: "Replay",
     windowTitle: "Nocta · Decide",
     cells: [
       {

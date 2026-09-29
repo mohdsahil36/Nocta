@@ -414,7 +414,7 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   background-color: color-mix(in oklab, var(--nocta-paper) 90%, white) !important;
 }
 
-/* App chrome — aligned with landing Mac cards (rounded-2xl, soft border) */
+/* App chrome — soft panels; navbar slightly tighter radius than content cards */
 .nocta-sidebar,
 .nocta-panel {
   border-radius: 1rem;
@@ -428,7 +428,7 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   overflow: hidden;
 }
 .nocta-navbar {
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   border: 1px solid color-mix(in oklab, var(--nocta-ink) 12%, transparent);
   background: var(--nocta-paper);
   box-shadow: 0 12px 40px -18px rgba(0, 0, 0, 0.22);

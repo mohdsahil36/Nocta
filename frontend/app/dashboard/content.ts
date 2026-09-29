@@ -34,19 +34,22 @@ export const dashboardContent = {
     themeDarkShort: "Dark mode",
   },
   tonight: {
+    windowTitle: "Nocta · Tonight",
     eyebrow: "Tonight",
     title: "One next step",
     body: "When your goals are in, Nocta will score them and pick a single action for the night.",
     emptyCta: "Goals come next",
   },
   pulse: {
+    windowTitle: "Nocta · This week",
     eyebrow: "This week",
-    title: "Quiet pulse",
-    body: "Streaks and neglected areas will live here — calm signals, not another feed.",
+    title: "Quiet for now",
+    body: "Streaks and neglected areas will show up here when goals are live.",
   },
   tip: {
+    windowTitle: "Nocta · Note",
     eyebrow: "Remember",
     title: "Rest counts",
-    body: "A recovery night is a valid priority. Protect it when the score says so.",
+    body: "A recovery night is a valid priority. Keep the UI calm when the score says so.",
   },
 };

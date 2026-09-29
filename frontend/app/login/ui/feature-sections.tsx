@@ -10,7 +10,6 @@ import {
   CornerDownLeft,
   Lightbulb,
   MoonStar,
-  RefreshCw,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
@@ -129,36 +128,43 @@ export function GoalsSection() {
             ))}
           </div>
         </div>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={scene.id} {...swap} className="p-5 sm:p-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <AreaTag>{scene.area}</AreaTag>
-              <span className="text-xs text-muted-foreground">{scene.badge}</span>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              {scene.detail}
-            </p>
-            <div className="mt-5 flex items-center gap-3">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">
-                <div
-                  className={[
-                    "h-full rounded-full",
-                    scene.idleDays >= 6 ? "bg-nocta-glow/70" : "bg-foreground/20",
-                  ].join(" ")}
-                  style={{
-                    width: `${Math.min(100, Math.max(8, scene.idleDays * 10))}%`,
-                  }}
-                />
+        {/* Reserved height + sync crossfade — scene copy length must not reflow the card. */}
+        <div className="relative min-h-40 sm:min-h-36">
+          <AnimatePresence mode="sync" initial={false}>
+            <motion.div
+              key={scene.id}
+              {...swap}
+              className="absolute inset-x-0 top-0 p-5 sm:p-6"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <AreaTag>{scene.area}</AreaTag>
+                <span className="text-xs text-muted-foreground">{scene.badge}</span>
               </div>
-              <span className="shrink-0 text-[11px] text-muted-foreground tabular-nums">
-                {scene.due}
-                {scene.idleDays > 0
-                  ? ` · ${c.lastTouchedLabel} ${scene.idleDays}d`
-                  : ""}
-              </span>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+              <p className="mt-4 min-h-12 text-sm leading-6 text-muted-foreground">
+                {scene.detail}
+              </p>
+              <div className="mt-5 flex items-center gap-3">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">
+                  <div
+                    className={[
+                      "h-full rounded-full",
+                      scene.idleDays >= 6 ? "bg-nocta-glow/70" : "bg-foreground/20",
+                    ].join(" ")}
+                    style={{
+                      width: `${Math.min(100, Math.max(8, scene.idleDays * 10))}%`,
+                    }}
+                  />
+                </div>
+                <span className="shrink-0 text-[11px] text-muted-foreground tabular-nums">
+                  {scene.due}
+                  {scene.idleDays > 0
+                    ? ` · ${c.lastTouchedLabel} ${scene.idleDays}d`
+                    : ""}
+                </span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </DeepDive>
   );
@@ -508,7 +514,7 @@ export function ScoringSection() {
   );
 }
 
-/* 04 — AI tabs + proof well; Replay re-runs a visible sequence */
+/* 04 — AI tabs + proof well; auto-advance + manual tab select (no Replay) */
 const AI_WELL = [
   "bg-landing-lavender",
   "bg-landing-mint",
@@ -520,13 +526,17 @@ const AI_ACCENT = [
   "border-foreground/10 bg-landing-sky",
 ] as const;
 
+/** Reserved height so tab swaps don't collapse the mobile layout (mobile-first). */
+const AI_PANEL_MIN_H = "min-h-88 md:min-h-80";
+
 export function AiSubGrid() {
   const c = loginContent.ai;
   const tabCount = c.cells.length;
   const TAB_MS = 3200;
-  const { index: active, select, pause, paused, reduceMotion, running } =
-    useDemoLoop(tabCount, TAB_MS);
-  const [tick, setTick] = useState(0);
+  const { index: active, select, paused, reduceMotion, running } = useDemoLoop(
+    tabCount,
+    TAB_MS,
+  );
   const [sceneIdx, setSceneIdx] = useState(0);
   const [generator, timeFit, reasoning] = c.cells;
   const scenes = generator.scenes;
@@ -539,16 +549,9 @@ export function AiSubGrid() {
     if (reduceMotion || active !== 0 || paused) return;
     const id = window.setInterval(() => {
       setSceneIdx((i) => (i + 1) % scenes.length);
-      setTick((n) => n + 1);
     }, 1600);
     return () => window.clearInterval(id);
   }, [reduceMotion, active, scenes.length, paused]);
-
-  const replay = () => {
-    pause();
-    setSceneIdx(0);
-    setTick((n) => n + 1);
-  };
 
   const liveTitle =
     active === 0
@@ -561,9 +564,9 @@ export function AiSubGrid() {
     reduceMotion
       ? {}
       : {
-          initial: { opacity: 0, y: 10 },
+          initial: { opacity: 0, y: 8 },
           animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.35, ease: easeOut, delay },
+          transition: { duration: 0.3, ease: easeOut, delay },
         };
 
   return (
@@ -576,17 +579,12 @@ export function AiSubGrid() {
             title={c.title}
             body={c.body}
             wide
-            titleSlot={
-              <LiveTitle
-                key={`${active}-${tick}-${liveTitle}`}
-                text={liveTitle}
-              />
-            }
+            titleSlot={<LiveTitle key={`${active}-${liveTitle}`} text={liveTitle} />}
           />
         </div>
 
         <MacWindow title={c.windowTitle} tone="lavender">
-          <div className={["grid min-h-80", COL_SPLIT].join(" ")}>
+          <div className={["grid", COL_SPLIT].join(" ")}>
             <div role="tablist" aria-label={c.title} className="bg-nocta-paper">
               {c.cells.map((item, i) => {
                 const on = i === active;
@@ -599,7 +597,6 @@ export function AiSubGrid() {
                     onClick={() => {
                       select(i);
                       setSceneIdx(0);
-                      setTick((n) => n + 1);
                     }}
                     className={[
                       "flex w-full cursor-pointer items-start border-b border-foreground/10 px-6 py-6 text-left outline-none transition-colors duration-150 last:border-b-0 sm:px-8",
@@ -658,149 +655,143 @@ export function AiSubGrid() {
 
             <div
               className={[
-                "relative flex min-h-80 items-center border-t border-foreground/10 p-8 sm:p-10 md:border-t-0 md:border-l",
+                "relative border-t border-foreground/10 p-8 sm:p-10 md:border-t-0 md:border-l",
+                AI_PANEL_MIN_H,
                 well,
               ].join(" ")}
             >
-              <button
-                type="button"
-                onClick={replay}
-                className="absolute top-4 right-4 z-10 inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-foreground/15 bg-nocta-paper/95 px-3 text-xs font-medium text-foreground shadow-sm outline-none transition-colors hover:bg-nocta-paper focus-visible:ring-2 focus-visible:ring-ring/50"
+              {/* Absolute crossfade — keeps reserved height; no mode="wait" collapse. */}
+              <div
+                role="tabpanel"
+                className={["relative w-full", AI_PANEL_MIN_H].join(" ")}
+                aria-live="polite"
               >
-                <RefreshCw aria-hidden className="size-3.5" />
-                {c.replay}
-              </button>
-
-              <div role="tabpanel" className="w-full" aria-live="polite">
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="sync" initial={false}>
                   <motion.div
-                    key={`${active}-${tick}-${sceneIdx}`}
+                    key={active}
                     initial={reduceMotion ? false : { opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={reduceMotion ? undefined : { opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="w-full"
+                    transition={{ duration: 0.22, ease: easeOut }}
+                    className="absolute inset-0 flex items-center"
                   >
-                    {active === 0 ? (
-                      <div className="mx-auto flex max-w-sm flex-col gap-3">
-                        <motion.div
-                          {...step(0)}
-                          className={[
-                            SURFACE,
-                            "border px-4 py-4",
-                            AI_ACCENT[0],
-                          ].join(" ")}
-                        >
-                          <PanelLabel>From tonight&apos;s score</PanelLabel>
-                          <p className="mt-2 text-sm font-medium text-foreground">
-                            {scene.from}
-                          </p>
-                          <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                            {scene.why}
-                          </p>
-                        </motion.div>
-                        <motion.span
-                          {...step(0.2)}
-                          aria-hidden
-                          className="ml-3 text-nocta-glow"
-                        >
-                          <ArrowRight className="size-4 rotate-90" />
-                        </motion.span>
-                        <motion.div
-                          {...step(0.35)}
-                          className={[
-                            SURFACE,
-                            "border border-dashed border-foreground/20 bg-nocta-paper/90 px-4 py-4",
-                          ].join(" ")}
-                        >
-                          <PanelLabel>{c.liveEyebrow}</PanelLabel>
-                          <p className="mt-2 min-h-10 text-sm font-semibold text-foreground">
-                            {scene.to}
-                          </p>
-                          <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                            Rewrites when accomplishments, rest or focus shift
-                          </p>
-                        </motion.div>
-                      </div>
-                    ) : null}
-
-                    {active === 1 ? (
-                      <ul
-                        className={[
-                          SURFACE,
-                          "mx-auto max-w-sm space-y-4 p-5",
-                        ].join(" ")}
-                      >
-                        {timeFit.fits.map((f, i) => (
-                          <motion.li
-                            key={`${f.minutes}-${tick}`}
-                            {...step(i * 0.15)}
+                    <div className="w-full">
+                      {active === 0 ? (
+                        <div className="mx-auto flex max-w-sm flex-col gap-3">
+                          <motion.div
+                            key={`from-${sceneIdx}`}
+                            {...step(0)}
+                            className={[
+                              SURFACE,
+                              "border px-4 py-4",
+                              AI_ACCENT[0],
+                            ].join(" ")}
                           >
-                            <div className="flex items-baseline justify-between gap-3 text-xs">
-                              <span
-                                className={[
-                                  "min-h-8 flex-1",
-                                  i === 1
-                                    ? "font-medium text-foreground"
-                                    : "text-muted-foreground",
-                                ].join(" ")}
-                              >
-                                {f.step}
-                              </span>
-                              <span className="shrink-0 text-muted-foreground tabular-nums">
-                                {f.minutes}
-                              </span>
-                            </div>
-                            <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-foreground/5">
-                              <motion.div
-                                className={[
-                                  "h-full rounded-full",
-                                  i === 1
-                                    ? "bg-nocta-glow/75"
-                                    : "bg-foreground/15",
-                                ].join(" ")}
-                                initial={reduceMotion ? false : { width: 0 }}
-                                animate={{
-                                  width: `${(parseInt(f.minutes, 10) / maxMinutes) * 100}%`,
-                                }}
-                                transition={{
-                                  duration: 0.55,
-                                  ease: easeOut,
-                                  delay: reduceMotion ? 0 : 0.15 + i * 0.12,
-                                }}
-                              />
-                            </div>
-                          </motion.li>
-                        ))}
-                      </ul>
-                    ) : null}
+                            <PanelLabel>From tonight&apos;s score</PanelLabel>
+                            <p className="mt-2 min-h-10 text-sm font-medium text-foreground">
+                              {scene.from}
+                            </p>
+                            <p className="mt-2 min-h-10 text-xs leading-5 text-muted-foreground">
+                              {scene.why}
+                            </p>
+                          </motion.div>
+                          <span aria-hidden className="ml-3 text-nocta-glow">
+                            <ArrowRight className="size-4 rotate-90" />
+                          </span>
+                          <motion.div
+                            key={`to-${sceneIdx}`}
+                            {...step(0.12)}
+                            className={[
+                              SURFACE,
+                              "border border-dashed border-foreground/20 bg-nocta-paper/90 px-4 py-4",
+                            ].join(" ")}
+                          >
+                            <PanelLabel>{c.liveEyebrow}</PanelLabel>
+                            <p className="mt-2 min-h-10 text-sm font-semibold text-foreground">
+                              {scene.to}
+                            </p>
+                            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                              Rewrites when accomplishments, rest or focus shift
+                            </p>
+                          </motion.div>
+                        </div>
+                      ) : null}
 
-                    {active === 2 ? (
-                      <div className="mx-auto max-w-sm">
-                        <motion.div
-                          {...step(0)}
+                      {active === 1 ? (
+                        <ul
                           className={[
-                            "rounded-2xl rounded-bl-md border bg-nocta-paper px-5 py-4 shadow-sm",
-                            AI_ACCENT[2],
+                            SURFACE,
+                            "mx-auto max-w-sm space-y-4 p-5",
                           ].join(" ")}
                         >
-                          <PanelLabel>Why this night</PanelLabel>
-                          <p className="mt-2 min-h-16 text-sm leading-6 text-muted-foreground">
-                            Built from deadlines, neglect, rest days and focus —
-                            not a preset list of actions.
-                          </p>
-                        </motion.div>
-                        <motion.div
-                          {...step(0.35)}
-                          className="mt-4 flex flex-wrap gap-1.5"
-                        >
-                          {loginContent.demo.goal.facts.map((fact) => (
-                            <AreaTag key={fact}>{fact}</AreaTag>
+                          {timeFit.fits.map((f, i) => (
+                            <motion.li key={f.minutes} {...step(i * 0.12)}>
+                              <div className="flex items-baseline justify-between gap-3 text-xs">
+                                <span
+                                  className={[
+                                    "min-h-8 flex-1",
+                                    i === 1
+                                      ? "font-medium text-foreground"
+                                      : "text-muted-foreground",
+                                  ].join(" ")}
+                                >
+                                  {f.step}
+                                </span>
+                                <span className="shrink-0 text-muted-foreground tabular-nums">
+                                  {f.minutes}
+                                </span>
+                              </div>
+                              <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-foreground/5">
+                                <motion.div
+                                  className={[
+                                    "h-full rounded-full",
+                                    i === 1
+                                      ? "bg-nocta-glow/75"
+                                      : "bg-foreground/15",
+                                  ].join(" ")}
+                                  initial={reduceMotion ? false : { width: 0 }}
+                                  animate={{
+                                    width: `${(parseInt(f.minutes, 10) / maxMinutes) * 100}%`,
+                                  }}
+                                  transition={{
+                                    duration: 0.55,
+                                    ease: easeOut,
+                                    delay: reduceMotion ? 0 : 0.12 + i * 0.1,
+                                  }}
+                                />
+                              </div>
+                            </motion.li>
                           ))}
-                          <AreaTag>{reasoning.fit}</AreaTag>
-                        </motion.div>
-                      </div>
-                    ) : null}
+                        </ul>
+                      ) : null}
+
+                      {active === 2 ? (
+                        <div className="mx-auto max-w-sm">
+                          <motion.div
+                            {...step(0)}
+                            className={[
+                              "rounded-2xl rounded-bl-md border bg-nocta-paper px-5 py-4 shadow-sm",
+                              AI_ACCENT[2],
+                            ].join(" ")}
+                          >
+                            <PanelLabel>Why this night</PanelLabel>
+                            <p className="mt-2 min-h-16 text-sm leading-6 text-muted-foreground">
+                              Built from deadlines, neglect, rest days and focus
+                              — not a preset list of actions.
+                            </p>
+                          </motion.div>
+                          <motion.div
+                            {...step(0.28)}
+                            className="mt-4 flex flex-wrap gap-1.5"
+                          >
+                            {loginContent.demo.goal.facts.map((fact) => (
+                              <AreaTag key={fact}>{fact}</AreaTag>
+                            ))}
+                            <AreaTag>{reasoning.fit}</AreaTag>
+                          </motion.div>
+                        </div>
+                      ) : null}
+                    </div>
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -959,7 +950,7 @@ export function LogParserSection() {
   return (
     <DeepDive {...c} tone="lavender" layout="normal">
       <MacWindow title={c.windowTitle} tone="lavender">
-        <div className="flex min-h-80 flex-col gap-4 p-4 sm:p-5">
+        <div className="flex min-h-88 flex-col gap-4 p-4 sm:min-h-80 sm:p-5">
           <form
             onSubmit={onParse}
             className={[SURFACE, "flex items-center gap-2 p-2 pl-4"].join(" ")}
@@ -999,15 +990,19 @@ export function LogParserSection() {
             </motion.div>
           </form>
 
-          <div aria-live="polite" className="relative min-h-48">
-            <AnimatePresence mode="wait">
+          <div
+            aria-live="polite"
+            className="relative min-h-52 flex-1 sm:min-h-48"
+          >
+            <AnimatePresence mode="sync" initial={false}>
               {showCards ? (
                 <motion.div
                   key={`cards-${loop}-${parsedShown?.goal ?? "x"}`}
                   initial={animate ? { opacity: 0 } : false}
                   animate={{ opacity: 1 }}
-                  exit={animate ? { opacity: 0, y: 6 } : undefined}
+                  exit={animate ? { opacity: 0 } : undefined}
                   transition={{ duration: 0.25, ease: easeOut }}
+                  className="absolute inset-0"
                 >
                   <dl className="grid grid-cols-2 gap-2">
                     {fields.map(([key, value], i) => (
@@ -1047,7 +1042,7 @@ export function LogParserSection() {
                   </dl>
 
                   <div className="mt-3 flex min-h-11 items-center justify-end gap-2">
-                    <AnimatePresence mode="wait" initial={false}>
+                    <AnimatePresence mode="sync" initial={false}>
                       {savedShown || phaseShown === "success" ? (
                         <motion.div
                           key="saved"
@@ -1105,7 +1100,7 @@ export function LogParserSection() {
                   initial={animate ? { opacity: 0 } : false}
                   animate={{ opacity: 1 }}
                   exit={animate ? { opacity: 0 } : undefined}
-                  className="flex h-48 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-foreground/15 bg-landing-lavender/30 px-4 text-center"
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-foreground/15 bg-landing-lavender/30 px-4 text-center"
                 >
                   <p className="text-sm font-medium text-foreground">
                     {phaseShown === "type"
@@ -1161,55 +1156,62 @@ export function RecoverySection() {
           aria-hidden
           className="pointer-events-none absolute top-0 left-1/2 size-56 -translate-x-1/2 -translate-y-1/3 rounded-full bg-nocta-glow/15 blur-3xl"
         />
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={scene.id} {...swap} className="relative">
-            <PanelLabel>{scene.label}</PanelLabel>
-            <span
-              className={[
-                "mx-auto mt-5 flex size-16 items-center justify-center rounded-full border",
-                scene.kind === "rest"
-                  ? "border-nocta-glow/30 bg-landing-mint"
-                  : "border-nocta-glow/30 bg-landing-sky",
-              ].join(" ")}
+        {/* Fixed week chrome + reserved copy height — rest/action body length must not jump. */}
+        <div className="relative min-h-56 sm:min-h-52">
+          <AnimatePresence mode="sync" initial={false}>
+            <motion.div
+              key={scene.id}
+              {...swap}
+              className="absolute inset-x-0 top-0"
             >
-              {scene.kind === "rest" ? (
-                <MoonStar aria-hidden className="size-7 text-nocta-glow" />
-              ) : (
-                <Check aria-hidden className="size-7 text-nocta-glow" />
-              )}
-            </span>
-            <p className="mx-auto mt-5 max-w-xs text-sm leading-6 text-muted-foreground">
-              {scene.body}
-            </p>
-            <div
-              className="mt-7 flex items-center justify-center gap-2"
-              aria-label={scene.streak}
-            >
-              {Array.from({ length: weekLen }, (_, i) => {
-                const day = i + 1;
-                const inStreak = day <= scene.streakDays;
-                const active = day === scene.streakDays;
-                return (
-                  <span
-                    key={`${scene.id}-${i}`}
-                    aria-hidden
-                    className={[
-                      "rounded-full transition-all duration-300",
-                      active
-                        ? "size-3.5 border-2 border-nocta-glow bg-nocta-glow/25"
-                        : inStreak
-                          ? "size-2.5 bg-nocta-glow/55"
-                          : "size-2.5 bg-foreground/15",
-                    ].join(" ")}
-                  />
-                );
-              })}
-            </div>
-            <p className="mt-2 text-xs font-medium text-foreground">
-              {scene.streak}
-            </p>
-          </motion.div>
-        </AnimatePresence>
+              <PanelLabel>{scene.label}</PanelLabel>
+              <span
+                className={[
+                  "mx-auto mt-5 flex size-16 items-center justify-center rounded-full border",
+                  scene.kind === "rest"
+                    ? "border-nocta-glow/30 bg-landing-mint"
+                    : "border-nocta-glow/30 bg-landing-sky",
+                ].join(" ")}
+              >
+                {scene.kind === "rest" ? (
+                  <MoonStar aria-hidden className="size-7 text-nocta-glow" />
+                ) : (
+                  <Check aria-hidden className="size-7 text-nocta-glow" />
+                )}
+              </span>
+              <p className="mx-auto mt-5 min-h-16 max-w-xs text-sm leading-6 text-muted-foreground">
+                {scene.body}
+              </p>
+              <div
+                className="mt-7 flex items-center justify-center gap-2"
+                aria-label={scene.streak}
+              >
+                {Array.from({ length: weekLen }, (_, i) => {
+                  const day = i + 1;
+                  const inStreak = day <= scene.streakDays;
+                  const active = day === scene.streakDays;
+                  return (
+                    <span
+                      key={i}
+                      aria-hidden
+                      className={[
+                        "rounded-full transition-all duration-300",
+                        active
+                          ? "size-3.5 border-2 border-nocta-glow bg-nocta-glow/25"
+                          : inStreak
+                            ? "size-2.5 bg-nocta-glow/55"
+                            : "size-2.5 bg-foreground/15",
+                      ].join(" ")}
+                    />
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-xs font-medium text-foreground">
+                {scene.streak}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </DeepDive>
   );

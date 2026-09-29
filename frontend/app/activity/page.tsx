@@ -67,8 +67,15 @@ export default function ActivityPage() {
     };
   }, []);
 
-  const todayLabel = formatActivityDate();
-  const todayCommits = commits.filter((c) => c.date === todayLabel).length;
+  // Defer locale date until after mount — SSR vs client timezone causes React #418.
+  const [todayLabel, setTodayLabel] = useState("");
+  useEffect(() => {
+    setTodayLabel(formatActivityDate());
+  }, []);
+
+  const todayCommits = todayLabel
+    ? commits.filter((c) => c.date === todayLabel).length
+    : 0;
 
   const grouped = useMemo(() => groupCommitsByDate(commits), [commits]);
 

@@ -32,13 +32,15 @@ export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
           initial={reduceMotion ? false : "hidden"}
           animate="show"
         >
-          <h1 className="max-w-4xl font-sans text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[1.12] font-semibold tracking-[-0.035em] text-foreground">
+          <h1 className="max-w-4xl min-h-[2.5em] font-sans text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[1.12] font-semibold tracking-[-0.035em] text-foreground sm:min-h-[2.25em]">
             {reduceMotion ? (
               c.headline
             ) : (
               <EncryptedText
                 text={c.headline}
                 playOnMount
+                loop
+                loopDelayMs={2800}
                 revealDelayMs={32}
                 flipDelayMs={42}
                 className="font-sans text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[1.12] font-semibold tracking-[-0.035em]"

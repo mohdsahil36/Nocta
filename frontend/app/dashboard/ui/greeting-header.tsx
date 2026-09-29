@@ -11,12 +11,16 @@ import {
 
 /** Navbar welcome — sans, matching landing type hierarchy. */
 export function GreetingHeader() {
-  const [timeGreeting] = useState(() => greetingForHour(new Date().getHours()));
+  // Stable SSR text; hour greeting set on client to avoid React #418.
+  const [timeGreeting, setTimeGreeting] = useState(
+    dashboardContent.greeting.evening,
+  );
   const [welcome, setWelcome] = useState(
     welcomeMessage(dashboardContent.greeting.fallbackName),
   );
 
   useEffect(() => {
+    setTimeGreeting(greetingForHour(new Date().getHours()));
     void getDisplayName().then((name) => {
       setWelcome(welcomeMessage(name));
     });

@@ -46,20 +46,21 @@ export function OptionSwapSection() {
 
           <div
             aria-live="polite"
-            className="relative mt-4 min-h-28 overflow-hidden"
+            className="relative mt-4 min-h-36 overflow-hidden sm:min-h-28"
           >
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="sync" initial={false}>
               <motion.div
                 key={option.title}
-                initial={reduceMotion ? false : { opacity: 0, x: 24 }}
+                initial={reduceMotion ? false : { opacity: 0, x: 16 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={reduceMotion ? undefined : { opacity: 0, x: -24 }}
+                exit={reduceMotion ? undefined : { opacity: 0, x: -16 }}
                 transition={{ duration: 0.25, ease: easeOut }}
+                className="absolute inset-x-0 top-0"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <AreaTag>{option.area}</AreaTag>
-                    <p className="mt-3 text-lg leading-snug font-semibold text-foreground">
+                    <p className="mt-3 min-h-12 text-lg leading-snug font-semibold text-foreground">
                       {option.title}
                     </p>
                   </div>
@@ -67,7 +68,9 @@ export function OptionSwapSection() {
                     {option.score}
                   </p>
                 </div>
-                <p className="mt-3 text-sm text-muted-foreground">{option.reason}</p>
+                <p className="mt-3 min-h-10 text-sm text-muted-foreground">
+                  {option.reason}
+                </p>
               </motion.div>
             </AnimatePresence>
           </div>

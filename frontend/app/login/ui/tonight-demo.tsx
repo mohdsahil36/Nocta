@@ -104,7 +104,8 @@ export function TonightDemo() {
   return (
     <SectionShell id="how-it-works">
       <MacWindow title={demo.windowTitle} tone="sand">
-        <div className={["grid", COL_SPLIT].join(" ")}>
+        {/* Mobile stacks check-in over pick — lock column mins so auto-loop doesn't reflow. */}
+        <div className={["grid md:min-h-0", COL_SPLIT].join(" ")}>
           <div className="flex flex-col gap-8 bg-landing-sand/60 p-6 sm:p-8 md:p-10">
             <PanelLabel>{demo.checkIn}</PanelLabel>
             <Segment
@@ -121,7 +122,7 @@ export function TonightDemo() {
             />
           </div>
 
-          <div className="flex flex-col gap-5 border-t border-foreground/10 bg-landing-sky/70 p-6 sm:p-8 md:border-t-0 md:border-l md:p-10">
+          <div className="flex min-h-120 flex-col gap-5 border-t border-foreground/10 bg-landing-sky/70 p-6 sm:min-h-0 sm:p-8 md:border-t-0 md:border-l md:p-10">
             <div className="flex items-center justify-between">
               <PanelLabel>{demo.pickLabel}</PanelLabel>
               <span className="text-xs text-muted-foreground">
@@ -131,15 +132,15 @@ export function TonightDemo() {
 
             <div
               aria-live="polite"
-              className="relative min-h-48 overflow-hidden rounded-2xl border border-nocta-glow/25 bg-nocta-glow/8 p-5 sm:p-6"
+              className="relative min-h-56 flex-1 overflow-hidden rounded-2xl border border-nocta-glow/25 bg-nocta-glow/8 p-5 sm:min-h-52 sm:p-6"
             >
-              <AnimatePresence mode="wait" initial={false}>
+              <AnimatePresence mode="sync" initial={false}>
                 <motion.div
                   key={key}
-                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
-                  transition={{ duration: 0.25, ease: easeOut }}
+                  initial={reduceMotion ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={reduceMotion ? undefined : { opacity: 0 }}
+                  transition={{ duration: 0.22, ease: easeOut }}
                   className="absolute inset-5 sm:inset-6"
                 >
                   {pick ? (
@@ -152,7 +153,7 @@ export function TonightDemo() {
                               {demo.goal.title}
                             </span>
                           </div>
-                          <p className="mt-3 text-lg leading-snug font-semibold text-foreground sm:text-xl">
+                          <p className="mt-3 min-h-14 text-lg leading-snug font-semibold text-foreground sm:min-h-12 sm:text-xl">
                             {pick.step}
                           </p>
                         </div>
@@ -165,12 +166,12 @@ export function TonightDemo() {
                           </p>
                         </div>
                       </div>
-                      <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+                      <p className="mt-5 flex items-start gap-2 text-sm text-muted-foreground">
                         <Info
                           aria-hidden
-                          className="size-3.5 shrink-0 text-nocta-glow"
+                          className="mt-0.5 size-3.5 shrink-0 text-nocta-glow"
                         />
-                        <span>
+                        <span className="min-h-10">
                           <span className="font-medium text-foreground">
                             {demo.whyLabel}:
                           </span>{" "}
@@ -186,10 +187,10 @@ export function TonightDemo() {
                           {demo.recovery.title}
                         </span>
                       </div>
-                      <p className="mt-3 text-lg leading-snug font-semibold text-foreground sm:text-xl">
+                      <p className="mt-3 min-h-14 text-lg leading-snug font-semibold text-foreground sm:min-h-12 sm:text-xl">
                         {demo.recovery.step}
                       </p>
-                      <p className="mt-5 text-sm text-muted-foreground">
+                      <p className="mt-5 min-h-10 text-sm text-muted-foreground">
                         {demo.recovery.reason}
                       </p>
                     </>
