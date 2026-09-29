@@ -5,7 +5,28 @@ import routes from "./routes/index.js";
 import cors from "cors";
 
 const app = express();
-app.use(cors());
+
+/** Comma-separated browser origins (Vercel + local). Defaults allow local Next. */
+const allowedOrigins = (
+  process.env.CORS_ORIGINS ??
+  "http://localhost:3000,https://nocta-two-theta.vercel.app"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Non-browser clients (curl, server-to-server) send no Origin.
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
+  }),
+);
 
 app.use("/api", routes);
 
