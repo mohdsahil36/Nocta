@@ -13,13 +13,24 @@ const parsed = z
       .number()
       .int()
       .positive() /**Env will recieved strong this will convert it o number format**/,
-    /** Path to the GitHub App `.pem` private key file */
-    NOCTA_PRIVATE_KEY_PATH: z.string().min(1),
+    /** Inline PEM — use this on Render (secret env var) */
+    NOCTA_PRIVATE_KEY: z.string().min(1).optional(),
+    /** Path to `.pem` — local only; file is gitignored and not on Render */
+    NOCTA_PRIVATE_KEY_PATH: z.string().min(1).optional(),
+  })
+  .refine((env) => Boolean(env.NOCTA_PRIVATE_KEY || env.NOCTA_PRIVATE_KEY_PATH), {
+    message: "Set NOCTA_PRIVATE_KEY (Render) or NOCTA_PRIVATE_KEY_PATH (local)",
   })
   .parse(process.env);
 
+function loadPrivateKey(): string {
+  if (parsed.NOCTA_PRIVATE_KEY) {
+    return parsed.NOCTA_PRIVATE_KEY.replace(/\\n/g, "\n");
+  }
+  return readFileSync(parsed.NOCTA_PRIVATE_KEY_PATH!, "utf8");
+}
+
 export const envConfig = {
   ...parsed,
-  /** PEM contents loaded from `NOCTA_PRIVATE_KEY_PATH` */
-  NOCTA_PRIVATE_KEY: readFileSync(parsed.NOCTA_PRIVATE_KEY_PATH, "utf8"),
+  NOCTA_PRIVATE_KEY: loadPrivateKey(),
 };
