@@ -17,7 +17,7 @@ type DashboardNavbarProps = {
 };
 
 const CONTROL =
-  "rounded-xl border-foreground/12 bg-nocta-paper text-nocta-ink shadow-sm dark:border-border dark:bg-card dark:text-nocta-ink";
+  "rounded-md border-foreground/12 bg-nocta-paper text-nocta-ink shadow-sm dark:border-border dark:bg-card dark:text-nocta-ink";
 
 /**
  * Frosted navbar — readable paper bar, soft day/night sky behind a veil.
