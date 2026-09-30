@@ -9,14 +9,15 @@ import {
   GitMerge,
   Trophy,
 } from "lucide-react";
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useRef, useSyncExternalStore } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 import type { Commit } from "../data/activity";
 import { activityStats } from "../data/activity";
 import { fetchPlatformCommits, formatActivityDate } from "@/lib/activity-api";
 import { NoctaLoader } from "@/components/ui/nocta-loader";
 import { cn } from "cn";
-import { useQuery } from "@tanstack/react-query";
 
 const EMPTY_COMMITS: Commit[] = [];
 
@@ -52,6 +53,18 @@ export default function ActivityPage() {
     : 0;
 
   const grouped = useMemo(() => groupCommitsByDate(commits), [commits]);
+
+  const rows = useMemo(() => FlattenActivityGroupData(grouped), [grouped]);
+
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: (index) => (rows[index]?.type === "day" ? 52 : 88),
+    overscan: 8,
+  });
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 py-2 sm:gap-8 sm:px-2 sm:py-4">
@@ -147,30 +160,42 @@ export default function ActivityPage() {
               No platform activity yet.
             </p>
           ) : (
-            <div className="flex flex-col gap-4">
-              {grouped.map((group) => (
-                <section
-                  key={group.date}
-                  className="nocta-panel overflow-hidden"
-                >
-                  <header className="flex items-center justify-between gap-3 border-b border-foreground/10 px-4 py-3 sm:px-5">
-                    <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-                      {group.date === todayLabel ? "Today" : group.date}
-                    </p>
-                    <p className="text-xs tabular-nums text-muted-foreground">
-                      {group.items.length}{" "}
-                      {group.items.length === 1 ? "event" : "events"}
-                    </p>
-                  </header>
-                  <ul className="flex flex-col gap-2 p-3 sm:p-4">
-                    {group.items.map((commit) => (
-                      <li key={commit.id}>
-                        <CommitItem commit={commit} />
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ))}
+            <div
+              ref={parentRef}
+              className="nocta-panel h-[min(70vh,40rem)] overflow-auto"
+            >
+              <div
+                className="relative w-full"
+                style={{ height: virtualizer.getTotalSize() }}
+              >
+                {virtualizer.getVirtualItems().map((vItem) => {
+                  const row = rows[vItem.index]!;
+                  return (
+                    <div
+                      key={vItem.key}
+                      data-index={vItem.index}
+                      ref={virtualizer.measureElement}
+                      className="absolute top-0 left-0 w-full px-3 sm:px-4"
+                      style={{ transform: `translateY(${vItem.start}px)` }}
+                    >
+                      {row.type === "day" ? (
+                        <header className="flex items-center justify-between gap-3 border-b border-foreground/10 py-3">
+                          <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                            {row.date === todayLabel ? "Today" : row.date}
+                          </p>
+                          <p className="text-xs tabular-nums text-muted-foreground">
+                            {row.count} {row.count === 1 ? "event" : "events"}
+                          </p>
+                        </header>
+                      ) : (
+                        <div className="py-1">
+                          <CommitItem commit={row.commit} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -187,6 +212,22 @@ function groupCommitsByDate(commits: Commit[]) {
     map.set(commit.date, list);
   }
   return Array.from(map.entries()).map(([date, items]) => ({ date, items }));
+}
+
+type ActivityFeedRow =
+  | { type: "day"; date: string; count: number }
+  | { type: "commit"; commit: Commit };
+
+function FlattenActivityGroupData(
+  groups: { date: string; items: Commit[] }[],
+): ActivityFeedRow[] {
+  return groups.flatMap((group) => [
+    { type: "day" as const, date: group.date, count: group.items.length },
+    ...group.items.map((commit) => ({
+      type: "commit" as const,
+      commit,
+    })),
+  ]);
 }
 
 function MetricRow({

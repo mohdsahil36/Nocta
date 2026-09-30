@@ -101,18 +101,23 @@ export default function LoginPage() {
     setAuthBusy(true);
     try {
       if (authMode === "login") {
-        await loginWithEmail({ email, password });
+        const displayName = await loginWithEmail({ email, password });
         toast.add({
-          title: "Welcome back",
-          description: "Opening your night…",
+          title: `Welcome back, ${displayName}`,
           type: "success",
+          timeout: 2200,
         });
       } else {
-        await signupWithEmail({ name, email, password, confirmPassword });
+        const displayName = await signupWithEmail({
+          name,
+          email,
+          password,
+          confirmPassword,
+        });
         toast.add({
-          title: "Account created",
-          description: "Opening your night…",
+          title: `Welcome, ${displayName}`,
           type: "success",
+          timeout: 2200,
         });
       }
       await enterDashboard();

@@ -9,7 +9,23 @@ export function greetingForHour(hour: number): string {
   return dashboardContent.greeting.night;
 }
 
-/** Personal welcome line with the display name. */
+/** Single navbar line — e.g. "Good afternoon, Sahil" (Claude-style). */
+export function navbarGreeting(hour: number, name: string): string {
+  const greeting = greetingForHour(hour);
+  const trimmed = name.trim();
+  const isFallback =
+    !trimmed || trimmed === dashboardContent.greeting.fallbackName;
+
+  // Don't show ", there" while loading or if the session has no name yet.
+  if (isFallback) return greeting;
+
+  if (greeting === dashboardContent.greeting.night) {
+    return `Still up, ${trimmed}?`;
+  }
+  return `${greeting}, ${trimmed}`;
+}
+
+/** Personal welcome line with the display name (toasts / legacy). */
 export function welcomeMessage(name: string): string {
   return dashboardContent.greeting.welcome(name);
 }
@@ -26,21 +42,38 @@ export type SessionProfile = {
   initials: string;
 };
 
+function firstNameFromMeta(meta: Record<string, unknown> | undefined): string | null {
+  if (!meta) return null;
+  for (const key of ["name", "full_name", "display_name"] as const) {
+    const value = meta[key];
+    if (typeof value === "string" && value.trim()) {
+      return value.trim().split(/\s+/)[0] ?? null;
+    }
+  }
+  return null;
+}
+
 /** Name + email for the sidebar profile chip. */
 export async function getSessionProfile(): Promise<SessionProfile> {
   const fallback = dashboardContent.greeting.fallbackName;
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) {
-    return { name: fallback, email: null, initials: initialsFrom(fallback) };
+
+  // Local session first — faster and avoids a race right after login navigate.
+  const { data: sessionData } = await supabase.auth.getSession();
+  let user = sessionData.session?.user ?? null;
+
+  if (!user) {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      return { name: fallback, email: null, initials: initialsFrom(fallback) };
+    }
+    user = data.user;
   }
 
-  const meta = data.user.user_metadata as { name?: string } | undefined;
-  const fromMeta = meta?.name?.trim();
-  const email = data.user.email?.trim() ?? null;
-  const name =
-    fromMeta?.split(" ")[0] ??
-    email?.split("@")[0] ??
-    fallback;
+  const meta = user.user_metadata as Record<string, unknown> | undefined;
+  const fromMeta = firstNameFromMeta(meta);
+  const email = user.email?.trim() ?? null;
+  const fromEmail = email?.split("@")[0]?.trim() || null;
+  const name = fromMeta || fromEmail || fallback;
 
   return {
     name,
