@@ -9,69 +9,43 @@ import {
   GitMerge,
   Trophy,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 
 import type { Commit } from "../data/activity";
 import { activityStats } from "../data/activity";
-import {
-  fetchPlatformCommits,
-  formatActivityDate,
-} from "@/lib/activity-api";
+import { fetchPlatformCommits, formatActivityDate } from "@/lib/activity-api";
 import { NoctaLoader } from "@/components/ui/nocta-loader";
 import { cn } from "cn";
+import { useQuery } from "@tanstack/react-query";
+
+const EMPTY_COMMITS: Commit[] = [];
+
+function subscribe() {
+  return () => {};
+}
+
+/** Client-only locale date; "" on the server so SSR/client markup match. */
+function useTodayLabel() {
+  return useSyncExternalStore(subscribe, formatActivityDate, () => "");
+}
 
 export default function ActivityPage() {
-  const [commits, setCommits] = useState<Commit[]>([]);
-  const [totalCommits, setTotalCommits] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const todayLabel = useTodayLabel();
 
-  async function loadCommits(options?: { sync?: boolean }) {
-    const isSync = options?.sync === true;
-    if (isSync) setSyncing(true);
-    setError(null);
+  const { data, isLoading, isFetching, error, refetch } = useQuery({
+    queryKey: ["activity", "platform-commits"],
+    queryFn: fetchPlatformCommits,
+  });
 
-    try {
-      const data = await fetchPlatformCommits();
-      setCommits(data.commits);
-      setTotalCommits(data.count);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not load commits");
-    } finally {
-      setLoading(false);
-      setSyncing(false);
-    }
-  }
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function initialLoad() {
-      try {
-        const data = await fetchPlatformCommits();
-        if (cancelled) return;
-        setCommits(data.commits);
-        setTotalCommits(data.count);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Could not load commits");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void initialLoad();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Defer locale date until after mount — SSR vs client timezone causes React #418.
-  const [todayLabel, setTodayLabel] = useState("");
-  useEffect(() => {
-    setTodayLabel(formatActivityDate());
-  }, []);
+  const commits = data?.commits ?? EMPTY_COMMITS;
+  const totalCommits = data?.count ?? 0;
+  const syncing = isFetching && !isLoading;
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : error
+        ? "Could not load commits"
+        : null;
 
   const todayCommits = todayLabel
     ? commits.filter((c) => c.date === todayLabel).length
@@ -103,8 +77,8 @@ export default function ActivityPage() {
         </div>
         <button
           type="button"
-          onClick={() => void loadCommits({ sync: true })}
-          disabled={syncing || loading}
+          onClick={() => void refetch()}
+          disabled={isFetching}
           className="relative inline-flex h-10 cursor-pointer items-center rounded-xl border border-foreground/10 bg-nocta-paper px-5 text-sm font-semibold text-nocta-ink transition-colors hover:bg-muted/40 disabled:cursor-wait disabled:opacity-50"
         >
           {syncing ? "Syncing…" : "Sync"}
@@ -136,7 +110,7 @@ export default function ActivityPage() {
               icon={<GitCommit className="h-4 w-4" aria-hidden />}
               iconClassName="bg-nocta-glow/15 text-nocta-glow"
               label="Today"
-              value={loading ? "—" : String(todayCommits)}
+              value={isLoading ? "—" : String(todayCommits)}
               hint={todayLabel}
               bordered
             />
@@ -149,20 +123,20 @@ export default function ActivityPage() {
               Feed
             </h2>
             <span className="text-sm tabular-nums text-muted-foreground">
-              {loading ? "…" : `${totalCommits} total`}
+              {isLoading ? "…" : `${totalCommits} total`}
             </span>
           </div>
 
-          {loading ? (
+          {isLoading ? (
             <div className="nocta-panel flex min-h-56 items-center justify-center px-4 py-12">
               <NoctaLoader size="sm" label="Loading activity…" />
             </div>
           ) : error ? (
             <div className="nocta-panel px-4 py-12 text-center">
-              <p className="text-sm text-muted-foreground">{error}</p>
+              <p className="text-sm text-muted-foreground">{errorMessage}</p>
               <button
                 type="button"
-                onClick={() => void loadCommits()}
+                onClick={() => void refetch()}
                 className="mt-3 cursor-pointer text-sm font-medium text-nocta-glow underline-offset-4 hover:underline"
               >
                 Try again
@@ -175,7 +149,10 @@ export default function ActivityPage() {
           ) : (
             <div className="flex flex-col gap-4">
               {grouped.map((group) => (
-                <section key={group.date} className="nocta-panel overflow-hidden">
+                <section
+                  key={group.date}
+                  className="nocta-panel overflow-hidden"
+                >
                   <header className="flex items-center justify-between gap-3 border-b border-foreground/10 px-4 py-3 sm:px-5">
                     <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
                       {group.date === todayLabel ? "Today" : group.date}
@@ -266,7 +243,8 @@ function CommitItem({ commit }: { commit: Commit }) {
       className={cn(
         "group flex items-start gap-3 rounded-xl border border-foreground/8 bg-muted/25 px-3.5 py-3 transition-colors duration-150",
         "hover:border-foreground/15 hover:bg-muted/45",
-        isMerge && "border-nocta-glow/20 bg-nocta-glow/5 hover:bg-nocta-glow/10",
+        isMerge &&
+          "border-nocta-glow/20 bg-nocta-glow/5 hover:bg-nocta-glow/10",
       )}
     >
       <span

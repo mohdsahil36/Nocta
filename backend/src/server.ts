@@ -6,10 +6,16 @@ import cors from "cors";
 
 const app = express();
 
-/** Comma-separated browser origins (Vercel + local). Defaults allow local Next. */
+/**
+ * Browser origins allowed to call this API.
+ * Prefer CORS_ORIGINS (comma-separated); else CLIENT_URL; else local Next.
+ * Example on Render: CORS_ORIGINS=https://nocta-two-theta.vercel.app
+ * or CLIENT_URL=https://nocta-two-theta.vercel.app
+ */
 const allowedOrigins = (
   process.env.CORS_ORIGINS ??
-  "http://localhost:3000,https://nocta-two-theta.vercel.app"
+  process.env.CLIENT_URL ??
+  "http://localhost:3000"
 )
   .split(",")
   .map((origin) => origin.trim())
@@ -18,7 +24,7 @@ const allowedOrigins = (
 app.use(
   cors({
     origin(origin, callback) {
-      // Non-browser clients (curl, server-to-server) send no Origin.
+      // Non-browser clients (curl, health checks) send no Origin.
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
         return;
@@ -30,7 +36,7 @@ app.use(
 
 app.use("/api", routes);
 
-// Local default; Render injects PORT at runtime — do not put PORT in .env.
+// Render injects PORT (often 10000). Local default 3001 — do not set PORT in Render env.
 const PORT = Number(process.env.PORT) || 3001;
 
 app.get("/health", async (req, res) => {

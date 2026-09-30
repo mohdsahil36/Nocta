@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeSync } from "@/app/store/themeStore";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -51,7 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         className="flex min-h-full flex-col bg-nocta-paper font-sans text-foreground"
       >
         <ThemeSync />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -168,6 +168,23 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
     );
   }
 
+  // Split into words so wrap happens at spaces only — never mid-word
+  // (inline-block glyphs would otherwise break "night" → "nig" / "ht").
+  const tokens: { start: number; chars: string }[] = [];
+  {
+    let i = 0;
+    while (i < text.length) {
+      if (text[i] === " ") {
+        tokens.push({ start: i, chars: " " });
+        i += 1;
+        continue;
+      }
+      const start = i;
+      while (i < text.length && text[i] !== " ") i += 1;
+      tokens.push({ start, chars: text.slice(start, i) });
+    }
+  }
+
   return (
     <motion.span
       ref={ref}
@@ -175,34 +192,39 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
       aria-label={text}
       role="text"
     >
-      {text.split("").map((char, index) => {
-        const isRevealed = index < revealCount;
-        const displayChar = isRevealed
-          ? char
-          : char === " "
-            ? " "
-            : (scramble[index] ?? char);
-
-        // Spaces stay normal flow spaces (word wrap). Glyphs reserve final
-        // character width so scramble↔reveal never reflows the hero.
-        if (char === " ") {
-          return <span key={index}> </span>;
+      {tokens.map((token) => {
+        if (token.chars === " ") {
+          return <span key={`sp-${token.start}`}> </span>;
         }
 
         return (
-          <span
-            key={index}
-            className={cn(
-              "relative inline-block",
-              isRevealed ? revealedClassName : encryptedClassName,
-            )}
-          >
-            <span aria-hidden className="invisible">
-              {char}
-            </span>
-            <span className="absolute inset-0 flex justify-center">
-              {displayChar}
-            </span>
+          <span key={`w-${token.start}`} className="inline-block whitespace-nowrap">
+            {token.chars.split("").map((char, offset) => {
+              const index = token.start + offset;
+              const isRevealed = index < revealCount;
+              const displayChar = isRevealed
+                ? char
+                : (scramble[index] ?? char);
+
+              // Glyphs reserve final character width so scramble↔reveal
+              // never reflows the hero.
+              return (
+                <span
+                  key={index}
+                  className={cn(
+                    "relative inline-block",
+                    isRevealed ? revealedClassName : encryptedClassName,
+                  )}
+                >
+                  <span aria-hidden className="invisible">
+                    {char}
+                  </span>
+                  <span className="absolute inset-0 flex justify-center">
+                    {displayChar}
+                  </span>
+                </span>
+              );
+            })}
           </span>
         );
       })}
