@@ -38,7 +38,7 @@ export function GreetingHeader() {
 
   return (
     <div className="min-w-0 flex-1">
-      <h1 className="truncate font-sans text-[0.95rem] leading-snug font-medium tracking-[-0.02em] text-nocta-ink sm:text-lg sm:leading-tight">
+      <h1 className="truncate font-sans text-sm leading-snug font-medium tracking-[-0.02em] text-nocta-ink">
         {line}
       </h1>
     </div>

@@ -6,6 +6,8 @@ type MacWindowProps = {
   className?: string;
   /** Soft fill behind the chrome (defaults to paper). */
   tone?: "paper" | "sand" | "sky" | "mint" | "lavender" | "peach";
+  /** Flat = hairline only (app). Soft = landing demos. */
+  elevation?: "soft" | "flat";
 };
 
 const TONE = {
@@ -17,6 +19,11 @@ const TONE = {
   peach: "bg-landing-peach/40",
 } as const;
 
+const ELEVATION = {
+  soft: "rounded-2xl border-foreground/12 shadow-[0_12px_40px_-18px_rgba(0,0,0,0.35)]",
+  flat: "rounded-lg border-foreground/10 shadow-none",
+} as const;
+
 /**
  * Shared Mac-style chrome for landing demos and app surfaces.
  * Calm frame only — keep interiors quiet; no bold marketing chrome.
@@ -26,11 +33,13 @@ export function MacWindow({
   children,
   className = "",
   tone = "paper",
+  elevation = "soft",
 }: MacWindowProps) {
   return (
     <div
       className={[
-        "overflow-hidden rounded-2xl border border-foreground/12 bg-nocta-paper shadow-[0_12px_40px_-18px_rgba(0,0,0,0.35)]",
+        "overflow-hidden border bg-nocta-paper",
+        ELEVATION[elevation],
         className,
       ].join(" ")}
     >

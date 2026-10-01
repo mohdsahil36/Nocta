@@ -98,16 +98,16 @@ function NavLink({
       href={item.href}
       title={item.label}
       onClick={onNavigate}
-      className="nocta-nav-pill grid h-10 shrink-0 items-center rounded-lg"
+      className="nocta-nav-pill grid h-10 shrink-0 items-center rounded-md"
       style={{
         gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
       }}
       data-active={active ? "true" : undefined}
     >
-      <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-lg">
+      <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-md">
         <Icon className="size-3.5 shrink-0" aria-hidden />
       </span>
-      <span className="flex items-center truncate pr-3 text-sm leading-none">
+      <span className="flex items-center truncate pr-3 text-xs leading-none">
         {item.label}
       </span>
     </Link>
@@ -219,7 +219,7 @@ export function DashboardSidebar({
           SIDEBAR_H,
           "overflow-hidden transition-[width,transform,box-shadow] duration-300 ease-out",
           expanded ? EXPANDED_W : COLLAPSED_W,
-          !pinned && expanded && "shadow-lg",
+          !pinned && expanded && "shadow-md",
         )}
         onMouseEnter={startHover}
         onMouseLeave={endHover}
@@ -242,7 +242,7 @@ export function DashboardSidebar({
             <div className="flex items-center justify-center">
               <Link
                 href="/dashboard"
-                className="flex size-8 items-center justify-center rounded-lg bg-nocta-ink text-nocta-paper shadow-sm"
+                className="flex size-8 items-center justify-center rounded-sm bg-nocta-ink text-nocta-paper"
                 aria-label={dashboardContent.brand}
                 onClick={closeIfMobile}
               >
@@ -255,7 +255,7 @@ export function DashboardSidebar({
                 <p className="text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   {dashboardContent.sidebar.eyebrow}
                 </p>
-                <p className="mt-1 truncate font-sans text-lg leading-none font-semibold tracking-[-0.03em] text-nocta-ink">
+                <p className="mt-1 truncate font-sans text-sm leading-none font-semibold tracking-[-0.02em] text-nocta-ink">
                   {dashboardContent.brand}
                 </p>
               </div>
@@ -263,7 +263,7 @@ export function DashboardSidebar({
               {pinned ? (
                 <ChromeButton
                   iconOnly
-                  className="size-8 shrink-0 rounded-lg"
+                  className="size-8 shrink-0 rounded-md"
                   aria-label={dashboardContent.actions.closeSidebar}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -275,7 +275,7 @@ export function DashboardSidebar({
               ) : (
                 <ChromeButton
                   iconOnly
-                  className="size-8 shrink-0 rounded-lg"
+                  className="size-8 shrink-0 rounded-md"
                   aria-label="Keep sidebar open"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -351,13 +351,13 @@ export function DashboardSidebar({
             />
 
             <div
-              className="grid h-12 items-center rounded-xl border border-border bg-muted/35 px-0"
+              className="grid h-11 items-center rounded-md border border-border/80 px-0"
               style={{
                 gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
               }}
               title={profile.email ?? profile.name}
             >
-              <span className="flex size-8 items-center justify-center justify-self-center rounded-lg bg-nocta-ink text-[11px] font-semibold tracking-wide text-nocta-paper">
+              <span className="flex size-8 items-center justify-center justify-self-center rounded-sm bg-nocta-ink text-[10px] font-semibold tracking-wide text-nocta-paper">
                 {profile.initials}
               </span>
               <span
@@ -366,10 +366,10 @@ export function DashboardSidebar({
                   !expanded && "pointer-events-none invisible",
                 )}
               >
-                <span className="block truncate text-sm leading-tight font-medium text-nocta-ink">
+                <span className="block truncate text-xs leading-tight font-medium text-nocta-ink">
                   {profile.name}
                 </span>
-                <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted-foreground">
+                <span className="mt-0.5 block truncate text-[10px] leading-tight text-muted-foreground">
                   {profile.email ?? dashboardContent.sidebar.profileLabel}
                 </span>
               </span>
