@@ -19,7 +19,8 @@ export const dashboardContent = {
     afternoon: "Good afternoon",
     evening: "Good evening",
     night: "Still up?",
-    welcome: (name: string) => `Welcome back, ${name}.`,
+    /** Toast / legacy two-part welcome. Navbar uses navbarGreeting(). */
+    welcome: (name: string) => `Welcome back, ${name}`,
     fallbackName: "there",
   },
   actions: {

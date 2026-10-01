@@ -37,6 +37,7 @@ import {
   authEaseOut,
   markAuthEnter,
 } from "@/lib/auth-transition";
+import { toast } from "@/components/ui/toast";
 import { usePageScroll } from "./ui/use-page-scroll";
 
 export default function LoginPage() {
@@ -100,9 +101,24 @@ export default function LoginPage() {
     setAuthBusy(true);
     try {
       if (authMode === "login") {
-        await loginWithEmail({ email, password });
+        const displayName = await loginWithEmail({ email, password });
+        toast.add({
+          title: `Welcome back, ${displayName}`,
+          type: "success",
+          timeout: 2200,
+        });
       } else {
-        await signupWithEmail({ name, email, password, confirmPassword });
+        const displayName = await signupWithEmail({
+          name,
+          email,
+          password,
+          confirmPassword,
+        });
+        toast.add({
+          title: `Welcome, ${displayName}`,
+          type: "success",
+          timeout: 2200,
+        });
       }
       await enterDashboard();
     } catch (err) {

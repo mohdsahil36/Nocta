@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   ArrowRight,
   BatteryFull,
@@ -11,9 +12,9 @@ import {
   Lightbulb,
   MoonStar,
 } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { PanelToast } from "@/components/ui/toast";
 import { loginContent, type Energy, type Minutes } from "../content";
 import { easeOut } from "./motion";
 import { MacWindow } from "./mac-window";
@@ -327,11 +328,23 @@ const FACTOR_TINT = [
 
 export function ScoringSection() {
   const c = loginContent.scoring;
+  return (
+    <DeepDive {...c} tone="peach" layout="flip">
+      <ScoringDemoShell />
+    </DeepDive>
+  );
+}
+
+function ScoringDemoShell() {
+  const c = loginContent.scoring;
   const reduceMotion = useReducedMotion();
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(surfaceRef, { amount: 0.35, once: false });
   /** Apply each factor, hold at 100 to celebrate, then clear. */
   const stepCount = c.rows.length + 2;
   const { index, pause } = useDemoLoop(stepCount, 1500);
   const [manual, setManual] = useState<Set<string> | null>(null);
+  const [toastOpen, setToastOpen] = useState(false);
 
   const step = index % stepCount;
   const appliedCount = Math.min(step, c.rows.length);
@@ -346,7 +359,17 @@ export function ScoringSection() {
   );
   const perfect = total >= 100;
 
-  /** Row to “press” this beat — derived, no effect setState. */
+  // Brief overlay toast — does not resize the panel; auto-dismisses.
+  useEffect(() => {
+    if (!perfect || !inView) {
+      setToastOpen(false);
+      return;
+    }
+    setToastOpen(true);
+    const id = window.setTimeout(() => setToastOpen(false), 2400);
+    return () => window.clearTimeout(id);
+  }, [perfect, inView]);
+
   const pressFactor =
     manual == null &&
     reduceMotion !== true &&
@@ -367,150 +390,155 @@ export function ScoringSection() {
   };
 
   return (
-    <DeepDive {...c} tone="peach" layout="flip">
-      <div
-        className={[
-          SURFACE,
-          "relative overflow-hidden transition-shadow duration-300",
-          perfect ? "ring-1 ring-nocta-glow/40 shadow-[0_0_0_1px_color-mix(in_oklab,var(--nocta-glow)_25%,transparent)]" : "",
-        ].join(" ")}
-      >
-        {perfect ? (
-          <motion.div
-            aria-hidden
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--nocta-glow)_28%,transparent),transparent_70%)]"
-          />
-        ) : null}
+    <div
+      ref={surfaceRef}
+      className={[
+        SURFACE,
+        "relative overflow-hidden transition-shadow duration-300",
+        perfect
+          ? "ring-1 ring-nocta-glow/40 shadow-[0_0_0_1px_color-mix(in_oklab,var(--nocta-glow)_25%,transparent)]"
+          : "",
+      ].join(" ")}
+    >
+      <PanelToast
+        open={toastOpen}
+        title={c.celebrate}
+        description={c.celebrateBody}
+        type="success"
+      />
+      {perfect ? (
+        <motion.div
+          aria-hidden
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--nocta-glow)_28%,transparent),transparent_70%)]"
+        />
+      ) : null}
 
-        <div className="relative flex items-end justify-between gap-4 px-5 pt-5">
-          <div className="min-w-0">
-            <PanelLabel>{c.totalLabel}</PanelLabel>
-            <p className="mt-1 truncate text-sm text-foreground">
-              {loginContent.demo.goal.title}
-            </p>
-          </div>
-          <div className="flex h-16 w-24 shrink-0 flex-col items-end justify-end text-right">
-            <motion.p
-              key={total}
-              initial={reduceMotion ? false : { opacity: 0.4, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.28, ease: easeOut }}
-              aria-live="polite"
-              className={[
-                "w-full text-right text-5xl leading-none font-semibold tracking-[-0.03em] tabular-nums",
-                perfect ? "text-nocta-glow" : "text-foreground",
-              ].join(" ")}
-            >
-              {total}
-            </motion.p>
-            <p
-              className={[
-                "mt-1 h-4 w-full text-right text-xs font-semibold tracking-[0.08em] text-nocta-glow uppercase transition-opacity duration-200",
-                perfect ? "opacity-100" : "opacity-0",
-              ].join(" ")}
-              aria-hidden={!perfect}
-            >
-              {c.celebrate}
-            </p>
-          </div>
+      <div className="relative flex items-end justify-between gap-4 px-5 pt-5">
+        <div className="min-w-0">
+          <PanelLabel>{c.totalLabel}</PanelLabel>
+          <p className="mt-1 truncate text-sm text-foreground">
+            {loginContent.demo.goal.title}
+          </p>
         </div>
-
-        <div className="relative mx-5 mt-3 h-11">
+        <div className="flex h-16 w-24 shrink-0 flex-col items-end justify-end text-right">
+          <motion.p
+            key={total}
+            initial={reduceMotion ? false : { opacity: 0.4, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, ease: easeOut }}
+            aria-live="polite"
+            className={[
+              "w-full text-right text-5xl leading-none font-semibold tracking-[-0.03em] tabular-nums",
+              perfect ? "text-nocta-glow" : "text-foreground",
+            ].join(" ")}
+          >
+            {total}
+          </motion.p>
           <p
             className={[
-              "absolute inset-x-0 top-0 rounded-xl border px-3.5 py-2.5 text-sm leading-snug transition-opacity duration-200",
-              perfect
-                ? "border-nocta-glow/25 bg-nocta-glow/10 text-foreground opacity-100"
-                : "pointer-events-none border-transparent opacity-0",
+              "mt-1 h-4 w-full text-right text-xs font-semibold tracking-[0.08em] text-nocta-glow uppercase transition-opacity duration-200",
+              perfect ? "opacity-100" : "opacity-0",
             ].join(" ")}
             aria-hidden={!perfect}
           >
-            {c.celebrateBody}
+            {c.celebrate}
           </p>
         </div>
+      </div>
 
-        <div
-          aria-hidden
-          className="relative mx-5 mt-4 flex h-2.5 gap-0.5 overflow-hidden rounded-full bg-foreground/5"
+      <div className="relative mx-5 mt-3 h-11">
+        <p
+          className={[
+            "absolute inset-x-0 top-0 rounded-xl border px-3.5 py-2.5 text-sm leading-snug transition-opacity duration-200",
+            perfect
+              ? "border-nocta-glow/25 bg-nocta-glow/10 text-foreground opacity-100"
+              : "pointer-events-none border-transparent opacity-0",
+          ].join(" ")}
+          aria-hidden={!perfect}
         >
-          {c.rows.map((r, i) => (
-            <motion.div
-              key={r.factor}
-              className={["h-full", FACTOR_TINT[i]].join(" ")}
-              initial={false}
-              animate={{ width: on.has(r.factor) ? `${r.points}%` : "0%" }}
-              transition={{ duration: 0.35, ease: easeOut }}
-            />
-          ))}
-        </div>
-
-        <ul className="relative mt-4 border-t border-foreground/10">
-          {c.rows.map((r, i) => {
-            const applied = on.has(r.factor);
-            const pressing = pressFactor === r.factor;
-            return (
-              <li
-                key={r.factor}
-                className="border-b border-foreground/10 last:border-b-0"
-              >
-                <motion.button
-                  type="button"
-                  aria-pressed={applied}
-                  onClick={() => toggle(r.factor)}
-                  key={
-                    pressing ? `${r.factor}-press-${appliedCount}` : r.factor
-                  }
-                  initial={pressing && !reduceMotion ? { scale: 0.97 } : false}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.28, ease: easeOut }}
-                  className={[
-                    "grid w-full cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-3 px-5 py-3 text-left outline-none transition-colors duration-150 focus-visible:bg-foreground/5",
-                    applied || pressing
-                      ? "bg-foreground/3"
-                      : "hover:bg-foreground/3",
-                  ].join(" ")}
-                >
-                  <span
-                    aria-hidden
-                    className={[
-                      "flex size-5 items-center justify-center rounded-md border transition-colors",
-                      applied
-                        ? `${FACTOR_TINT[i]} border-transparent text-nocta-paper`
-                        : "border-foreground/20 bg-nocta-paper",
-                    ].join(" ")}
-                  >
-                    {applied ? (
-                      <Check className="size-3 text-foreground" />
-                    ) : null}
-                  </span>
-                  <span>
-                    <span className="block text-sm text-foreground">{r.factor}</span>
-                    <span className="block text-xs text-muted-foreground">
-                      {r.detail}
-                      {" · "}
-                      {applied ? c.apply : c.pending}
-                    </span>
-                  </span>
-                  <span
-                    className={[
-                      "text-sm font-medium tabular-nums",
-                      applied ? "text-foreground" : "text-muted-foreground",
-                    ].join(" ")}
-                  >
-                    +{r.points}
-                  </span>
-                </motion.button>
-              </li>
-            );
-          })}
-        </ul>
-        <p className="relative border-t border-foreground/10 px-5 py-3 text-xs text-muted-foreground">
-          {c.hint} {c.footnote}
+          {c.celebrateBody}
         </p>
       </div>
-    </DeepDive>
+
+      <div
+        aria-hidden
+        className="relative mx-5 mt-4 flex h-2.5 gap-0.5 overflow-hidden rounded-full bg-foreground/5"
+      >
+        {c.rows.map((r, i) => (
+          <motion.div
+            key={r.factor}
+            className={["h-full", FACTOR_TINT[i]].join(" ")}
+            initial={false}
+            animate={{ width: on.has(r.factor) ? `${r.points}%` : "0%" }}
+            transition={{ duration: 0.35, ease: easeOut }}
+          />
+        ))}
+      </div>
+
+      <ul className="relative mt-4 border-t border-foreground/10">
+        {c.rows.map((r, i) => {
+          const applied = on.has(r.factor);
+          const pressing = pressFactor === r.factor;
+          return (
+            <li
+              key={r.factor}
+              className="border-b border-foreground/10 last:border-b-0"
+            >
+              <motion.button
+                type="button"
+                aria-pressed={applied}
+                onClick={() => toggle(r.factor)}
+                key={pressing ? `${r.factor}-press-${appliedCount}` : r.factor}
+                initial={pressing && !reduceMotion ? { scale: 0.97 } : false}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.28, ease: easeOut }}
+                className={[
+                  "grid w-full cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-3 px-5 py-3 text-left outline-none transition-colors duration-150 focus-visible:bg-foreground/5",
+                  applied || pressing
+                    ? "bg-foreground/3"
+                    : "hover:bg-foreground/3",
+                ].join(" ")}
+              >
+                <span
+                  aria-hidden
+                  className={[
+                    "flex size-5 items-center justify-center rounded-md border transition-colors",
+                    applied
+                      ? `${FACTOR_TINT[i]} border-transparent text-nocta-paper`
+                      : "border-foreground/20 bg-nocta-paper",
+                  ].join(" ")}
+                >
+                  {applied ? (
+                    <Check className="size-3 text-foreground" />
+                  ) : null}
+                </span>
+                <span>
+                  <span className="block text-sm text-foreground">{r.factor}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {r.detail}
+                    {" · "}
+                    {applied ? c.apply : c.pending}
+                  </span>
+                </span>
+                <span
+                  className={[
+                    "text-sm font-medium tabular-nums",
+                    applied ? "text-foreground" : "text-muted-foreground",
+                  ].join(" ")}
+                >
+                  +{r.points}
+                </span>
+              </motion.button>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="relative border-t border-foreground/10 px-5 py-3 text-xs text-muted-foreground">
+        {c.hint} {c.footnote}
+      </p>
+    </div>
   );
 }
 
@@ -839,6 +867,8 @@ function parseLog(line: string): Parsed {
 export function LogParserSection() {
   const c = loginContent.logParser;
   const prefersMotion = usePrefersMotion();
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(surfaceRef, { amount: 0.35, once: false });
   const full = c.input;
   const [line, setLine] = useState("");
   const [parsed, setParsed] = useState<Parsed | null>(null);
@@ -848,6 +878,7 @@ export function LogParserSection() {
   >("type");
   const [manual, setManual] = useState(false);
   const [loop, setLoop] = useState(0);
+  const [toastOpen, setToastOpen] = useState(false);
 
   const animate = prefersMotion && !manual;
   const lineShown = animate ? line : manual ? line : full;
@@ -918,6 +949,18 @@ export function LogParserSection() {
     };
   }, [full, animate, loop]);
 
+  // Brief overlay — auto-dismiss; no layout growth.
+  useEffect(() => {
+    const shouldShow = Boolean(savedShown && inView && (animate || manual));
+    if (!shouldShow) {
+      setToastOpen(false);
+      return;
+    }
+    setToastOpen(true);
+    const id = window.setTimeout(() => setToastOpen(false), 2400);
+    return () => window.clearTimeout(id);
+  }, [savedShown, inView, animate, manual]);
+
   const onParse = (e: React.FormEvent) => {
     e.preventDefault();
     setManual(true);
@@ -949,8 +992,16 @@ export function LogParserSection() {
 
   return (
     <DeepDive {...c} tone="lavender" layout="normal">
-      <MacWindow title={c.windowTitle} tone="lavender">
-        <div className="flex min-h-88 flex-col gap-4 p-4 sm:min-h-80 sm:p-5">
+      <div ref={surfaceRef} className="relative overflow-hidden">
+        <MacWindow title={c.windowTitle} tone="lavender">
+        <div className="relative flex min-h-88 flex-col gap-4 p-4 sm:min-h-80 sm:p-5">
+          <PanelToast
+            open={toastOpen}
+            align="start"
+            title={c.saved}
+            description="Tonight's log is confirmed."
+            type="success"
+          />
           <form
             onSubmit={onParse}
             className={[SURFACE, "flex items-center gap-2 p-2 pl-4"].join(" ")}
@@ -1117,6 +1168,7 @@ export function LogParserSection() {
           </div>
         </div>
       </MacWindow>
+      </div>
     </DeepDive>
   );
 }

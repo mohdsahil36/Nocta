@@ -2,37 +2,44 @@
 
 import { useEffect, useState } from "react";
 
+import { supabase } from "@/lib/supabase";
 import { dashboardContent } from "../content";
-import {
-  getDisplayName,
-  greetingForHour,
-  welcomeMessage,
-} from "../functions/dashboard";
+import { getDisplayName, navbarGreeting } from "../functions/dashboard";
 
-/** Navbar welcome — sans, matching landing type hierarchy. */
+/** Navbar greeting — one calm line: "Good afternoon, Sahil". */
 export function GreetingHeader() {
-  // Stable SSR text; hour greeting set on client to avoid React #418.
-  const [timeGreeting, setTimeGreeting] = useState(
-    dashboardContent.greeting.evening,
-  );
-  const [welcome, setWelcome] = useState(
-    welcomeMessage(dashboardContent.greeting.fallbackName),
+  // Greeting-only until the session name resolves (never flash ", there").
+  const [line, setLine] = useState(() =>
+    navbarGreeting(12, dashboardContent.greeting.fallbackName),
   );
 
   useEffect(() => {
-    setTimeGreeting(greetingForHour(new Date().getHours()));
-    void getDisplayName().then((name) => {
-      setWelcome(welcomeMessage(name));
+    let cancelled = false;
+
+    const refresh = async () => {
+      const hour = new Date().getHours();
+      const name = await getDisplayName();
+      if (!cancelled) setLine(navbarGreeting(hour, name));
+    };
+
+    void refresh();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      void refresh();
     });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (
     <div className="min-w-0 flex-1">
-      <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase sm:text-xs">
-        {timeGreeting}
-      </p>
-      <h1 className="mt-1 truncate font-sans text-xl leading-tight font-semibold tracking-[-0.03em] text-nocta-ink sm:text-2xl">
-        {welcome}
+      <h1 className="truncate font-sans text-[0.95rem] leading-snug font-medium tracking-[-0.02em] text-nocta-ink sm:text-lg sm:leading-tight">
+        {line}
       </h1>
     </div>
   );
