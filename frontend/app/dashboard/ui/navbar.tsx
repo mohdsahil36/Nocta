@@ -113,7 +113,7 @@ export function DashboardNavbar({
       </header>
 
       {logoutError ? (
-        <p className="px-1 text-xs text-destructive" role="alert">
+        <p className="px-1 text-[11px] text-destructive" role="alert">
           {logoutError}
         </p>
       ) : null}

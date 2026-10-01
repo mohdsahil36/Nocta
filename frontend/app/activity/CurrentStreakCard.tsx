@@ -14,7 +14,7 @@ export default function CurrentStreakCard() {
       </div>
 
       <div className="flex items-center gap-1.5">
-        <span className="text-xs text-muted-foreground">Current streak</span>
+        <span className="text-[10px] text-muted-foreground">Current streak</span>
 
         <span className="text-sm font-medium">
           {activityStats.currentStreak} days

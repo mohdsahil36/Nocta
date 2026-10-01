@@ -107,7 +107,7 @@ function NavLink({
       <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-md">
         <Icon className="size-3.5 shrink-0" aria-hidden />
       </span>
-      <span className="flex items-center truncate pr-3 text-sm leading-none">
+      <span className="flex items-center truncate pr-3 text-xs leading-none">
         {item.label}
       </span>
     </Link>
@@ -255,7 +255,7 @@ export function DashboardSidebar({
                 <p className="text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   {dashboardContent.sidebar.eyebrow}
                 </p>
-                <p className="mt-1 truncate font-sans text-lg leading-none font-semibold tracking-[-0.03em] text-nocta-ink">
+                <p className="mt-1 truncate font-sans text-sm leading-none font-semibold tracking-[-0.02em] text-nocta-ink">
                   {dashboardContent.brand}
                 </p>
               </div>
@@ -357,7 +357,7 @@ export function DashboardSidebar({
               }}
               title={profile.email ?? profile.name}
             >
-              <span className="flex size-8 items-center justify-center justify-self-center rounded-sm bg-nocta-ink text-[11px] font-semibold tracking-wide text-nocta-paper">
+              <span className="flex size-8 items-center justify-center justify-self-center rounded-sm bg-nocta-ink text-[10px] font-semibold tracking-wide text-nocta-paper">
                 {profile.initials}
               </span>
               <span
@@ -366,10 +366,10 @@ export function DashboardSidebar({
                   !expanded && "pointer-events-none invisible",
                 )}
               >
-                <span className="block truncate text-sm leading-tight font-medium text-nocta-ink">
+                <span className="block truncate text-xs leading-tight font-medium text-nocta-ink">
                   {profile.name}
                 </span>
-                <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted-foreground">
+                <span className="mt-0.5 block truncate text-[10px] leading-tight text-muted-foreground">
                   {profile.email ?? dashboardContent.sidebar.profileLabel}
                 </span>
               </span>
