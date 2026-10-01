@@ -17,10 +17,10 @@ type DashboardNavbarProps = {
 };
 
 const CONTROL =
-  "rounded-md border-foreground/12 bg-nocta-paper text-nocta-ink shadow-sm dark:border-border dark:bg-card dark:text-nocta-ink";
+  "rounded-sm border-foreground/10 bg-transparent text-nocta-ink shadow-none hover:bg-muted/60 dark:border-border dark:text-nocta-ink dark:hover:bg-muted/40";
 
 /**
- * Frosted navbar — readable paper bar, soft day/night sky behind a veil.
+ * Minimal navbar — flat bar, greeting + controls. No sky ornaments.
  */
 export function DashboardNavbar({
   sidebarPinned,
@@ -49,25 +49,8 @@ export function DashboardNavbar({
 
   return (
     <>
-      <header className="nocta-navbar relative top-0 z-30 flex w-full items-center justify-between gap-3 overflow-hidden px-4 py-4 sm:px-5 sm:py-5">
-        {/* Day + night layers crossfade via .dark — no React phase swap (avoids jitter) */}
-        <div
-          aria-hidden
-          className="nocta-navbar-sky pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]"
-        >
-          <div className="nocta-navbar-sky-day">
-            <span className="nocta-navbar-orb nocta-navbar-orb-primary" />
-            <span className="nocta-navbar-orb nocta-navbar-orb-secondary" />
-          </div>
-          <div className="nocta-navbar-sky-night">
-            <span className="nocta-navbar-orb nocta-navbar-orb-primary" />
-            <span className="nocta-navbar-orb nocta-navbar-orb-secondary" />
-            <span className="nocta-navbar-stars" />
-          </div>
-          <div className="nocta-navbar-veil" />
-        </div>
-
-        <div className="relative z-10 flex min-w-0 flex-1 items-center gap-2.5">
+      <header className="nocta-navbar relative top-0 z-30 flex w-full items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-3.5">
+        <div className="relative z-10 flex min-w-0 flex-1 items-center gap-2">
           {!sidebarPinned ? (
             <ChromeButton
               iconOnly
@@ -81,7 +64,7 @@ export function DashboardNavbar({
           <GreetingHeader />
         </div>
 
-        <div className="relative z-10 flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="relative z-10 flex shrink-0 items-center gap-1 sm:gap-1.5">
           <ChromeButton
             iconOnly
             className={["size-8", CONTROL].join(" ")}
@@ -139,7 +122,7 @@ export function DashboardNavbar({
         variant="overlay"
         open={loggingOut}
         title={dashboardContent.brand}
-        label="Closing tonight…"
+        label="Signing out…"
       />
     </>
   );
