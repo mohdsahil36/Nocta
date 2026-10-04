@@ -1,10 +1,6 @@
 import { Plus } from "lucide-react";
 import { loginContent } from "../content";
-import {
-  COL_SPLIT,
-  SectionHeader,
-  SectionShell,
-} from "./section";
+import { COL_SPLIT, SectionHeader, SectionShell } from "./section";
 
 export function FaqSection() {
   const c = loginContent.faq;

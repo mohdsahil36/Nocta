@@ -12,10 +12,16 @@ import {
 import { useMemo, useRef, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import type { LucideIcon } from "lucide-react";
 
 import type { Commit } from "../data/activity";
-import { activityStats } from "../data/activity";
 import { fetchPlatformCommits, formatActivityDate } from "@/lib/activity-api";
+import {
+  AnimatedIcon,
+  ICON_TONE_BG,
+  type IconMotionPreset,
+  type IconTone,
+} from "@/components/ui/animated-icon";
 import { NoctaLoader } from "@/components/ui/nocta-loader";
 import { cn } from "cn";
 
@@ -40,6 +46,7 @@ export default function ActivityPage() {
 
   const commits = data?.commits ?? EMPTY_COMMITS;
   const totalCommits = data?.count ?? 0;
+  const stats = data?.stats;
   const syncing = isFetching && !isLoading;
   const errorMessage =
     error instanceof Error
@@ -47,10 +54,6 @@ export default function ActivityPage() {
       : error
         ? "Could not load commits"
         : null;
-
-  const todayCommits = todayLabel
-    ? commits.filter((c) => c.date === todayLabel).length
-    : 0;
 
   const grouped = useMemo(() => groupCommitsByDate(commits), [commits]);
 
@@ -107,23 +110,30 @@ export default function ActivityPage() {
           </div>
           <aside className="nocta-panel overflow-hidden lg:sticky lg:top-3">
             <MetricRow
-              icon={<Flame className="h-4 w-4" aria-hidden />}
-              iconClassName="bg-landing-peach/60 text-nocta-ink dark:bg-muted"
+              icon={Flame}
+              motion="pulse"
+              tone="warm"
               label="Current streak"
-              value={`${activityStats.currentStreak} days`}
+              value={
+                isLoading || !stats ? "—" : `${stats.currentStreak} days`
+              }
             />
             <MetricRow
-              icon={<Trophy className="h-4 w-4" aria-hidden />}
-              iconClassName="bg-landing-mint/60 text-nocta-ink dark:bg-muted"
+              icon={Trophy}
+              motion="tilt"
+              tone="mint"
               label="Longest streak"
-              value={`${activityStats.longestStreak} days`}
+              value={
+                isLoading || !stats ? "—" : `${stats.longestStreak} days`
+              }
               bordered
             />
             <MetricRow
-              icon={<GitCommit className="h-4 w-4" aria-hidden />}
-              iconClassName="bg-nocta-glow/15 text-nocta-glow"
+              icon={GitCommit}
+              motion="rise"
+              tone="glow"
               label="Today"
-              value={isLoading ? "—" : String(todayCommits)}
+              value={isLoading || !stats ? "—" : String(stats.todayCount)}
               hint={todayLabel}
               bordered
             />
@@ -232,14 +242,16 @@ function FlattenActivityGroupData(
 
 function MetricRow({
   icon,
-  iconClassName,
+  motion: preset,
+  tone,
   label,
   value,
   hint,
   bordered,
 }: {
-  icon: React.ReactNode;
-  iconClassName: string;
+  icon: LucideIcon;
+  motion: IconMotionPreset;
+  tone: IconTone;
   label: string;
   value: string;
   hint?: string;
@@ -254,11 +266,16 @@ function MetricRow({
     >
       <div
         className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-          iconClassName,
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-md",
+          ICON_TONE_BG[tone],
         )}
       >
-        {icon}
+        <AnimatedIcon
+          icon={icon}
+          className="size-4"
+          preset={preset}
+          tone={tone}
+        />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[10px] text-muted-foreground">{label}</p>

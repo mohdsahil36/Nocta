@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+# Block push if TypeScript fails (same class of error as Vercel build).
+npm run typecheck

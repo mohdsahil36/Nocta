@@ -24,6 +24,7 @@
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
     "build": "npm install && prisma generate && tsc",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/server.js"
   }
 }

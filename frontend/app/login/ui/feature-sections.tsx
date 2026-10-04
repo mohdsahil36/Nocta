@@ -1,6 +1,11 @@
 "use client";
 
-import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useReducedMotion,
+} from "motion/react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   ArrowRight,
@@ -123,7 +128,9 @@ export function GoalsSection() {
                 onClick={() => setSceneIdx(i)}
                 className={[
                   "size-2 cursor-pointer rounded-full transition-colors",
-                  i === sceneIdx ? "bg-nocta-glow" : "bg-foreground/15 hover:bg-foreground/30",
+                  i === sceneIdx
+                    ? "bg-nocta-glow"
+                    : "bg-foreground/15 hover:bg-foreground/30",
                 ].join(" ")}
               />
             ))}
@@ -139,7 +146,9 @@ export function GoalsSection() {
             >
               <div className="flex flex-wrap items-center gap-2">
                 <AreaTag>{scene.area}</AreaTag>
-                <span className="text-xs text-muted-foreground">{scene.badge}</span>
+                <span className="text-xs text-muted-foreground">
+                  {scene.badge}
+                </span>
               </div>
               <p className="mt-4 min-h-12 text-sm leading-6 text-muted-foreground">
                 {scene.detail}
@@ -149,7 +158,9 @@ export function GoalsSection() {
                   <div
                     className={[
                       "h-full rounded-full",
-                      scene.idleDays >= 6 ? "bg-nocta-glow/70" : "bg-foreground/20",
+                      scene.idleDays >= 6
+                        ? "bg-nocta-glow/70"
+                        : "bg-foreground/20",
                     ].join(" ")}
                     style={{
                       width: `${Math.min(100, Math.max(8, scene.idleDays * 10))}%`,
@@ -172,7 +183,11 @@ export function GoalsSection() {
 }
 
 /* 02 — phone-style sheet with stepped time track + battery energy */
-const ENERGY_ICON = { low: BatteryLow, steady: BatteryMedium, high: BatteryFull };
+const ENERGY_ICON = {
+  low: BatteryLow,
+  steady: BatteryMedium,
+  high: BatteryFull,
+};
 
 function stepSize(minutes: Minutes, energy: Energy) {
   if (energy === "low" && minutes === 20) return "rest";
@@ -217,15 +232,27 @@ export function CheckInSection() {
     <DeepDive {...c} tone="mint" layout="normal">
       <MacWindow title={`${loginContent.brand} · Check-in`} tone="mint">
         <div className="mx-auto w-full max-w-md p-6 sm:p-8">
-          <div aria-hidden className="mx-auto h-1 w-10 rounded-full bg-foreground/15" />
+          <div
+            aria-hidden
+            className="mx-auto h-1 w-10 rounded-full bg-foreground/15"
+          />
           <div className="mt-5 text-center">
             <LiveTitle text={c.question} size="card" />
             <p className="mt-2 text-sm text-muted-foreground">{c.sheetLead}</p>
           </div>
 
-          <p className="mt-6 text-xs font-medium text-muted-foreground">{d.timeLabel}</p>
-          <div role="radiogroup" aria-label={d.timeLabel} className="relative mt-3 grid grid-cols-3">
-            <div aria-hidden className="absolute inset-x-[16.66%] top-2 h-0.5 rounded-full bg-foreground/10" />
+          <p className="mt-6 text-xs font-medium text-muted-foreground">
+            {d.timeLabel}
+          </p>
+          <div
+            role="radiogroup"
+            aria-label={d.timeLabel}
+            className="relative mt-3 grid grid-cols-3"
+          >
+            <div
+              aria-hidden
+              className="absolute inset-x-[16.66%] top-2 h-0.5 rounded-full bg-foreground/10"
+            />
             <div
               aria-hidden
               className="absolute top-2 left-[16.66%] h-0.5 rounded-full bg-nocta-glow/70 transition-[width] duration-200"
@@ -243,14 +270,18 @@ export function CheckInSection() {
                 <span
                   className={[
                     "size-4.5 rounded-full border-2 transition-colors duration-150",
-                    i <= selectedIndex ? "border-nocta-glow" : "border-foreground/15",
+                    i <= selectedIndex
+                      ? "border-nocta-glow"
+                      : "border-foreground/15",
                     m === minutes ? "bg-nocta-glow" : "bg-nocta-paper",
                   ].join(" ")}
                 />
                 <span
                   className={[
                     "text-sm tabular-nums",
-                    m === minutes ? "font-medium text-foreground" : "text-muted-foreground",
+                    m === minutes
+                      ? "font-medium text-foreground"
+                      : "text-muted-foreground",
                   ].join(" ")}
                 >
                   {m} min
@@ -259,8 +290,14 @@ export function CheckInSection() {
             ))}
           </div>
 
-          <p className="mt-6 text-xs font-medium text-muted-foreground">{d.energyLabel}</p>
-          <div role="radiogroup" aria-label={d.energyLabel} className="mt-3 grid grid-cols-3 gap-2">
+          <p className="mt-6 text-xs font-medium text-muted-foreground">
+            {d.energyLabel}
+          </p>
+          <div
+            role="radiogroup"
+            aria-label={d.energyLabel}
+            className="mt-3 grid grid-cols-3 gap-2"
+          >
             {d.energy.map((e) => {
               const Icon = ENERGY_ICON[e.id];
               const on = e.id === energy;
@@ -278,15 +315,23 @@ export function CheckInSection() {
                       : "border-foreground/10 text-muted-foreground hover:text-foreground",
                   ].join(" ")}
                 >
-                  <Icon aria-hidden className={on ? "size-5 text-nocta-glow" : "size-5"} />
+                  <Icon
+                    aria-hidden
+                    className={on ? "size-5 text-nocta-glow" : "size-5"}
+                  />
                   {e.label}
                 </button>
               );
             })}
           </div>
 
-          <div aria-live="polite" className="mt-6 min-h-16 rounded-2xl bg-muted/50 px-4 py-3">
-            <p className="text-[11px] text-muted-foreground">{c.previewLabel}</p>
+          <div
+            aria-live="polite"
+            className="mt-6 min-h-16 rounded-2xl bg-muted/50 px-4 py-3"
+          >
+            <p className="text-[11px] text-muted-foreground">
+              {c.previewLabel}
+            </p>
             <div className="mt-0.5">
               <LiveTitle text={c.sizes[size]} size="line" />
             </div>
@@ -348,9 +393,7 @@ function ScoringDemoShell() {
 
   const step = index % stepCount;
   const appliedCount = Math.min(step, c.rows.length);
-  const autoOn = new Set(
-    c.rows.slice(0, appliedCount).map((r) => r.factor),
-  );
+  const autoOn = new Set(c.rows.slice(0, appliedCount).map((r) => r.factor));
   const on = manual ?? autoOn;
 
   const total = c.rows.reduce(
@@ -515,7 +558,9 @@ function ScoringDemoShell() {
                   ) : null}
                 </span>
                 <span>
-                  <span className="block text-sm text-foreground">{r.factor}</span>
+                  <span className="block text-sm text-foreground">
+                    {r.factor}
+                  </span>
                   <span className="block text-xs text-muted-foreground">
                     {r.detail}
                     {" · "}
@@ -561,10 +606,13 @@ export function AiSubGrid() {
   const c = loginContent.ai;
   const tabCount = c.cells.length;
   const TAB_MS = 3200;
-  const { index: active, select, paused, reduceMotion, running } = useDemoLoop(
-    tabCount,
-    TAB_MS,
-  );
+  const {
+    index: active,
+    select,
+    paused,
+    reduceMotion,
+    running,
+  } = useDemoLoop(tabCount, TAB_MS);
   const [sceneIdx, setSceneIdx] = useState(0);
   const [generator, timeFit, reasoning] = c.cells;
   const scenes = generator.scenes;
@@ -607,7 +655,9 @@ export function AiSubGrid() {
             title={c.title}
             body={c.body}
             wide
-            titleSlot={<LiveTitle key={`${active}-${liveTitle}`} text={liveTitle} />}
+            titleSlot={
+              <LiveTitle key={`${active}-${liveTitle}`} text={liveTitle} />
+            }
           />
         </div>
 
@@ -832,7 +882,12 @@ export function AiSubGrid() {
 }
 
 /* 06 — command bar → parsed tokens → confirm */
-type Parsed = { goal: string | null; time: string | null; energy: string | null; progress: string | null };
+type Parsed = {
+  goal: string | null;
+  time: string | null;
+  energy: string | null;
+  progress: string | null;
+};
 
 const GOAL_KEYWORDS: [RegExp, string][] = [
   [/\b(test|tests|pr|review|scoring)\b/i, "Ship the scoring PR"],
@@ -860,7 +915,10 @@ function parseLog(line: string): Parsed {
     .map((s) => s.trim())
     .filter(Boolean)
     .at(-1);
-  const progress = clause && clause.length > 3 ? clause.charAt(0).toUpperCase() + clause.slice(1) : null;
+  const progress =
+    clause && clause.length > 3
+      ? clause.charAt(0).toUpperCase() + clause.slice(1)
+      : null;
   return { goal, time, energy, progress };
 }
 
@@ -882,11 +940,7 @@ export function LogParserSection() {
 
   const animate = prefersMotion && !manual;
   const lineShown = animate ? line : manual ? line : full;
-  const parsedShown = animate
-    ? parsed
-    : manual
-      ? parsed
-      : parseLog(full);
+  const parsedShown = animate ? parsed : manual ? parsed : parseLog(full);
   const savedShown = animate ? saved : manual ? saved : true;
   const phaseShown = animate ? phase : "success";
 
@@ -970,21 +1024,19 @@ export function LogParserSection() {
     setPhase("reveal");
   };
 
-  const fields = (
-    parsedShown
-      ? ([
-          ["goal", parsedShown.goal],
-          ["time", parsedShown.time],
-          ["energy", parsedShown.energy],
-          ["progress", parsedShown.progress],
-        ] as const)
-      : ([
-          ["goal", null],
-          ["time", null],
-          ["energy", null],
-          ["progress", null],
-        ] as const)
-  );
+  const fields = parsedShown
+    ? ([
+        ["goal", parsedShown.goal],
+        ["time", parsedShown.time],
+        ["energy", parsedShown.energy],
+        ["progress", parsedShown.progress],
+      ] as const)
+    : ([
+        ["goal", null],
+        ["time", null],
+        ["energy", null],
+        ["progress", null],
+      ] as const);
 
   const showCards = parsedShown != null && phaseShown !== "clear";
   const parsePressed = phaseShown === "press-parse" && animate;
@@ -994,180 +1046,187 @@ export function LogParserSection() {
     <DeepDive {...c} tone="lavender" layout="normal">
       <div ref={surfaceRef} className="relative overflow-hidden">
         <MacWindow title={c.windowTitle} tone="lavender">
-        <div className="relative flex min-h-88 flex-col gap-4 p-4 sm:min-h-80 sm:p-5">
-          <PanelToast
-            open={toastOpen}
-            align="start"
-            title={c.saved}
-            description="Tonight's log is confirmed."
-            type="success"
-          />
-          <form
-            onSubmit={onParse}
-            className={[SURFACE, "flex items-center gap-2 p-2 pl-4"].join(" ")}
-          >
-            <label htmlFor="nocta-log-line" className="sr-only">
-              {c.inputLabel}
-            </label>
-            <input
-              id="nocta-log-line"
-              value={lineShown}
-              onChange={(e) => {
-                setManual(true);
-                setLine(e.target.value);
-                setParsed(null);
-                setSaved(false);
-              }}
-              placeholder={c.placeholder}
-              maxLength={140}
-              className="h-9 min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          <div className="relative flex min-h-88 flex-col gap-4 p-4 sm:min-h-80 sm:p-5">
+            <PanelToast
+              open={toastOpen}
+              align="start"
+              title={c.saved}
+              description="Tonight's log is confirmed."
+              type="success"
             />
-            <motion.div
-              animate={parsePressed ? { scale: 0.92 } : { scale: 1 }}
-              transition={{ duration: 0.12 }}
+            <form
+              onSubmit={onParse}
+              className={[SURFACE, "flex items-center gap-2 p-2 pl-4"].join(
+                " ",
+              )}
             >
-              <Button
-                type="submit"
-                size="lg"
-                className={[
-                  "rounded-xl px-3 transition-shadow",
-                  parsePressed ? "ring-2 ring-nocta-glow/50 shadow-md" : "",
-                ].join(" ")}
-                disabled={!lineShown.trim()}
+              <label htmlFor="nocta-log-line" className="sr-only">
+                {c.inputLabel}
+              </label>
+              <input
+                id="nocta-log-line"
+                value={lineShown}
+                onChange={(e) => {
+                  setManual(true);
+                  setLine(e.target.value);
+                  setParsed(null);
+                  setSaved(false);
+                }}
+                placeholder={c.placeholder}
+                maxLength={140}
+                className="h-9 min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+              />
+              <motion.div
+                animate={parsePressed ? { scale: 0.92 } : { scale: 1 }}
+                transition={{ duration: 0.12 }}
               >
-                {c.parse}
-                <CornerDownLeft aria-hidden data-icon="inline-end" />
-              </Button>
-            </motion.div>
-          </form>
-
-          <div
-            aria-live="polite"
-            className="relative min-h-52 flex-1 sm:min-h-48"
-          >
-            <AnimatePresence mode="sync" initial={false}>
-              {showCards ? (
-                <motion.div
-                  key={`cards-${loop}-${parsedShown?.goal ?? "x"}`}
-                  initial={animate ? { opacity: 0 } : false}
-                  animate={{ opacity: 1 }}
-                  exit={animate ? { opacity: 0 } : undefined}
-                  transition={{ duration: 0.25, ease: easeOut }}
-                  className="absolute inset-0"
+                <Button
+                  type="submit"
+                  size="lg"
+                  className={[
+                    "rounded-xl px-3 transition-shadow",
+                    parsePressed ? "ring-2 ring-nocta-glow/50 shadow-md" : "",
+                  ].join(" ")}
+                  disabled={!lineShown.trim()}
                 >
-                  <dl className="grid grid-cols-2 gap-2">
-                    {fields.map(([key, value], i) => (
-                      <motion.div
-                        key={key}
-                        initial={
-                          animate ? { opacity: 0, y: 12, scale: 0.96 } : false
-                        }
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{
-                          duration: 0.32,
-                          ease: easeOut,
-                          delay: animate ? 0.06 + i * 0.09 : 0,
-                        }}
-                        className={[
-                          "min-h-16 rounded-xl border px-3.5 py-2.5",
-                          value
-                            ? "border-nocta-glow/25 bg-nocta-glow/5"
-                            : "border-dashed border-foreground/20",
-                        ].join(" ")}
-                      >
-                        <dt className="text-[11px] text-muted-foreground">
-                          {c.fieldLabels[key]}
-                        </dt>
-                        <dd
+                  {c.parse}
+                  <CornerDownLeft aria-hidden data-icon="inline-end" />
+                </Button>
+              </motion.div>
+            </form>
+
+            <div
+              aria-live="polite"
+              className="relative min-h-52 flex-1 sm:min-h-48"
+            >
+              <AnimatePresence mode="sync" initial={false}>
+                {showCards ? (
+                  <motion.div
+                    key={`cards-${loop}-${parsedShown?.goal ?? "x"}`}
+                    initial={animate ? { opacity: 0 } : false}
+                    animate={{ opacity: 1 }}
+                    exit={animate ? { opacity: 0 } : undefined}
+                    transition={{ duration: 0.25, ease: easeOut }}
+                    className="absolute inset-0"
+                  >
+                    <dl className="grid grid-cols-2 gap-2">
+                      {fields.map(([key, value], i) => (
+                        <motion.div
+                          key={key}
+                          initial={
+                            animate ? { opacity: 0, y: 12, scale: 0.96 } : false
+                          }
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{
+                            duration: 0.32,
+                            ease: easeOut,
+                            delay: animate ? 0.06 + i * 0.09 : 0,
+                          }}
                           className={[
-                            "mt-0.5 truncate text-sm",
+                            "min-h-16 rounded-xl border px-3.5 py-2.5",
                             value
-                              ? "font-medium text-foreground"
-                              : "text-muted-foreground",
+                              ? "border-nocta-glow/25 bg-nocta-glow/5"
+                              : "border-dashed border-foreground/20",
                           ].join(" ")}
                         >
-                          {value ?? c.unknown}
-                        </dd>
-                      </motion.div>
-                    ))}
-                  </dl>
-
-                  <div className="mt-3 flex min-h-11 items-center justify-end gap-2">
-                    <AnimatePresence mode="sync" initial={false}>
-                      {savedShown || phaseShown === "success" ? (
-                        <motion.div
-                          key="saved"
-                          initial={animate ? { opacity: 0, y: 6 } : false}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={animate ? { opacity: 0 } : undefined}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-nocta-glow/30 bg-nocta-glow/10 px-3 py-1.5 text-sm font-medium text-foreground"
-                        >
-                          <Check aria-hidden className="size-4 text-nocta-glow" />
-                          {c.saved}
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="confirm"
-                          animate={
-                            confirmPressed ? { scale: 0.94 } : { scale: 1 }
-                          }
-                          transition={{ duration: 0.12 }}
-                        >
-                          <Button
-                            size="lg"
+                          <dt className="text-[11px] text-muted-foreground">
+                            {c.fieldLabels[key]}
+                          </dt>
+                          <dd
                             className={[
-                              "rounded-full px-4",
-                              confirmPressed ? "ring-2 ring-nocta-glow/50" : "",
+                              "mt-0.5 truncate text-sm",
+                              value
+                                ? "font-medium text-foreground"
+                                : "text-muted-foreground",
                             ].join(" ")}
-                            onClick={() => {
-                              setManual(true);
-                              setSaved(true);
-                              setPhase("success");
-                            }}
                           >
-                            {c.confirm}
-                          </Button>
+                            {value ?? c.unknown}
+                          </dd>
                         </motion.div>
-                      )}
-                    </AnimatePresence>
-                    {manual && savedShown ? (
-                      <Button
-                        variant="ghost"
-                        size="lg"
-                        className="rounded-full"
-                        onClick={() => {
-                          setSaved(false);
-                          setPhase("reveal");
-                        }}
-                      >
-                        {c.edit}
-                      </Button>
-                    ) : null}
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="empty"
-                  initial={animate ? { opacity: 0 } : false}
-                  animate={{ opacity: 1 }}
-                  exit={animate ? { opacity: 0 } : undefined}
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-foreground/15 bg-landing-lavender/30 px-4 text-center"
-                >
-                  <p className="text-sm font-medium text-foreground">
-                    {phaseShown === "type"
-                      ? "Type what you did tonight…"
-                      : "Parse a line to fill tonight's fields"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {c.fieldLabels.goal} · {c.fieldLabels.time} ·{" "}
-                    {c.fieldLabels.energy} · {c.fieldLabels.progress}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                      ))}
+                    </dl>
+
+                    <div className="mt-3 flex min-h-11 items-center justify-end gap-2">
+                      <AnimatePresence mode="sync" initial={false}>
+                        {savedShown || phaseShown === "success" ? (
+                          <motion.div
+                            key="saved"
+                            initial={animate ? { opacity: 0, y: 6 } : false}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={animate ? { opacity: 0 } : undefined}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-nocta-glow/30 bg-nocta-glow/10 px-3 py-1.5 text-sm font-medium text-foreground"
+                          >
+                            <Check
+                              aria-hidden
+                              className="size-4 text-nocta-glow"
+                            />
+                            {c.saved}
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="confirm"
+                            animate={
+                              confirmPressed ? { scale: 0.94 } : { scale: 1 }
+                            }
+                            transition={{ duration: 0.12 }}
+                          >
+                            <Button
+                              size="lg"
+                              className={[
+                                "rounded-full px-4",
+                                confirmPressed
+                                  ? "ring-2 ring-nocta-glow/50"
+                                  : "",
+                              ].join(" ")}
+                              onClick={() => {
+                                setManual(true);
+                                setSaved(true);
+                                setPhase("success");
+                              }}
+                            >
+                              {c.confirm}
+                            </Button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      {manual && savedShown ? (
+                        <Button
+                          variant="ghost"
+                          size="lg"
+                          className="rounded-full"
+                          onClick={() => {
+                            setSaved(false);
+                            setPhase("reveal");
+                          }}
+                        >
+                          {c.edit}
+                        </Button>
+                      ) : null}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="empty"
+                    initial={animate ? { opacity: 0 } : false}
+                    animate={{ opacity: 1 }}
+                    exit={animate ? { opacity: 0 } : undefined}
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-foreground/15 bg-landing-lavender/30 px-4 text-center"
+                  >
+                    <p className="text-sm font-medium text-foreground">
+                      {phaseShown === "type"
+                        ? "Type what you did tonight…"
+                        : "Parse a line to fill tonight's fields"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {c.fieldLabels.goal} · {c.fieldLabels.time} ·{" "}
+                      {c.fieldLabels.energy} · {c.fieldLabels.progress}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
-      </MacWindow>
+        </MacWindow>
       </div>
     </DeepDive>
   );
@@ -1288,35 +1347,53 @@ export function ReflectionSection() {
           ].map(([label, value], i) => (
             <div
               key={String(label)}
-              className={["px-5 py-4", i > 0 ? "border-l border-foreground/10" : ""].join(" ")}
+              className={[
+                "px-5 py-4",
+                i > 0 ? "border-l border-foreground/10" : "",
+              ].join(" ")}
             >
               <dt className="text-[11px] text-muted-foreground">{label}</dt>
-              <dd className="mt-0.5 text-xl font-semibold text-foreground tabular-nums">{value}</dd>
+              <dd className="mt-0.5 text-xl font-semibold text-foreground tabular-nums">
+                {value}
+              </dd>
             </div>
           ))}
         </dl>
         <div className="p-5">
           <div className="grid h-32 grid-cols-7 items-end gap-2">
             {c.week.map((d) => (
-              <div key={d.day} className="flex h-full flex-col items-center justify-end gap-2">
+              <div
+                key={d.day}
+                className="flex h-full flex-col items-center justify-end gap-2"
+              >
                 {d.kind === "action" ? (
                   <div
                     className="w-full rounded-md bg-foreground/15"
-                    style={{ height: `${Math.max(12, (d.minutes / max) * 100)}%` }}
+                    style={{
+                      height: `${Math.max(12, (d.minutes / max) * 100)}%`,
+                    }}
                   />
                 ) : d.kind === "recovery" ? (
                   <div className="h-3 w-full rounded-md border border-dashed border-nocta-glow/60 bg-nocta-glow/15" />
                 ) : (
                   <div className="h-1 w-full rounded-full bg-foreground/10" />
                 )}
-                <span className="text-[11px] text-muted-foreground">{d.day}</span>
+                <span className="text-[11px] text-muted-foreground">
+                  {d.day}
+                </span>
               </div>
             ))}
           </div>
           <ul className="mt-5 flex flex-col gap-2.5 border-t border-foreground/10 pt-5">
             {c.insights.map((line) => (
-              <li key={line} className="flex gap-2.5 text-sm leading-6 text-foreground">
-                <Lightbulb aria-hidden className="mt-1 size-3.5 shrink-0 text-nocta-glow" />
+              <li
+                key={line}
+                className="flex gap-2.5 text-sm leading-6 text-foreground"
+              >
+                <Lightbulb
+                  aria-hidden
+                  className="mt-1 size-3.5 shrink-0 text-nocta-glow"
+                />
                 {line}
               </li>
             ))}

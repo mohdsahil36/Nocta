@@ -148,9 +148,7 @@ export const loginContent = {
       },
       {
         area: "Learning",
-        goals: [
-          { goal: "Finish the systems book", due: "Ch. 7", idleDays: 1 },
-        ],
+        goals: [{ goal: "Finish the systems book", due: "Ch. 7", idleDays: 1 }],
       },
       {
         area: "People",
@@ -245,7 +243,10 @@ export const loginContent = {
         title: "AI Time-Fit Adapter",
         body: "Makes the same step bigger or smaller to fit the time you have.",
         fits: [
-          { minutes: "90m", step: "Finish the PR description and request review" },
+          {
+            minutes: "90m",
+            step: "Finish the PR description and request review",
+          },
           { minutes: "45m", step: "Open the scoring PR for review" },
           { minutes: "20m", step: "List remaining review blockers" },
         ],
@@ -372,7 +373,11 @@ export const loginContent = {
       { day: "Fri", kind: "action", minutes: 45 },
       { day: "Sat", kind: "skip", minutes: 0 },
       { day: "Sun", kind: "action", minutes: 45 },
-    ] as { day: string; kind: "action" | "recovery" | "skip"; minutes: number }[],
+    ] as {
+      day: string;
+      kind: "action" | "recovery" | "skip";
+      minutes: number;
+    }[],
     legend: {
       action: "Action nights",
       recovery: "Recovery",
@@ -439,6 +444,9 @@ export const loginContent = {
   },
   footer: {
     copyright: "© 2026 Nocta. All rights reserved.",
+    tagline: "One meaningful action, every night.",
+    exploreLabel: "Explore",
+    startLabel: "Start",
   },
   auth: {
     panelEyebrow: "Enter",

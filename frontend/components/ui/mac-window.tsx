@@ -27,6 +27,7 @@ const ELEVATION = {
 /**
  * Shared Mac-style chrome for landing demos and app surfaces.
  * Calm frame only — keep interiors quiet; no bold marketing chrome.
+ * Traffic lights: soft (landing) only — flat (app) title bar is text-only.
  */
 export function MacWindow({
   title,
@@ -35,6 +36,8 @@ export function MacWindow({
   tone = "paper",
   elevation = "soft",
 }: MacWindowProps) {
+  const showTrafficLights = elevation === "soft";
+
   return (
     <div
       className={[
@@ -49,15 +52,24 @@ export function MacWindow({
           TONE[tone],
         ].join(" ")}
       >
-        <span aria-hidden className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-full bg-[#FF5F57] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
-          <span className="size-2.5 rounded-full bg-[#FEBC2E] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
-          <span className="size-2.5 rounded-full bg-[#28C840] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
-        </span>
-        <p className="flex-1 truncate text-center text-xs text-muted-foreground">
+        {showTrafficLights ? (
+          <span aria-hidden className="flex items-center gap-1.5">
+            <span className="size-2.5 rounded-full bg-[#FF5F57] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
+            <span className="size-2.5 rounded-full bg-[#FEBC2E] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
+            <span className="size-2.5 rounded-full bg-[#28C840] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
+          </span>
+        ) : null}
+        <p
+          className={[
+            "flex-1 truncate text-xs text-muted-foreground",
+            showTrafficLights ? "text-center" : "text-left",
+          ].join(" ")}
+        >
           {title}
         </p>
-        <span className="w-10 shrink-0" aria-hidden />
+        {showTrafficLights ? (
+          <span className="w-10 shrink-0" aria-hidden />
+        ) : null}
       </div>
       <div className="min-w-0">{children}</div>
     </div>

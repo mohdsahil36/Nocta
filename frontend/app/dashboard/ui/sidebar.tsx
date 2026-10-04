@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ComponentType,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   Activity,
@@ -16,23 +11,29 @@ import {
   Pin,
   Sparkles,
   Target,
+  type LucideIcon,
 } from "lucide-react";
 
 import { cn } from "cn";
 import { ChromeButton } from "@/components/ui/chrome-button";
-import { dashboardContent } from "../content";
 import {
-  getSessionProfile,
-  type SessionProfile,
-} from "../functions/dashboard";
+  AnimatedIcon,
+  type IconMotionPreset,
+} from "@/components/ui/animated-icon";
+import { dashboardContent } from "../content";
+import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
 
 /** Collapsed rail = icon column. Must stay in sync. */
 const ICON_COL = "3.5rem";
 const SIDEBAR_H = "h-[calc(100svh-1rem)]";
-/** Full class strings — Tailwind won't emit `md:${var}` template classes. */
-const EXPANDED_W = "w-[15.5rem] translate-x-0";
+/**
+ * Expanded width — full class strings so Tailwind emits them.
+ * Rail, spacer, and aside must all use SIDEBAR_EXPANDED_W.
+ */
+const SIDEBAR_EXPANDED_W = "w-[13rem]";
+const EXPANDED_W = "w-[13rem] translate-x-0";
 const COLLAPSED_W =
-  "max-md:w-[15.5rem] max-md:-translate-x-[calc(100%+0.5rem)] md:w-14 md:translate-x-0";
+  "max-md:w-[13rem] max-md:-translate-x-[calc(100%+0.5rem)] md:w-14 md:translate-x-0";
 
 /** Collapse only after the pointer has really left (avoids width-flap jitter). */
 const HOVER_LEAVE_MS = 280;
@@ -40,7 +41,8 @@ const HOVER_LEAVE_MS = 280;
 type NavItem = {
   href: string;
   label: string;
-  icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+  icon: LucideIcon;
+  motion: IconMotionPreset;
 };
 
 const PRIMARY_NAV: NavItem[] = [
@@ -48,16 +50,19 @@ const PRIMARY_NAV: NavItem[] = [
     href: "/dashboard",
     label: dashboardContent.nav.tonight,
     icon: Sparkles,
+    motion: "pulse",
   },
   {
     href: "/dashboard#goals",
     label: dashboardContent.nav.goals,
     icon: Target,
+    motion: "tilt",
   },
   {
     href: "/dashboard#reflect",
     label: dashboardContent.nav.reflect,
     icon: BookOpen,
+    motion: "rise",
   },
 ];
 
@@ -65,6 +70,7 @@ const PLATFORM_NAV: NavItem = {
   href: "/activity",
   label: dashboardContent.nav.activity,
   icon: Activity,
+  motion: "wiggle",
 };
 
 type DashboardSidebarProps = {
@@ -98,19 +104,79 @@ function NavLink({
       href={item.href}
       title={item.label}
       onClick={onNavigate}
-      className="nocta-nav-pill grid h-10 shrink-0 items-center rounded-md"
+      className="nocta-nav-pill grid h-10 shrink-0 items-center rounded-lg tracking-tight"
       style={{
         gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
       }}
       data-active={active ? "true" : undefined}
     >
       <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-md">
-        <Icon className="size-3.5 shrink-0" aria-hidden />
+        <AnimatedIcon
+          icon={Icon}
+          active={active}
+          preset={item.motion}
+          tone="neutral"
+          inheritColor
+        />
       </span>
-      <span className="flex items-center truncate pr-3 text-xs leading-none">
+      <span className="flex items-center truncate pr-3 text-xs leading-none font-medium tracking-tight">
         {item.label}
       </span>
     </Link>
+  );
+}
+
+function BrandMark({ onNavigate }: { onNavigate: () => void }) {
+  return (
+    <Link
+      href="/dashboard"
+      className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
+      aria-label={dashboardContent.brand}
+      onClick={onNavigate}
+    >
+      <AnimatedIcon
+        icon={Moon}
+        className="size-3.5"
+        preset="tilt"
+        tone="neutral"
+        inheritColor
+      />
+    </Link>
+  );
+}
+
+/** Matches navbar icon chip — size-10 muted surface in light and dark. */
+const SIDEBAR_ICON_CHIP =
+  "size-10 shrink-0 rounded-lg border border-border/60 bg-muted/45 text-nocta-ink shadow-none hover:border-border hover:bg-muted/70 dark:border-border dark:bg-muted/50 dark:hover:bg-muted/70";
+
+function SidebarChromeIcon({
+  icon,
+  preset,
+  label,
+  onClick,
+}: {
+  icon: LucideIcon;
+  preset: IconMotionPreset;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <ChromeButton
+      iconOnly
+      className={SIDEBAR_ICON_CHIP}
+      aria-label={label}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+    >
+      <AnimatedIcon
+        icon={icon}
+        className="size-3.5"
+        preset={preset}
+        tone="neutral"
+      />
+    </ChromeButton>
   );
 }
 
@@ -208,7 +274,7 @@ export function DashboardSidebar({
       <div
         className={cn(
           "hidden shrink-0 md:block",
-          pinned ? "w-62" : "w-14",
+          pinned ? SIDEBAR_EXPANDED_W : "w-14",
         )}
         aria-hidden
       />
@@ -225,10 +291,7 @@ export function DashboardSidebar({
         onMouseLeave={endHover}
       >
         <aside
-          className={cn(
-            "nocta-sidebar grid w-62 py-3",
-            SIDEBAR_H,
-          )}
+          className={cn("nocta-sidebar grid py-3", SIDEBAR_EXPANDED_W, SIDEBAR_H)}
           style={{
             gridTemplateRows: "auto auto auto minmax(0, 1fr) auto",
           }}
@@ -240,14 +303,7 @@ export function DashboardSidebar({
             style={{ gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)` }}
           >
             <div className="flex items-center justify-center">
-              <Link
-                href="/dashboard"
-                className="flex size-8 items-center justify-center rounded-sm bg-nocta-ink text-nocta-paper"
-                aria-label={dashboardContent.brand}
-                onClick={closeIfMobile}
-              >
-                <Moon className="size-3.5" aria-hidden />
-              </Link>
+              <BrandMark onNavigate={closeIfMobile} />
             </div>
 
             <div className="flex min-w-0 items-center justify-between gap-2 pr-3">
@@ -255,35 +311,25 @@ export function DashboardSidebar({
                 <p className="text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   {dashboardContent.sidebar.eyebrow}
                 </p>
-                <p className="mt-1 truncate font-sans text-sm leading-none font-semibold tracking-[-0.02em] text-nocta-ink">
+                <p className="mt-1 truncate font-sans text-sm leading-none font-semibold tracking-tight text-nocta-ink">
                   {dashboardContent.brand}
                 </p>
               </div>
 
               {pinned ? (
-                <ChromeButton
-                  iconOnly
-                  className="size-8 shrink-0 rounded-md"
-                  aria-label={dashboardContent.actions.closeSidebar}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onPinClose();
-                  }}
-                >
-                  <PanelLeftClose className="size-4" />
-                </ChromeButton>
+                <SidebarChromeIcon
+                  icon={PanelLeftClose}
+                  preset="nudge"
+                  label={dashboardContent.actions.closeSidebar}
+                  onClick={onPinClose}
+                />
               ) : (
-                <ChromeButton
-                  iconOnly
-                  className="size-8 shrink-0 rounded-md"
-                  aria-label="Keep sidebar open"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onPinOpen();
-                  }}
-                >
-                  <Pin className="size-3.5" />
-                </ChromeButton>
+                <SidebarChromeIcon
+                  icon={Pin}
+                  preset="tilt"
+                  label="Keep sidebar open"
+                  onClick={onPinOpen}
+                />
               )}
             </div>
           </div>
@@ -329,16 +375,17 @@ export function DashboardSidebar({
           </nav>
 
           {/* Footer — always last grid row, never clipped by page length */}
-          <div
+          <footer
             className={cn(
-              "flex flex-col gap-2 border-t border-border/70 pt-3",
+              "flex flex-col gap-2 border-t border-border/50 pt-3",
               expanded && "px-2",
             )}
           >
             <p
               className={cn(
                 "px-1 text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase",
-                !expanded && "pointer-events-none invisible h-0 overflow-hidden p-0",
+                !expanded &&
+                  "pointer-events-none invisible h-0 overflow-hidden p-0",
               )}
             >
               {dashboardContent.sidebar.workspaceLabel}
@@ -351,13 +398,13 @@ export function DashboardSidebar({
             />
 
             <div
-              className="grid h-11 items-center rounded-md border border-border/80 px-0"
+              className="grid h-11 items-center rounded-lg border border-border/50 bg-muted/35 px-0 transition-colors duration-150 hover:bg-muted/55 dark:border-border dark:bg-muted/40 dark:hover:bg-muted/60"
               style={{
                 gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
               }}
               title={profile.email ?? profile.name}
             >
-              <span className="flex size-8 items-center justify-center justify-self-center rounded-sm bg-nocta-ink text-[10px] font-semibold tracking-wide text-nocta-paper">
+              <span className="flex size-8 items-center justify-center justify-self-center rounded-md bg-primary text-[10px] font-semibold tracking-wide text-primary-foreground">
                 {profile.initials}
               </span>
               <span
@@ -366,15 +413,15 @@ export function DashboardSidebar({
                   !expanded && "pointer-events-none invisible",
                 )}
               >
-                <span className="block truncate text-xs leading-tight font-medium text-nocta-ink">
+                <span className="block truncate text-xs leading-tight font-medium tracking-tight text-nocta-ink">
                   {profile.name}
                 </span>
-                <span className="mt-0.5 block truncate text-[10px] leading-tight text-muted-foreground">
+                <span className="mt-0.5 block truncate text-[10px] leading-tight tracking-tight text-muted-foreground">
                   {profile.email ?? dashboardContent.sidebar.profileLabel}
                 </span>
               </span>
             </div>
-          </div>
+          </footer>
         </aside>
       </div>
     </>

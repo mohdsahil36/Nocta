@@ -37,9 +37,6 @@ manifest.json
 out/
 build/
 
-# Accidental npm install at monorepo root (no root package.json)
-/package-lock.json
-
 # Frontend
 frontend/node_modules/
 frontend/.next/

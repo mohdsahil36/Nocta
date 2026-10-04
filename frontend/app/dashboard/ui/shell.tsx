@@ -13,12 +13,13 @@ type DashboardShellProps = {
 };
 
 /**
- * App shell — flat canvas. Minimal: no pastel washes behind the frame.
+ * App shell — light canvas with a calm dotted grid (panels float above).
+ * Pin / hover sidebar state unchanged.
  */
 export function DashboardShell({ children }: DashboardShellProps) {
   const reduceMotion = useReducedMotion();
   const [fromAuth] = useState(() => consumeAuthEnter());
-  const [pinned, setPinned] = useState(false);
+  const [pinned, setPinned] = useState(true);
   const [hoverExpand, setHoverExpand] = useState(false);
   const suppressHoverRef = useRef(false);
   const expanded = pinned || hoverExpand;
@@ -27,7 +28,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   return (
     <motion.div
-      className="relative flex min-h-svh w-full gap-2 bg-nocta-canvas p-2 text-nocta-ink transition-[background-color,color] duration-300 ease-out sm:gap-2.5 sm:p-2.5"
+      className="relative flex min-h-svh w-full gap-3 bg-nocta-canvas p-3 text-nocta-ink transition-[background-color,color] duration-300 ease-out sm:gap-3.5 sm:p-3.5"
       initial={playEnter ? { opacity: 0, y: 8 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{
@@ -36,6 +37,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
         delay: playEnter ? 0.04 : 0,
       }}
     >
+      {/* Light-mode canvas texture — hidden in dark via CSS */}
+      <div aria-hidden className="nocta-shell-dotgrid" />
+
       <DashboardSidebar
         pinned={pinned}
         expanded={expanded}
@@ -60,7 +64,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         }}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col gap-3 sm:gap-3.5">
         <DashboardNavbar
           sidebarPinned={pinned}
           onOpenSidebar={() => {

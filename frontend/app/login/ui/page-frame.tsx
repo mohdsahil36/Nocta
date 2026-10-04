@@ -1,19 +1,26 @@
-/** Shared column width for landing rails + content alignment (time.fyi-inspired). */
+/** Primary column — vertical rails mark this edge. */
 export const FRAME_MAX = "max-w-[1080px]";
+/** Breakout column — wide hero headline only. */
+export const FRAME_MAX_WIDE = "max-w-[1280px]";
 
 export const FRAME_PAD = "px-6 md:px-10";
 
-/** Centers content to the same 1080px column the rails mark. */
-export function Frame({
-  children,
-  className = "",
-}: {
+type FrameProps = {
   children: React.ReactNode;
   className?: string;
-}) {
+  /** Wider than the rail column (wide hero only). */
+  wide?: boolean;
+};
+
+/** Centers content to the rail column (or the wide breakout). */
+export function Frame({ children, className = "", wide = false }: FrameProps) {
   return (
     <div
-      className={["relative mx-auto w-full", FRAME_MAX, className]
+      className={[
+        "relative mx-auto w-full",
+        wide ? FRAME_MAX_WIDE : FRAME_MAX,
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
     >
@@ -23,21 +30,22 @@ export function Frame({
 }
 
 /**
- * Vertical hairlines at the 1080px column edges (full page height).
- * Horizontals are full-viewport and cross these rails.
+ * Vertical hairlines at the 1080px column edges.
+ * Must live inside a `relative overflow-hidden` band that does **not**
+ * include the footer — absolute inset lines cannot escape that box.
  */
 export function PageFrameRails({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
       className={[
-        "pointer-events-none absolute inset-y-0 left-1/2 z-30 w-full -translate-x-1/2",
+        "pointer-events-none absolute inset-y-0 left-1/2 z-0 w-full -translate-x-1/2",
         FRAME_MAX,
         className,
       ].join(" ")}
     >
-      <div className="absolute inset-y-0 left-0 w-px bg-foreground/10" />
-      <div className="absolute inset-y-0 right-0 w-px bg-foreground/10" />
+      <div className="absolute inset-y-0 left-0 w-px bg-foreground/25" />
+      <div className="absolute inset-y-0 right-0 w-px bg-foreground/25" />
     </div>
   );
 }

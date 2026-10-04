@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { PageFrameRails } from "./ui/page-frame";
 
 export const metadata: Metadata = {
   title: {
@@ -11,8 +10,8 @@ export const metadata: Metadata = {
 /**
  * time.fyi frame craft:
  * - Page is full-bleed paper (no max-width wrapper)
- * - Vertical rails overlay at 1080px
- * - Sections own FullRule (full viewport) + inner max-w-[1080px] content
+ * - Vertical rails at 1080 in the content band (not the footer) — see page.tsx
+ * - Hero + features share that column so content does not break the rails
  */
 export default function LoginLayout({
   children,
@@ -21,8 +20,7 @@ export default function LoginLayout({
 }) {
   return (
     <div className="nocta-landing relative min-h-svh w-full bg-nocta-paper text-foreground">
-      <PageFrameRails />
-      <div className="relative z-10 w-full">{children}</div>
+      {children}
     </div>
   );
 }
