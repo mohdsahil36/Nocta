@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { FRAME_PAD, Frame } from "./page-frame";
+import { FRAME_MAX, FRAME_PAD, Frame } from "./page-frame";
 
 type Point = { title: string; body: string };
 
@@ -7,20 +7,25 @@ type Point = { title: string; body: string };
 export const COL_SPLIT = "md:grid-cols-2";
 
 /**
- * Full-viewport horizontal hairline — use sparingly (hero / close),
- * not between every feature (that welded columns together).
+ * Full-viewport horizontal hairline — nodes sit on the primary rail column.
+ * Rails stay behind content; rules only mark section seams.
  */
 export function FullRule({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={["relative z-20 h-px w-full bg-foreground/10", className].join(
+      className={["relative z-1 h-px w-full bg-foreground/20", className].join(
         " ",
       )}
     >
-      <div className="pointer-events-none absolute inset-0 mx-auto max-w-270">
-        <span className="absolute top-1/2 left-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/25" />
-        <span className="absolute top-1/2 right-0 size-1.5 translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/25" />
+      <div
+        className={[
+          "pointer-events-none absolute inset-0 mx-auto",
+          FRAME_MAX,
+        ].join(" ")}
+      >
+        <span className="absolute top-1/2 left-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/40" />
+        <span className="absolute top-1/2 right-0 size-1.5 translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/40" />
       </div>
     </div>
   );
@@ -100,6 +105,8 @@ type DeepDiveProps = {
   points?: readonly Point[];
   tone?: BandTone;
   layout?: BandLayout;
+  /** Use the wide breakout frame (past the rail column). */
+  wide?: boolean;
   titleSlot?: ReactNode;
   children: ReactNode;
 };
@@ -162,19 +169,25 @@ export function SectionShell({
   id,
   children,
   className = "",
+  wide = false,
 }: {
   id?: string;
   children: ReactNode;
   className?: string;
+  /** Wider than the rail column; opaque cards cover rails at the breakout. */
+  wide?: boolean;
 }) {
   return (
     <>
       <FullRule />
       <section
         id={id}
-        className={["scroll-mt-16 py-12 sm:py-16", className].join(" ")}
+        className={[
+          "relative z-2 scroll-mt-16 py-12 sm:py-16",
+          className,
+        ].join(" ")}
       >
-        <Frame>
+        <Frame wide={wide}>
           <div className={FRAME_PAD}>{children}</div>
         </Frame>
       </section>
@@ -232,16 +245,18 @@ export function DeepDive({
   points,
   tone = "paper",
   layout = "split",
+  wide = false,
   titleSlot,
   children,
 }: DeepDiveProps) {
   const t = TONE[tone];
   const copyPad = "p-8 sm:p-10 md:p-12";
   const panelPad = "flex items-center p-8 sm:p-10 md:p-12";
+  const demoWidth = wide ? "mx-auto w-full" : "mx-auto w-full max-w-2xl";
 
   if (layout === "stack" || layout === "normal") {
     return (
-      <SectionShell id={id}>
+      <SectionShell id={id} wide={wide}>
         <div className="flex flex-col gap-6">
           <div className={[CARD, "bg-nocta-paper", copyPad].join(" ")}>
             <CopyBlock
@@ -256,7 +271,7 @@ export function DeepDive({
             />
           </div>
           {/* Demo sits in its own chrome (often MacWindow) — no second welded panel. */}
-          <div className="mx-auto w-full max-w-2xl">{children}</div>
+          <div className={demoWidth}>{children}</div>
         </div>
       </SectionShell>
     );
@@ -264,7 +279,7 @@ export function DeepDive({
 
   if (layout === "flip") {
     return (
-      <SectionShell id={id}>
+      <SectionShell id={id} wide={wide}>
         <div className={[CARD, "grid", COL_SPLIT].join(" ")}>
           <div
             className={[
@@ -290,7 +305,7 @@ export function DeepDive({
   }
 
   return (
-    <SectionShell id={id}>
+    <SectionShell id={id} wide={wide}>
       <div className={[CARD, "grid", COL_SPLIT].join(" ")}>
         <CopyBlock
           index={index}

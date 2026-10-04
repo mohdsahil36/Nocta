@@ -23,12 +23,12 @@ import {
   ReflectionSection,
   ScoringSection,
 } from "./ui/feature-sections";
-import { FooterWordmark } from "./ui/footer-wordmark";
-import { Hero } from "./ui/hero";
+import { Hero, HeroTryIt } from "./ui/hero";
+import { LandingFooter } from "./ui/landing-footer";
 import { LandingNav } from "./ui/landing-nav";
 import { OptionSwapSection } from "./ui/option-swap";
 import { FullRule } from "./ui/section";
-import { FRAME_PAD, Frame } from "./ui/page-frame";
+import { FRAME_PAD, Frame, PageFrameRails } from "./ui/page-frame";
 import { TonightDemo } from "./ui/tonight-demo";
 import { NoctaLoader } from "@/components/ui/nocta-loader";
 import useThemeStore from "@/app/store/themeStore";
@@ -150,31 +150,41 @@ export default function LoginPage() {
         transition={{ duration: AUTH_EXIT_MS / 1000, ease: authEaseOut }}
       >
         <main className="relative z-10 w-full">
+          {/* Hero sits outside the rail band — wider, no vertical grid lines */}
           <Hero
             reduceMotion={reduceMotion}
             onOpenAuth={() => openAuth()}
             onHowItWorks={() => scrollToId("how-it-works")}
           />
-          <NarrativeBand which="product" />
-          <TonightDemo />
-          <NarrativeBand which="onboarding" />
-          <GoalsSection />
-          <CheckInSection />
-          <NarrativeBand which="process" />
-          <ScoringSection />
-          <AiSubGrid />
-          <OptionSwapSection />
-          <LogParserSection />
-          <RecoverySection />
-          <ReflectionSection />
-          <FaqSection />
 
-          <section id="close" className="scroll-mt-16">
+          {/* Rails: TRY IT → FAQ only (not wide hero, not close CTA, not footer) */}
+          <div className="relative w-full overflow-hidden">
+            <PageFrameRails />
             <FullRule />
+            <HeroTryIt />
+
+            <NarrativeBand which="product" />
+            <TonightDemo />
+            <NarrativeBand which="onboarding" />
+            <GoalsSection />
+            <CheckInSection />
+            <NarrativeBand which="process" />
+            <ScoringSection />
+            <AiSubGrid />
+            <OptionSwapSection />
+            <LogParserSection />
+            <RecoverySection />
+            <ReflectionSection />
+            <FaqSection />
+            <FullRule />
+          </div>
+
+          {/* Close + footer — no vertical grid lines */}
+          <section id="close" className="scroll-mt-16">
             <Frame>
               <div
                 className={[
-                  "mx-auto max-w-2xl pt-28 pb-24 text-center sm:pt-36 sm:pb-28",
+                  "mx-auto max-w-2xl pt-28 pb-20 text-center sm:pt-36 sm:pb-24",
                   FRAME_PAD,
                 ].join(" ")}
               >
@@ -196,22 +206,9 @@ export default function LoginPage() {
                 </p>
               </div>
             </Frame>
-
-            <FullRule />
-            <Frame>
-              <footer
-                className={[
-                  "bg-landing-sand pt-10 pb-12 text-center sm:pt-12 sm:pb-14",
-                  FRAME_PAD,
-                ].join(" ")}
-              >
-                <FooterWordmark />
-                <p className="mt-2 text-xs text-muted-foreground sm:mt-3">
-                  {loginContent.footer.copyright}
-                </p>
-              </footer>
-            </Frame>
           </section>
+
+          <LandingFooter />
         </main>
 
         <AuthDialog

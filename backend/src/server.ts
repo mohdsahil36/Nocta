@@ -12,25 +12,39 @@ const app = express();
  * Example on Render: CORS_ORIGINS=https://nocta-two-theta.vercel.app
  * or CLIENT_URL=https://nocta-two-theta.vercel.app
  */
-const allowedOrigins = (
-  process.env.CORS_ORIGINS ??
-  process.env.CLIENT_URL ??
-  "http://localhost:3000"
-)
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = new Set(
+  (
+    process.env.CORS_ORIGINS ??
+    process.env.CLIENT_URL ??
+    "http://localhost:3000,http://127.0.0.1:3000"
+  )
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+);
+
+// Local Next often flips between localhost / 127.0.0.1 — allow both in dev.
+for (const origin of [...allowedOrigins]) {
+  if (origin.includes("localhost")) {
+    allowedOrigins.add(origin.replace("localhost", "127.0.0.1"));
+  } else if (origin.includes("127.0.0.1")) {
+    allowedOrigins.add(origin.replace("127.0.0.1", "localhost"));
+  }
+}
 
 app.use(
   cors({
     origin(origin, callback) {
       // Non-browser clients (curl, health checks) send no Origin.
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.has(origin)) {
         callback(null, true);
         return;
       }
+      console.warn(`[cors] blocked origin: ${origin}`);
       callback(null, false);
     },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 

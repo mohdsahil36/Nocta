@@ -64,6 +64,9 @@ html.theme-transition *::after {
   --color-nocta-canvas: var(--nocta-canvas);
   --color-nocta-ink: var(--nocta-ink);
   --color-nocta-night: var(--nocta-night);
+  --color-nocta-accent-warm: var(--nocta-accent-warm);
+  --color-nocta-accent-mint: var(--nocta-accent-mint);
+  --color-nocta-icon-on-chip: var(--nocta-icon-on-chip);
   /* Landing soft pastels (scoped vars below; light multi-hue wells) */
   --color-landing-sky: var(--landing-sky);
   --color-landing-mint: var(--landing-mint);
@@ -86,8 +89,9 @@ html.theme-transition *::after {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  /* Medium blue CTA — not near-black; white label in light mode */
+  --primary: oklch(0.55 0.13 250);
+  --primary-foreground: oklch(0.99 0.002 250);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -110,10 +114,15 @@ html.theme-transition *::after {
   --nocta-canvas: oklch(0.97 0.006 240);
   --nocta-ink: oklch(0.17 0.028 250);
   --nocta-night: oklch(0.15 0.03 250);
+  /* Icon accents (readable strokes — not wash pastels) */
+  --nocta-accent-warm: oklch(0.55 0.1 55);
+  --nocta-accent-mint: oklch(0.48 0.08 165);
+  /* Dark glyph on light accent chips (both themes) */
+  --nocta-icon-on-chip: oklch(0.22 0.03 250);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.55 0.13 250);
+  --sidebar-primary-foreground: oklch(0.99 0.002 250);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
@@ -128,8 +137,9 @@ html.theme-transition *::after {
   --card-foreground: oklch(0.98 0 0);
   --popover: oklch(0.16 0 0);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.98 0 0);
-  --primary-foreground: oklch(0.12 0 0);
+  /* Same medium-blue CTA as light — slightly brighter on charcoal */
+  --primary: oklch(0.62 0.12 250);
+  --primary-foreground: oklch(0.99 0.002 250);
   --secondary: oklch(0.22 0 0);
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.22 0 0);
@@ -150,10 +160,13 @@ html.theme-transition *::after {
   --nocta-canvas: oklch(0.08 0 0);
   --nocta-ink: oklch(0.98 0 0);
   --nocta-night: oklch(0.08 0 0);
+  --nocta-accent-warm: oklch(0.78 0.08 55);
+  --nocta-accent-mint: oklch(0.75 0.07 165);
+  --nocta-icon-on-chip: oklch(0.2 0.025 250);
   --sidebar: oklch(0.16 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.72 0.08 195);
-  --sidebar-primary-foreground: oklch(0.12 0 0);
+  --sidebar-primary: oklch(0.62 0.12 250);
+  --sidebar-primary-foreground: oklch(0.99 0.002 250);
   --sidebar-accent: oklch(0.22 0 0);
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
@@ -414,22 +427,51 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   background-color: color-mix(in oklab, var(--nocta-paper) 90%, white) !important;
 }
 
-/* App chrome — flat panels; hairline borders only */
-.nocta-sidebar,
+/* App chrome — panels stay opaque; sidebar/navbar frost in light */
 .nocta-panel {
   border-radius: 0.5rem;
   border: 1px solid color-mix(in oklab, var(--nocta-ink) 10%, transparent);
   background: var(--nocta-paper);
   box-shadow: none;
 }
+/* Light shell canvas — calm dotted grid under floating chrome (dark: off) */
+.nocta-shell-dotgrid {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--nocta-ink) 12%, transparent) 0.85px,
+    transparent 1.1px
+  );
+  background-size: 18px 18px;
+  background-position: 0 0;
+  opacity: 1;
+}
+.dark .nocta-shell-dotgrid {
+  opacity: 0;
+}
+
 .nocta-sidebar {
   overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  background: color-mix(in oklab, var(--nocta-paper) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--nocta-ink) 4%, transparent),
+    0 8px 24px color-mix(in oklab, var(--nocta-ink) 5%, transparent);
 }
 .nocta-navbar {
-  border-radius: 0.375rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 10%, transparent);
-  background: var(--nocta-paper);
-  box-shadow: none;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--nocta-ink) 8%, transparent);
+  background: color-mix(in oklab, var(--nocta-paper) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--nocta-ink) 4%, transparent),
+    0 6px 18px color-mix(in oklab, var(--nocta-ink) 4%, transparent);
   overflow: hidden;
 }
 .dark .nocta-sidebar,
@@ -438,10 +480,16 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   background: var(--card);
   box-shadow: none;
 }
+.dark .nocta-sidebar {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 .dark .nocta-navbar {
   border-color: var(--border);
   background: var(--card);
   box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 /* Navbar day / night — two layers crossfade on .dark (no data-phase remount) */
@@ -564,8 +612,9 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   }
 }
 
-/* Nav pills — light soft wash; dark glow wash */
+/* Nav pills — primary blue in light and dark (same as labeled chrome buttons) */
 .nocta-nav-pill {
+  position: relative;
   color: var(--muted-foreground);
   transition:
     background-color 150ms ease,
@@ -576,34 +625,28 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   transition:
     background-color 150ms ease,
     color 150ms ease,
-    box-shadow 150ms ease;
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 .nocta-nav-pill:hover {
-  background-color: color-mix(in oklab, var(--nocta-ink) 5%, white);
+  background-color: color-mix(in oklab, var(--primary) 10%, transparent);
   color: var(--nocta-ink);
-  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 6%, transparent);
+  box-shadow: none;
 }
-.dark .nocta-nav-pill:hover {
-  background-color: color-mix(in oklab, var(--nocta-glow) 18%, transparent);
-  color: var(--nocta-ink);
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 32%, transparent),
-    0 6px 16px color-mix(in oklab, var(--nocta-glow) 12%, transparent);
+.nocta-nav-pill:hover .nocta-nav-icon {
+  transform: translateY(-0.5px);
 }
-.nocta-nav-pill[data-active="true"] {
-  background-color: var(--nocta-ink);
-  color: var(--nocta-paper);
-  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 18%, transparent);
-}
+/* Active route — solid primary + white (both themes) */
+.nocta-nav-pill[data-active="true"],
 .nocta-nav-pill[data-active="true"]:hover {
-  background-color: var(--nocta-ink);
-  color: var(--nocta-paper);
-  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 18%, transparent);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: none;
 }
 
 /*
  * Collapsed rail: clip shows only the icon column. Put active/hover on the
- * size-9 icon chip so it matches the brand moon square — not a cut-off row pill.
+ * icon chip — not a cut-off row pill.
  */
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill,
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover,
@@ -614,23 +657,17 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   color: var(--muted-foreground);
 }
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover .nocta-nav-icon {
-  background-color: color-mix(in oklab, var(--nocta-ink) 5%, white);
+  background-color: color-mix(in oklab, var(--primary) 12%, transparent);
   color: var(--nocta-ink);
-  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 6%, transparent);
-}
-.dark .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover .nocta-nav-icon {
-  background-color: color-mix(in oklab, var(--nocta-glow) 18%, transparent);
-  color: var(--nocta-ink);
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--nocta-glow) 32%, transparent),
-    0 6px 16px color-mix(in oklab, var(--nocta-glow) 12%, transparent);
+  box-shadow: none;
+  transform: none;
 }
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"] .nocta-nav-icon,
 .nocta-sidebar[data-collapsed="true"]
   .nocta-nav-pill[data-active="true"]:hover
   .nocta-nav-icon {
-  background-color: var(--nocta-ink);
-  color: var(--nocta-paper);
-  box-shadow: 0 1px 2px color-mix(in oklab, var(--nocta-ink) 18%, transparent);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: none;
 }
 
