@@ -116,7 +116,7 @@ npm run typecheck
 | `npm run dev` | Development server |
 | `npm run build` | Production build |
 | `npm run start` | Serve production build |
-| `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
+| `npm run typecheck` | `next typegen` then `tsc --noEmit` |
 | `npm run lint` | ESLint |
 
 **Backend** (`cd backend`)
