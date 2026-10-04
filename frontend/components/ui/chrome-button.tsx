@@ -11,7 +11,7 @@ const chromeIconClass =
   "border-transparent bg-transparent text-nocta-ink shadow-none transition-[background-color,border-color,color,box-shadow] duration-150 ease-out hover:border-border/40 hover:bg-muted/55 hover:text-foreground dark:hover:border-border dark:hover:bg-muted/50";
 
 /**
- * Labeled chrome — medium-blue primary + white text in both themes.
+ * Labeled chrome — green primary + white text in both themes.
  * Locked size: h-10 · gap-1.5 · px-3.5 (override only with care).
  */
 const chromeLabelClass =
@@ -49,7 +49,7 @@ export type ChromeButtonProps = (AsButton | AsLink) & {
 
 /**
  * Shared chrome control for app shells (dashboard header, sidebar, etc.).
- * Icon = quiet; labeled = solid primary blue + white (light and dark).
+ * Icon = quiet; labeled = solid primary green + white (light and dark).
  */
 export function ChromeButton({
   children,

@@ -44,8 +44,8 @@ export function PageFrameRails({ className = "" }: { className?: string }) {
         className,
       ].join(" ")}
     >
-      <div className="absolute inset-y-0 left-0 w-px bg-foreground/25" />
-      <div className="absolute inset-y-0 right-0 w-px bg-foreground/25" />
+      <div className="absolute inset-y-0 left-0 w-px bg-foreground/5" />
+      <div className="absolute inset-y-0 right-0 w-px bg-foreground/5" />
     </div>
   );
 }

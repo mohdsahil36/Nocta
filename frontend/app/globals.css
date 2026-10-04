@@ -9,12 +9,12 @@ html {
 }
 
 /* Brief window while toggling theme — enables smooth color swaps without always-on * transitions. */
+/* No background-color here — token swaps + bg transitions cause footer/page flicker */
 html.theme-transition,
 html.theme-transition *,
 html.theme-transition *::before,
 html.theme-transition *::after {
   transition:
-    background-color 300ms ease,
     border-color 300ms ease,
     color 300ms ease,
     fill 300ms ease,
@@ -89,9 +89,9 @@ html.theme-transition *::after {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Medium blue CTA — not near-black; white label in light mode */
-  --primary: oklch(0.55 0.13 250);
-  --primary-foreground: oklch(0.99 0.002 250);
+  /* Forest green CTA — white label in light mode */
+  --primary: oklch(0.36 0.1 148);
+  --primary-foreground: oklch(0.99 0.002 148);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -109,7 +109,8 @@ html.theme-transition *::after {
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
   /* Nocta colors — light canvas: soft pearl-stone (not warm beige) */
-  --nocta-glow: oklch(0.58 0.09 195);
+  /* Accent aligned with forest primary (greenish theme) */
+  --nocta-glow: oklch(0.48 0.1 148);
   --nocta-paper: oklch(0.99 0.004 240);
   --nocta-canvas: oklch(0.97 0.006 240);
   --nocta-ink: oklch(0.17 0.028 250);
@@ -121,8 +122,8 @@ html.theme-transition *::after {
   --nocta-icon-on-chip: oklch(0.22 0.03 250);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.55 0.13 250);
-  --sidebar-primary-foreground: oklch(0.99 0.002 250);
+  --sidebar-primary: oklch(0.36 0.1 148);
+  --sidebar-primary-foreground: oklch(0.99 0.002 148);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
@@ -137,9 +138,9 @@ html.theme-transition *::after {
   --card-foreground: oklch(0.98 0 0);
   --popover: oklch(0.16 0 0);
   --popover-foreground: oklch(0.98 0 0);
-  /* Same medium-blue CTA as light — slightly brighter on charcoal */
-  --primary: oklch(0.62 0.12 250);
-  --primary-foreground: oklch(0.99 0.002 250);
+  /* Forest CTA — a touch brighter on charcoal for contrast */
+  --primary: oklch(0.48 0.11 148);
+  --primary-foreground: oklch(0.99 0.002 148);
   --secondary: oklch(0.22 0 0);
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.22 0 0);
@@ -155,7 +156,7 @@ html.theme-transition *::after {
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --nocta-glow: oklch(0.72 0.08 195);
+  --nocta-glow: oklch(0.62 0.1 148);
   --nocta-paper: oklch(0.16 0 0);
   --nocta-canvas: oklch(0.08 0 0);
   --nocta-ink: oklch(0.98 0 0);
@@ -165,8 +166,8 @@ html.theme-transition *::after {
   --nocta-icon-on-chip: oklch(0.2 0.025 250);
   --sidebar: oklch(0.16 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.62 0.12 250);
-  --sidebar-primary-foreground: oklch(0.99 0.002 250);
+  --sidebar-primary: oklch(0.48 0.11 148);
+  --sidebar-primary-foreground: oklch(0.99 0.002 148);
   --sidebar-accent: oklch(0.22 0 0);
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
@@ -395,6 +396,35 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   --landing-peach: oklch(0.21 0.025 55);
   --landing-lavender: oklch(0.2 0.022 290);
   --landing-sand: oklch(0.2 0.012 90);
+}
+
+/* Shared blue dusk — paper stays nocta-paper; wash is blue-only linear */
+.nocta-landing {
+  --landing-dusk-blue: oklch(0.92 0.045 155);
+}
+.dark .nocta-landing {
+  --landing-dusk-blue: color-mix(
+    in oklab,
+    oklch(0.42 0.08 148) 38%,
+    var(--nocta-paper)
+  );
+}
+.nocta-footer-dusk {
+  background-color: var(--nocta-paper);
+}
+.nocta-footer-dusk-wash {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--landing-dusk-blue) 100%
+  );
+}
+.nocta-hero-wash {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--landing-dusk-blue) 55%, transparent) 0%,
+    transparent 75%
+  );
 }
 
 /* Bento card surface */

@@ -14,7 +14,7 @@ export function FullRule({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={["relative z-1 h-px w-full bg-foreground/20", className].join(
+      className={["relative z-1 h-px w-full bg-foreground/5", className].join(
         " ",
       )}
     >
@@ -24,8 +24,8 @@ export function FullRule({ className = "" }: { className?: string }) {
           FRAME_MAX,
         ].join(" ")}
       >
-        <span className="absolute top-1/2 left-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/40" />
-        <span className="absolute top-1/2 right-0 size-1.5 translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/40" />
+        <span className="absolute top-1/2 left-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/15" />
+        <span className="absolute top-1/2 right-0 size-1.5 translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/15" />
       </div>
     </div>
   );

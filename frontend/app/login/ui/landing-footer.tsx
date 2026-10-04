@@ -3,20 +3,19 @@
 import { Moon } from "lucide-react";
 
 import { loginContent } from "../content";
-import { FooterLandscape } from "./footer-landscape";
 import { FRAME_PAD, Frame } from "./page-frame";
 
 const LINK =
   "text-[13px] tracking-tight text-foreground/70 transition-colors duration-150 hover:text-foreground";
 
 /**
- * Minimal brand/nav chrome; most of the footer height is the dithered bg.
+ * Minimal brand/nav chrome; lower band is a calm CSS dusk wash (theme tokens).
  */
 export function LandingFooter() {
   return (
     <footer
       id="site-footer"
-      className="relative z-30 isolate overflow-hidden bg-nocta-paper"
+      className="nocta-footer relative z-30 isolate overflow-hidden bg-nocta-paper"
     >
       <Frame>
         <div
@@ -79,14 +78,14 @@ export function LandingFooter() {
         </div>
       </Frame>
 
-      {/* Most of the (shorter) footer is landscape */}
-      <div className="relative z-10 min-h-44 bg-landing-sky sm:min-h-52 md:min-h-60">
-        <FooterLandscape />
+      {/* Dusk band — dedicated wash tokens (stronger in light); no mid hairline seam */}
+      <div className="nocta-footer-dusk relative z-10 min-h-44 overflow-hidden sm:min-h-52 md:min-h-60">
+        <div aria-hidden className="nocta-footer-dusk-wash pointer-events-none absolute inset-0" />
 
         <Frame>
           <div
             className={[
-              "relative z-10 flex flex-col gap-1.5 pt-1 pb-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:pb-4",
+              "relative z-10 flex flex-col gap-1.5 pt-2 pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:pb-5",
               FRAME_PAD,
             ].join(" ")}
           >
@@ -102,7 +101,7 @@ export function LandingFooter() {
         <a
           href="#top"
           aria-label="Back to top"
-          className="absolute right-4 bottom-3 z-10 flex size-7 items-center justify-center rounded-full bg-nocta-ink text-[10px] font-semibold tracking-tight text-nocta-paper shadow-sm transition-transform duration-150 hover:scale-105 sm:right-6 sm:bottom-3.5"
+          className="absolute right-4 bottom-3 z-10 flex size-7 items-center justify-center rounded-lg bg-nocta-ink text-[10px] font-semibold tracking-tight text-nocta-paper shadow-sm transition-transform duration-150 hover:scale-105 sm:right-6 sm:bottom-3.5"
         >
           N
         </a>

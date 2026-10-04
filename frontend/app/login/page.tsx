@@ -196,7 +196,7 @@ export default function LoginPage() {
                 </p>
                 <Button
                   size="lg"
-                  className="mt-10 h-12 min-w-40 rounded-full px-8 text-sm font-semibold"
+                  className="mt-10 h-12 min-w-40 rounded-lg px-8 text-sm font-semibold"
                   onClick={() => openAuth("signup")}
                 >
                   {loginContent.close.cta}
