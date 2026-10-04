@@ -587,14 +587,14 @@ function ScoringDemoShell() {
   );
 }
 
-/* 04 — AI tabs + proof well; auto-advance + manual tab select (no Replay) */
+/* Decide tabs + proof well; auto-advance + manual tab select (no Replay) */
 const AI_WELL = [
-  "bg-landing-lavender",
+  "bg-landing-mint",
   "bg-landing-mint",
   "bg-landing-sky",
 ] as const;
 const AI_ACCENT = [
-  "border-nocta-glow/30 bg-nocta-glow/10",
+  "border-primary/30 bg-primary/10",
   "border-foreground/10 bg-landing-mint",
   "border-foreground/10 bg-landing-sky",
 ] as const;
@@ -661,7 +661,7 @@ export function AiSubGrid() {
           />
         </div>
 
-        <MacWindow title={c.windowTitle} tone="lavender">
+        <MacWindow title={c.windowTitle} tone="mint">
           <div className={["grid", COL_SPLIT].join(" ")}>
             <div role="tablist" aria-label={c.title} className="bg-nocta-paper">
               {c.cells.map((item, i) => {
@@ -708,7 +708,7 @@ export function AiSubGrid() {
                         {on && running ? (
                           <motion.span
                             key={`tab-progress-${active}`}
-                            className="block h-full rounded-full bg-nocta-glow"
+                            className="block h-full rounded-full bg-primary"
                             initial={{ width: "0%" }}
                             animate={{ width: "100%" }}
                             transition={{
@@ -719,7 +719,7 @@ export function AiSubGrid() {
                         ) : (
                           <span
                             className={[
-                              "block h-full rounded-full bg-nocta-glow transition-[width] duration-150",
+                              "block h-full rounded-full bg-primary transition-[width] duration-150",
                               on ? "w-10" : "w-0",
                             ].join(" ")}
                           />

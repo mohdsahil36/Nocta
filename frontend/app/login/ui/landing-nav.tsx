@@ -80,7 +80,7 @@ export function LandingNav({
             </Button>
             <Button
               size="sm"
-              className="ml-1 h-9 cursor-pointer rounded-full px-4 text-sm font-semibold"
+              className="ml-1 h-9 cursor-pointer rounded-lg px-4 text-sm font-semibold"
               onClick={onOpenAuth}
             >
               {loginContent.nav.cta}

@@ -20,10 +20,11 @@ type HeroProps = {
 export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
   const c = loginContent.hero;
   return (
-    <section id="top" className="relative isolate">
+    <section id="top" className="relative isolate bg-nocta-paper">
+      {/* Same paper + blue linear wash as footer (top → transparent) */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(ellipse_at_top_left,color-mix(in_oklab,var(--landing-sky)_80%,transparent),transparent_55%),radial-gradient(ellipse_at_top_right,color-mix(in_oklab,var(--landing-peach)_70%,transparent),transparent_50%)]"
+        className="nocta-hero-wash pointer-events-none absolute inset-0 -z-10"
       />
       <Frame>
         <motion.div
@@ -63,7 +64,7 @@ export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
             <div className="flex shrink-0 flex-col gap-2.5 sm:flex-row sm:justify-end">
               <Button
                 size="lg"
-                className="h-11 rounded-full px-6 text-sm font-semibold"
+                className="h-11 rounded-lg px-6 text-sm font-semibold"
                 onClick={onOpenAuth}
               >
                 {c.primaryCta}
@@ -71,7 +72,7 @@ export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
               <Button
                 size="lg"
                 variant="secondary"
-                className="h-11 rounded-full px-6 text-sm font-semibold"
+                className="h-11 rounded-lg px-6 text-sm font-semibold"
                 onClick={onHowItWorks}
               >
                 {c.secondaryCta}

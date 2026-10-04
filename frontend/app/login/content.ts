@@ -209,14 +209,14 @@ export const loginContent = {
   ai: {
     index: "07",
     eyebrow: "Decide",
-    title: "AI Action Generator, Time-Fit Adapter & Recommendation Reasoning",
+    title: "Action Generator, Time-Fit Adapter & Recommendation Reasoning",
     body: "The step you see is not from a canned list. It rewrites itself from tonight's score, your recent finishes, rest days and which of your goals needs attention.",
     liveEyebrow: "Tonight writes",
     windowTitle: "Nocta · Decide",
     cells: [
       {
         id: "generator",
-        title: "AI Action Generator",
+        title: "Action Generator",
         body: "Turns whatever is highest tonight into one concrete step — then rewrites it when your week changes.",
         from: "Ship the scoring PR",
         to: "Open the scoring PR for review",
@@ -240,7 +240,7 @@ export const loginContent = {
       },
       {
         id: "time-fit",
-        title: "AI Time-Fit Adapter",
+        title: "Time-Fit Adapter",
         body: "Makes the same step bigger or smaller to fit the time you have.",
         fits: [
           {
@@ -253,7 +253,7 @@ export const loginContent = {
       },
       {
         id: "reasoning",
-        title: "AI Recommendation Reasoning",
+        title: "Recommendation Reasoning",
         body: "A single line explaining the pick, built from the score.",
         quote:
           "Tests landed last night and Friday is still close. 45 minutes is enough to open the PR.",
@@ -407,8 +407,8 @@ export const loginContent = {
         a: "With fixed rules: deadline proximity, neglect, goal weight and momentum. The same inputs always give the same score, and you can see every point.",
       },
       {
-        q: "Does AI decide what matters?",
-        a: "No. Scores come first. AI only writes the step for whatever is highest tonight — and that step changes when your week does.",
+        q: "Does a model decide what matters?",
+        a: "No. Scores come first. The Action Generator only writes the step for whatever is highest tonight — and that step changes when your week does.",
       },
       {
         q: "What does the Time-Fit Adapter do?",
