@@ -1,14 +1,23 @@
 import type { Commit } from "@/app/data/activity";
 
+export type ActivityStatsResponse = {
+  currentStreak: number;
+  longestStreak: number;
+  todayCount: number;
+};
+
 export type ActivityCommitsResponse = {
   message: string;
   data: {
     count: number;
     commits: Commit[];
+    stats: ActivityStatsResponse;
   };
 };
 
-export async function fetchPlatformCommits(): Promise<ActivityCommitsResponse["data"]> {
+export async function fetchPlatformCommits(): Promise<
+  ActivityCommitsResponse["data"]
+> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!baseUrl) {
     throw new Error("NEXT_PUBLIC_API_URL is not configured");

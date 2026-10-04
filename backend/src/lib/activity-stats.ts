@@ -9,7 +9,7 @@ export type ActivityStats = {
 };
 
 /** Same string shape as commit.date in activity.service */
-function formatActivityDate(date: Date): string {
+export function formatActivityDate(date: Date = new Date()): string {
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

@@ -15,9 +15,13 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import type { LucideIcon } from "lucide-react";
 
 import type { Commit } from "../data/activity";
-import { activityStats } from "../data/activity";
 import { fetchPlatformCommits, formatActivityDate } from "@/lib/activity-api";
-import { AnimatedIcon, ICON_TONE_BG, type IconMotionPreset, type IconTone } from "@/components/ui/animated-icon";
+import {
+  AnimatedIcon,
+  ICON_TONE_BG,
+  type IconMotionPreset,
+  type IconTone,
+} from "@/components/ui/animated-icon";
 import { NoctaLoader } from "@/components/ui/nocta-loader";
 import { cn } from "cn";
 
@@ -42,6 +46,7 @@ export default function ActivityPage() {
 
   const commits = data?.commits ?? EMPTY_COMMITS;
   const totalCommits = data?.count ?? 0;
+  const stats = data?.stats;
   const syncing = isFetching && !isLoading;
   const errorMessage =
     error instanceof Error
@@ -49,10 +54,6 @@ export default function ActivityPage() {
       : error
         ? "Could not load commits"
         : null;
-
-  const todayCommits = todayLabel
-    ? commits.filter((c) => c.date === todayLabel).length
-    : 0;
 
   const grouped = useMemo(() => groupCommitsByDate(commits), [commits]);
 
@@ -113,14 +114,18 @@ export default function ActivityPage() {
               motion="pulse"
               tone="warm"
               label="Current streak"
-              value={`${activityStats.currentStreak} days`}
+              value={
+                isLoading || !stats ? "—" : `${stats.currentStreak} days`
+              }
             />
             <MetricRow
               icon={Trophy}
               motion="tilt"
               tone="mint"
               label="Longest streak"
-              value={`${activityStats.longestStreak} days`}
+              value={
+                isLoading || !stats ? "—" : `${stats.longestStreak} days`
+              }
               bordered
             />
             <MetricRow
@@ -128,7 +133,7 @@ export default function ActivityPage() {
               motion="rise"
               tone="glow"
               label="Today"
-              value={isLoading ? "—" : String(todayCommits)}
+              value={isLoading || !stats ? "—" : String(stats.todayCount)}
               hint={todayLabel}
               bordered
             />
