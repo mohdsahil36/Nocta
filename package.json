@@ -1,0 +1,13 @@
+{
+  "name": "nocta",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "typecheck": "npm run typecheck:frontend && npm run typecheck:backend",
+    "typecheck:frontend": "npm run typecheck --prefix frontend",
+    "typecheck:backend": "npm run typecheck --prefix backend"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

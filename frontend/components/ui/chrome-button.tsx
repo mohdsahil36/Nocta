@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, MouseEventHandler, ReactNode } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
@@ -17,14 +17,15 @@ const chromeIconClass =
 const chromeLabelClass =
   "h-10 border-transparent bg-primary text-primary-foreground shadow-none transition-[background-color,color] duration-150 ease-out hover:bg-primary/88 hover:text-primary-foreground";
 
+/** Shared across <button> and <Link> — element-agnostic handlers. */
 type Shared = {
   children: ReactNode;
   className?: string;
   /** Accessible name — required when the visible label is icon-only. */
   "aria-label"?: string;
   title?: string;
-  onMouseEnter?: ComponentProps<"button">["onMouseEnter"];
-  onMouseLeave?: ComponentProps<"button">["onMouseLeave"];
+  onMouseEnter?: MouseEventHandler<HTMLElement>;
+  onMouseLeave?: MouseEventHandler<HTMLElement>;
 };
 
 type AsButton = Shared & {
