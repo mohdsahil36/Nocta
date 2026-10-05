@@ -103,36 +103,18 @@ export function DashboardPanels() {
         </div>
       </div>
 
-      {/* Continue */}
-      <div className="nocta-panel px-5 py-5 sm:px-6 sm:py-6">
-        <p className="text-[11px] font-medium text-muted-foreground">
-          {c.continue.eyebrow}
-        </p>
-        <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 max-w-xl">
-            <h2 className="font-sans text-base font-semibold tracking-tight text-nocta-ink sm:text-lg">
-              {c.continue.emptyTitle}
-            </h2>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              {c.continue.emptyBody}
-            </p>
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              {c.continue.meta}
-            </p>
-          </div>
-          <Link
-            href="/dashboard#goals"
-            className={cn(
-              buttonVariants({ variant: "default", size: "lg" }),
-              "h-9 shrink-0 rounded-md px-4 text-xs shadow-none",
-            )}
-          >
-            {c.actions.addGoals}
-            <span aria-hidden className="ml-1">
-              →
-            </span>
-          </Link>
-        </div>
+      {/* Continue — Blueprint content row: intro · main · desc · meta */}
+      <div className="nocta-panel p-2 sm:p-2.5">
+        <Link
+          href="/dashboard#goals"
+          className="nocta-content-row"
+          aria-label={`${c.continue.emptyTitle}. ${c.actions.addGoals}`}
+        >
+          <p className="nocta-content-intro">{c.continue.eyebrow}</p>
+          <p className="nocta-content-main">{c.continue.emptyTitle}</p>
+          <p className="nocta-content-desc">{c.continue.emptyBody}</p>
+          <p className="nocta-content-meta">{c.continue.meta}</p>
+        </Link>
       </div>
 
       {/* Today */}

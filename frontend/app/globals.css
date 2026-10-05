@@ -469,6 +469,57 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   box-shadow: none;
 }
 
+/* Blueprint content row — muted wash hover; title goes primary */
+.nocta-content-row {
+  display: block;
+  width: 100%;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  transition: background-color 150ms ease;
+}
+.nocta-content-row:hover,
+.nocta-content-row:focus-visible {
+  background-color: var(--muted);
+  outline: none;
+}
+.nocta-content-row .nocta-content-intro {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--muted-foreground);
+}
+.nocta-content-row .nocta-content-main {
+  margin-top: 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--nocta-ink);
+  transition: color 150ms ease;
+}
+@media (min-width: 640px) {
+  .nocta-content-row .nocta-content-main {
+    font-size: 1.25rem;
+  }
+}
+.nocta-content-row:hover .nocta-content-main,
+.nocta-content-row:focus-visible .nocta-content-main {
+  color: var(--primary);
+}
+.nocta-content-row .nocta-content-desc {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--nocta-ink);
+  opacity: 0.78;
+}
+.nocta-content-row .nocta-content-meta {
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  color: var(--muted-foreground);
+}
+
 /* Shell texture — off for utilitarian app; kept as no-op hook */
 .nocta-shell-dotgrid {
   display: none;
