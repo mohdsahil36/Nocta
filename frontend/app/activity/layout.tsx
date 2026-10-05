@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { DashboardShell } from "../dashboard/ui/shell";
 
 export const metadata: Metadata = {
-  title: "Platform activity",
+  title: "Activity",
   description: "Platform commits and coding activity from the Nocta repo.",
 };
 

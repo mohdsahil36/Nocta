@@ -68,7 +68,7 @@ export const loginContent = {
       title: "Recovery night",
       step: "Close the laptop. A short walk, then sleep.",
       reason:
-        "Low energy and little time. Resting tonight doesn't break your streak.",
+        "Low energy and little time. A recovery night doesn't cost you momentum.",
     },
     others: [
       { title: "Evening run", area: "Health", score: 64 },
@@ -91,7 +91,7 @@ export const loginContent = {
       },
       {
         title: "Rest counts",
-        body: "Recovery nights feed the model too. Nocta learns when to push and when to protect the streak.",
+        body: "Recovery nights feed the model too. Nocta learns when to push and when rest should hold your momentum.",
       },
     ],
     lastTouchedLabel: "Last touched",
@@ -113,7 +113,7 @@ export const loginContent = {
         title: "Recovery night",
         detail: "Nothing hard due tomorrow. Rest is the scored choice.",
         idleDays: 0,
-        due: "Protected",
+        due: "Momentum holds",
       },
       {
         id: "people",
@@ -321,11 +321,11 @@ export const loginContent = {
     index: "10",
     eyebrow: "Rest",
     title: "Recovery Night Mode",
-    body: "Rest days are part of how Nocta evolves — not a blank. When time and energy are low, recovery is scored like any other choice, then tomorrow reshapes from a clean slate.",
+    body: "Rest is part of the model, not a gap. When time and energy are low, recovery is scored like any other choice — momentum holds, and tomorrow reshapes without punishment.",
     points: [
       {
-        title: "Protected streak",
-        body: "Recovery nights keep your streak and don't drop your scores.",
+        title: "Momentum holds",
+        body: "A recovery night doesn't cost you momentum and doesn't drop your scores.",
       },
       {
         title: "No catch-up pile",
@@ -336,8 +336,8 @@ export const loginContent = {
       label: "Tonight",
       title: "Recovery night",
       body: "Energy is low and you have 20 minutes. Nothing important is due tomorrow.",
-      streak: "Streak protected",
-      streakDays: 6,
+      momentumLabel: "Momentum holds",
+      momentumLevel: 6,
     },
     scenes: [
       {
@@ -345,8 +345,8 @@ export const loginContent = {
         label: "Tonight",
         title: "Recovery night",
         body: "Energy is low and you have 20 minutes. Nothing important is due tomorrow.",
-        streak: "Streak protected",
-        streakDays: 6,
+        momentumLabel: "Momentum holds",
+        momentumLevel: 6,
         kind: "rest" as const,
       },
       {
@@ -354,8 +354,8 @@ export const loginContent = {
         label: "Next night",
         title: "Open the scoring PR for review",
         body: "After rest, your top goal is still due Friday. Focus returns without a catch-up pile.",
-        streak: "Streak continues",
-        streakDays: 7,
+        momentumLabel: "Momentum rising",
+        momentumLevel: 7,
         kind: "action" as const,
       },
     ],
@@ -428,7 +428,7 @@ export const loginContent = {
       },
       {
         q: "What is a recovery night?",
-        a: "When time and energy are both low, Nocta may suggest resting. Recovery nights keep your streak and don't count against your scores.",
+        a: "When time and energy are both low, Nocta may suggest resting. A recovery night doesn't cost you momentum and doesn't count against your scores — rest is part of the model, not a gap.",
       },
       {
         q: "What's in the weekly reflection?",

@@ -11,6 +11,7 @@ AGENTS.md
 
 # Local design docs — never commit (agents update in-session)
 docs/design/
+frontend/app/login/DESIGN_BACKLOG.md
 
 # Local feature scratchpad — never commit
 docs/todo-features.md

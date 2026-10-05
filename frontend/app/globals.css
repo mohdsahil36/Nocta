@@ -25,7 +25,9 @@ html.theme-transition *::after {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Sans stack — Outfit via Google Fonts (--font-sans-face) */
+  --font-sans: var(--font-sans-active, var(--font-sans-face)), ui-sans-serif,
+    system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --font-heading: var(--font-instrument-serif), ui-serif, Georgia, serif;
   --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
@@ -83,95 +85,96 @@ html.theme-transition *::after {
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  /* Forest green CTA — white label in light mode */
-  --primary: oklch(0.36 0.1 148);
-  --primary-foreground: oklch(0.99 0.002 148);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Outfit from Google Fonts link in layout; active can override later */
+  --font-sans-face: "Outfit";
+  --font-sans-active: var(--font-sans-face);
+  --background: oklch(0.955 0.006 85);
+  --foreground: oklch(0.2 0.02 250);
+  /* Soft off-white cards — not pure white */
+  --card: oklch(0.98 0.004 85);
+  --card-foreground: oklch(0.2 0.02 250);
+  --popover: oklch(0.98 0.004 85);
+  --popover-foreground: oklch(0.2 0.02 250);
+  /* Primary CTA — Blueprint blue */
+  --primary: rgb(0, 109, 221);
+  --primary-foreground: rgb(255, 255, 255);
+  --secondary: oklch(0.94 0.006 85);
+  --secondary-foreground: oklch(0.2 0.02 250);
+  --muted: oklch(0.93 0.008 85);
+  --muted-foreground: oklch(0.45 0.02 250);
+  --accent: oklch(0.93 0.008 85);
+  --accent-foreground: oklch(0.2 0.02 250);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.86 0.01 85);
+  --input: oklch(0.86 0.01 85);
+  --ring: rgb(0, 109, 221);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  /* Nocta colors — light canvas: soft pearl-stone (not warm beige) */
-  /* Accent aligned with forest primary (greenish theme) */
-  --nocta-glow: oklch(0.48 0.1 148);
-  --nocta-paper: oklch(0.99 0.004 240);
-  --nocta-canvas: oklch(0.97 0.006 240);
-  --nocta-ink: oklch(0.17 0.028 250);
+  /* Nocta — warm off-white desk; blue accent */
+  --nocta-glow: rgb(0, 109, 221);
+  --nocta-paper: oklch(0.98 0.004 85);
+  --nocta-canvas: oklch(0.955 0.006 85);
+  --nocta-ink: oklch(0.2 0.02 250);
   --nocta-night: oklch(0.15 0.03 250);
-  /* Icon accents (readable strokes — not wash pastels) */
   --nocta-accent-warm: oklch(0.55 0.1 55);
   --nocta-accent-mint: oklch(0.48 0.08 165);
-  /* Dark glyph on light accent chips (both themes) */
   --nocta-icon-on-chip: oklch(0.22 0.03 250);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.36 0.1 148);
-  --sidebar-primary-foreground: oklch(0.99 0.002 148);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  --sidebar: oklch(0.955 0.006 85);
+  --sidebar-foreground: oklch(0.2 0.02 250);
+  --sidebar-primary: rgb(0, 109, 221);
+  --sidebar-primary-foreground: rgb(255, 255, 255);
+  --sidebar-accent: oklch(0.92 0.008 85);
+  --sidebar-accent-foreground: oklch(0.2 0.02 250);
+  --sidebar-border: oklch(0.86 0.01 85);
   --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  /* Dashboard charcoal dark — login shares these tokens */
-  --background: oklch(0.08 0 0);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0 0);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0 0);
-  --popover-foreground: oklch(0.98 0 0);
-  /* Forest CTA — a touch brighter on charcoal for contrast */
-  --primary: oklch(0.48 0.11 148);
-  --primary-foreground: oklch(0.99 0.002 148);
-  --secondary: oklch(0.22 0 0);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.22 0 0);
-  --muted-foreground: oklch(0.68 0 0);
-  --accent: oklch(0.22 0 0);
-  --accent-foreground: oklch(0.98 0 0);
+  --font-sans-active: var(--font-sans-face);
+  /* Dark desk — black-shade canvas; panels slightly lifted */
+  --background: rgb(14, 14, 14);
+  --foreground: rgb(245, 245, 245);
+  --card: rgb(28, 28, 28);
+  --card-foreground: rgb(245, 245, 245);
+  --popover: rgb(28, 28, 28);
+  --popover-foreground: rgb(245, 245, 245);
+  --primary: rgb(0, 109, 221);
+  --primary-foreground: rgb(255, 255, 255);
+  --secondary: rgb(38, 38, 38);
+  --secondary-foreground: rgb(245, 245, 245);
+  --muted: rgb(38, 38, 38);
+  --muted-foreground: rgb(168, 168, 168);
+  --accent: rgb(38, 38, 38);
+  --accent-foreground: rgb(245, 245, 245);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.55 0 0);
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 12%);
+  --ring: rgb(0, 109, 221);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --nocta-glow: oklch(0.62 0.1 148);
-  --nocta-paper: oklch(0.16 0 0);
-  --nocta-canvas: oklch(0.08 0 0);
-  --nocta-ink: oklch(0.98 0 0);
-  --nocta-night: oklch(0.08 0 0);
+  --nocta-glow: rgb(0, 109, 221);
+  --nocta-paper: rgb(28, 28, 28);
+  --nocta-canvas: rgb(14, 14, 14);
+  --nocta-ink: rgb(245, 245, 245);
+  --nocta-night: rgb(14, 14, 14);
   --nocta-accent-warm: oklch(0.78 0.08 55);
   --nocta-accent-mint: oklch(0.75 0.07 165);
   --nocta-icon-on-chip: oklch(0.2 0.025 250);
-  --sidebar: oklch(0.16 0 0);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.48 0.11 148);
-  --sidebar-primary-foreground: oklch(0.99 0.002 148);
-  --sidebar-accent: oklch(0.22 0 0);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.55 0 0);
+  --sidebar: rgb(14, 14, 14);
+  --sidebar-foreground: rgb(245, 245, 245);
+  --sidebar-primary: rgb(0, 109, 221);
+  --sidebar-primary-foreground: rgb(255, 255, 255);
+  --sidebar-accent: rgb(38, 38, 38);
+  --sidebar-accent-foreground: rgb(245, 245, 245);
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: rgb(0, 109, 221);
 }
 
 @layer base {
@@ -179,11 +182,13 @@ html.theme-transition *::after {
     @apply border-border outline-ring/50;
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-sans-active, var(--font-sans-face)), ui-sans-serif,
+      system-ui, sans-serif;
     scroll-behavior: auto;
   }
   body {
     @apply bg-background text-foreground text-[15px] leading-relaxed tracking-[-0.011em] antialiased;
+    font-family: inherit;
     cursor: default;
   }
   a,
@@ -390,22 +395,21 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   --landing-sand: oklch(0.97 0.014 90);
 }
 .dark .nocta-landing {
-  --nocta-canvas: oklch(0.14 0 0);
-  --landing-sky: oklch(0.2 0.02 240);
-  --landing-mint: oklch(0.2 0.025 165);
-  --landing-peach: oklch(0.21 0.025 55);
-  --landing-lavender: oklch(0.2 0.022 290);
-  --landing-sand: oklch(0.2 0.012 90);
+  --landing-sky: rgb(32, 32, 36);
+  --landing-mint: rgb(30, 34, 32);
+  --landing-peach: rgb(36, 32, 30);
+  --landing-lavender: rgb(34, 32, 38);
+  --landing-sand: rgb(34, 34, 32);
 }
 
 /* Shared blue dusk — paper stays nocta-paper; wash is blue-only linear */
 .nocta-landing {
-  --landing-dusk-blue: oklch(0.92 0.045 155);
+  --landing-dusk-blue: color-mix(in srgb, rgb(0, 109, 221) 18%, white);
 }
 .dark .nocta-landing {
   --landing-dusk-blue: color-mix(
-    in oklab,
-    oklch(0.42 0.08 148) 38%,
+    in srgb,
+    rgb(0, 109, 221) 28%,
     var(--nocta-paper)
   );
 }
@@ -457,247 +461,70 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   background-color: color-mix(in oklab, var(--nocta-paper) 90%, white) !important;
 }
 
-/* App chrome — panels stay opaque; sidebar/navbar frost in light */
+/* App chrome — utilitarian desk. Canvas ≠ panel; borders use --border. */
 .nocta-panel {
-  border-radius: 0.5rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 10%, transparent);
-  background: var(--nocta-paper);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--card);
   box-shadow: none;
 }
-/* Light shell canvas — calm dotted grid under floating chrome (dark: off) */
+
+/* Shell texture — off for utilitarian app; kept as no-op hook */
 .nocta-shell-dotgrid {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-image: radial-gradient(
-    color-mix(in oklab, var(--nocta-ink) 12%, transparent) 0.85px,
-    transparent 1.1px
-  );
-  background-size: 18px 18px;
-  background-position: 0 0;
-  opacity: 1;
-}
-.dark .nocta-shell-dotgrid {
-  opacity: 0;
+  display: none;
 }
 
 .nocta-sidebar {
   overflow: hidden;
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 8%, transparent);
-  background: color-mix(in oklab, var(--nocta-paper) 82%, transparent);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  box-shadow:
-    0 1px 2px color-mix(in oklab, var(--nocta-ink) 4%, transparent),
-    0 8px 24px color-mix(in oklab, var(--nocta-ink) 5%, transparent);
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: var(--sidebar);
+  box-shadow: none;
 }
 .nocta-navbar {
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in oklab, var(--nocta-ink) 8%, transparent);
-  background: color-mix(in oklab, var(--nocta-paper) 82%, transparent);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  box-shadow:
-    0 1px 2px color-mix(in oklab, var(--nocta-ink) 4%, transparent),
-    0 6px 18px color-mix(in oklab, var(--nocta-ink) 4%, transparent);
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--sidebar);
+  box-shadow: none;
   overflow: hidden;
 }
-.dark .nocta-sidebar,
-.dark .nocta-panel {
-  border-color: var(--border);
-  background: var(--card);
-  box-shadow: none;
-}
-.dark .nocta-sidebar {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-.dark .nocta-navbar {
-  border-color: var(--border);
-  background: var(--card);
-  box-shadow: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
 
-/* Navbar day / night — two layers crossfade on .dark (no data-phase remount) */
-.nocta-navbar-sky-day,
-.nocta-navbar-sky-night {
-  position: absolute;
-  inset: 0;
-  transition: opacity 420ms ease;
-}
-.nocta-navbar-sky-day {
-  opacity: 1;
-  background: radial-gradient(
-    ellipse at 85% 0%,
-    color-mix(in oklab, var(--landing-peach) 45%, transparent),
-    transparent 55%
-  );
-}
-.nocta-navbar-sky-night {
-  opacity: 0;
-  background: radial-gradient(
-    ellipse at 80% 15%,
-    color-mix(in oklab, var(--nocta-glow) 14%, transparent),
-    transparent 55%
-  );
-}
-.dark .nocta-navbar-sky-day {
-  opacity: 0;
-}
-.dark .nocta-navbar-sky-night {
-  opacity: 1;
-}
-.nocta-navbar-veil {
-  position: absolute;
-  inset: 0;
-  background: color-mix(in oklab, var(--nocta-paper) 72%, transparent);
-}
-.dark .nocta-navbar-veil {
-  background: color-mix(in oklab, var(--card) 55%, transparent);
-}
-.nocta-navbar-orb {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(32px);
-  opacity: 0.55;
-  will-change: transform;
-}
-.nocta-navbar-sky-day .nocta-navbar-orb-primary {
-  top: -45%;
-  right: 6%;
-  width: 8rem;
-  height: 8rem;
-  background: color-mix(in oklab, var(--landing-peach) 80%, transparent);
-  animation: nocta-navbar-drift 16s ease-in-out infinite;
-}
-.nocta-navbar-sky-day .nocta-navbar-orb-secondary {
-  bottom: -55%;
-  left: 12%;
-  width: 10rem;
-  height: 10rem;
-  background: color-mix(in oklab, var(--landing-sky) 85%, transparent);
-  animation: nocta-navbar-drift 20s ease-in-out infinite reverse;
-}
-.nocta-navbar-sky-night .nocta-navbar-orb-primary {
-  top: -40%;
-  right: 10%;
-  width: 7rem;
-  height: 7rem;
-  background: color-mix(in oklab, var(--nocta-glow) 35%, transparent);
-  animation: nocta-navbar-drift 18s ease-in-out infinite;
-}
-.nocta-navbar-sky-night .nocta-navbar-orb-secondary {
-  bottom: -50%;
-  left: 20%;
-  width: 9rem;
-  height: 9rem;
-  background: color-mix(in oklab, oklch(0.4 0.05 260) 40%, transparent);
-  animation: nocta-navbar-drift 22s ease-in-out infinite reverse;
-}
-.nocta-navbar-stars {
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 18% 32%, white, transparent),
-    radial-gradient(1px 1px at 42% 18%, white, transparent),
-    radial-gradient(1.5px 1.5px at 68% 28%, white, transparent),
-    radial-gradient(1px 1px at 82% 55%, white, transparent),
-    radial-gradient(1px 1px at 55% 62%, white, transparent);
-  opacity: 0.45;
-  animation: nocta-navbar-twinkle 6s ease-in-out infinite;
-}
-@keyframes nocta-navbar-drift {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(-5%, 6%);
-  }
-}
-@keyframes nocta-navbar-twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.55;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .nocta-navbar-orb,
-  .nocta-navbar-stars {
-    animation: none !important;
-  }
-  .nocta-navbar-sky-day,
-  .nocta-navbar-sky-night {
-    transition: none;
-  }
-  .nocta-navbar-stars {
-    opacity: 0.4;
-  }
-}
-
-/* Nav pills — primary blue in light and dark (same as labeled chrome buttons) */
+/* Nav pills — Blueprint soft wash active */
 .nocta-nav-pill {
   position: relative;
   color: var(--muted-foreground);
   transition:
     background-color 150ms ease,
-    color 150ms ease,
-    box-shadow 150ms ease;
+    color 150ms ease;
 }
 .nocta-nav-pill .nocta-nav-icon {
-  transition:
-    background-color 150ms ease,
-    color 150ms ease,
-    box-shadow 150ms ease,
-    transform 150ms ease;
+  transition: color 150ms ease;
 }
 .nocta-nav-pill:hover {
-  background-color: color-mix(in oklab, var(--primary) 10%, transparent);
+  background-color: color-mix(in oklab, var(--nocta-ink) 5%, transparent);
   color: var(--nocta-ink);
-  box-shadow: none;
 }
-.nocta-nav-pill:hover .nocta-nav-icon {
-  transform: translateY(-0.5px);
-}
-/* Active route — solid primary + white (both themes) */
 .nocta-nav-pill[data-active="true"],
 .nocta-nav-pill[data-active="true"]:hover {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: none;
+  background-color: var(--muted);
+  color: var(--nocta-ink);
 }
 
-/*
- * Collapsed rail: clip shows only the icon column. Put active/hover on the
- * icon chip — not a cut-off row pill.
- */
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill,
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover,
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"],
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"]:hover {
-  background-color: transparent;
-  box-shadow: none;
   color: var(--muted-foreground);
 }
-.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover .nocta-nav-icon {
-  background-color: color-mix(in oklab, var(--primary) 12%, transparent);
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover {
+  background-color: var(--muted);
   color: var(--nocta-ink);
-  box-shadow: none;
-  transform: none;
 }
-.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"] .nocta-nav-icon,
-.nocta-sidebar[data-collapsed="true"]
-  .nocta-nav-pill[data-active="true"]:hover
-  .nocta-nav-icon {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: none;
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"],
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"]:hover {
+  background-color: var(--muted);
+  color: var(--nocta-ink);
 }
 

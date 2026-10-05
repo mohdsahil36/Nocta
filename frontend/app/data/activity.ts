@@ -9,7 +9,7 @@ export type Commit = {
   isMerge: boolean;
 };
 
-/** Placeholder until streak logic is computed from commit history. */
+/** Placeholder until dashboard wires to API streak stats. */
 export const activityStats = {
   currentStreak: 0,
   longestStreak: 0,

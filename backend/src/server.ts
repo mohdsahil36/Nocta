@@ -5,13 +5,7 @@ import routes from "./routes/index.js";
 import cors from "cors";
 
 const app = express();
-
-/**
- * Browser origins allowed to call this API.
- * Prefer CORS_ORIGINS (comma-separated); else CLIENT_URL; else local Next.
- * Example on Render: CORS_ORIGINS=https://nocta-two-theta.vercel.app
- * or CLIENT_URL=https://nocta-two-theta.vercel.app
- */
+app.use(express.json());
 const allowedOrigins = new Set(
   (
     process.env.CORS_ORIGINS ??

@@ -1,15 +1,20 @@
 export const dashboardContent = {
   brand: "Nocta",
+  navbar: {
+    dashboard: "Dashboard",
+    activity: "Platform Activity",
+    searchPlaceholder: "Search",
+    searchHint: "⌘K",
+  },
   sidebar: {
-    eyebrow: "Nightly focus",
-    navLabel: "Navigate",
+    planLabel: "Plan",
     workspaceLabel: "Workspace",
     profileLabel: "Signed in",
     tagline: "One action",
     taglineSupport: "Close the night with clarity.",
   },
   nav: {
-    tonight: "Tonight",
+    dashboard: "Dashboard",
     goals: "Goals",
     reflect: "Reflect",
     activity: "Platform activity",
@@ -19,38 +24,48 @@ export const dashboardContent = {
     afternoon: "Good afternoon",
     evening: "Good evening",
     night: "Still up?",
-    /** Toast / legacy two-part welcome. Navbar uses navbarGreeting(). */
+    /** Toast / legacy two-part welcome. Home card uses navbarGreeting(). */
     welcome: (name: string) => `Welcome back, ${name}`,
     fallbackName: "there",
+    emptySupport: "Add a goal when you’re ready. Rest is part of the model.",
+    supportWithMomentum:
+      "Momentum holds when you rest. One clear step when you don’t.",
   },
   actions: {
-    platformCommits: "Platform activity",
+    platformCommits: "Activity",
     backToDashboard: "Dashboard",
     logout: "Log out",
     openSidebar: "Open sidebar",
     closeSidebar: "Close sidebar",
+    pinSidebar: "Keep sidebar open",
     themeLight: "Switch to light mode",
     themeDark: "Switch to dark mode",
     themeLightShort: "Light mode",
     themeDarkShort: "Dark mode",
+    browseActivity: "Activity",
+    addGoals: "Add goals",
+    continueTonight: "Continue",
   },
-  tonight: {
-    windowTitle: "Nocta · Tonight",
-    eyebrow: "Tonight",
-    title: "One next step",
-    body: "Your scored action for the night will show up here.",
-    emptyCta: "Add goals to begin",
+  stats: {
+    momentum: "Momentum",
+    goals: "Goals",
+    nights: "Nights logged",
+    recovery: "Recovery",
   },
-  pulse: {
-    windowTitle: "Nocta · Week",
-    eyebrow: "Week",
-    title: "No pulse yet",
-    body: "Streaks appear once you start logging nights.",
+  continue: {
+    eyebrow: "Continue where you left off",
+    emptyTitle: "Nothing queued for tonight",
+    emptyBody:
+      "When goals and a check-in are in place, your one next step shows up here.",
+    meta: "Tonight · scored pick",
   },
-  tip: {
-    windowTitle: "Nocta · Note",
-    eyebrow: "Note",
-    title: "Rest counts",
-    body: "A recovery night is still a valid priority.",
+  today: {
+    title: "Today",
+    plannerLabel: "Check-in",
+    plannerEmpty: "No check-in yet tonight.",
+    planLabel: "Week",
+    planEmptyTitle: "No pulse yet",
+    planEmptyBody: "Momentum and nights appear once you start logging.",
+    tip: "A recovery night doesn’t cost you momentum.",
   },
 };

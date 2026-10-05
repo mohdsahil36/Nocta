@@ -175,7 +175,7 @@ export function OneActionVisual({ className, wide }: VisualProps) {
                 "flex items-center gap-3 rounded-2xl border px-3 py-2.5 sm:px-3.5",
                 active
                   ? "border-nocta-glow/30 bg-nocta-glow/12 shadow-[0_8px_24px_color-mix(in_oklab,var(--nocta-glow)_12%,transparent)]"
-                  : "border-nocta-ink/6 bg-nocta-ink/[0.03] dark:border-white/6 dark:bg-white/[0.03]",
+                  : "border-nocta-ink/6 bg-nocta-ink/3 dark:border-white/6 dark:bg-white/3",
               )}
             >
               <span
@@ -246,7 +246,7 @@ export function ReflectionVisual({ className }: VisualProps) {
         {cells.map((level, i) => (
           <motion.div
             key={i}
-            className={cn("size-2.5 rounded-[2px] sm:size-3", tone[level])}
+            className={cn("size-2.5 rounded-xs sm:size-3", tone[level])}
             animate={reduce ? undefined : { opacity: [0.55, 1, 0.55] }}
             transition={{
               duration: 2.4 + (i % 5) * 0.1,
@@ -264,8 +264,8 @@ export function RecoveryVisual({ className }: VisualProps) {
   const reduce = useReducedMotion();
   const states = [
     { label: "Idle", sub: "Ready when you are", wide: false },
-    { label: "Protecting…", sub: "Recovery night locked", wide: true },
-    { label: "Rest held", sub: "Streak safe · resume tomorrow", wide: true },
+    { label: "Holding…", sub: "Recovery night locked", wide: true },
+    { label: "Rest held", sub: "Momentum holds · resume tomorrow", wide: true },
   ] as const;
   const [i, setI] = useState(0);
 
@@ -363,7 +363,7 @@ export function NeglectedVisual({ className }: VisualProps) {
                 "flex items-center gap-2 rounded-2xl px-2.5 py-1.5 ring-1",
                 area.hot
                   ? "bg-nocta-glow/10 ring-nocta-glow/25"
-                  : "bg-nocta-ink/[0.04] ring-nocta-ink/8 dark:bg-white/[0.03] dark:ring-white/8",
+                  : "bg-nocta-ink/4 ring-nocta-ink/8 dark:bg-white/3 dark:ring-white/8",
               )}
               animate={
                 reduce
@@ -396,7 +396,9 @@ export function NeglectedVisual({ className }: VisualProps) {
                 <motion.div
                   className={cn(
                     "h-full rounded-full",
-                    area.hot ? "bg-nocta-glow" : "bg-nocta-ink/35 dark:bg-nocta-ink/40",
+                    area.hot
+                      ? "bg-nocta-glow"
+                      : "bg-nocta-ink/35 dark:bg-nocta-ink/40",
                   )}
                   initial={false}
                   animate={{ width: `${Math.min(100, area.days * 9)}%` }}
@@ -411,13 +413,7 @@ export function NeglectedVisual({ className }: VisualProps) {
   );
 }
 
-export function BentoVisual({
-  id,
-  wide,
-}: {
-  id: string;
-  wide?: boolean;
-}) {
+export function BentoVisual({ id, wide }: { id: string; wide?: boolean }) {
   switch (id) {
     case "scoring":
       return <ScoringVisual wide={wide} />;
