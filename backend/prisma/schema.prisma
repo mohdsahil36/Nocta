@@ -107,6 +107,27 @@ model User {
   createDate   DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   repositories Repository[]
+  goals        Goal[]
+}
+
+enum GoalStatus{
+  active
+  archived
+}
+
+model Goal {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id])
+
+  name          String
+  weight        Int
+  deadline      DateTime?
+  nextAction    String
+  status        GoalStatus @default(active)
+  lastTouchedAt DateTime   @default(now())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Repository {

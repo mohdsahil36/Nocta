@@ -16,12 +16,7 @@ import type { LucideIcon } from "lucide-react";
 
 import type { Commit } from "../data/activity";
 import { fetchPlatformCommits, formatActivityDate } from "@/lib/activity-api";
-import {
-  AnimatedIcon,
-  ICON_TONE_BG,
-  type IconMotionPreset,
-  type IconTone,
-} from "@/components/ui/animated-icon";
+import { buttonVariants } from "@/components/ui/button";
 import { NoctaLoader } from "@/components/ui/nocta-loader";
 import { cn } from "cn";
 
@@ -56,63 +51,56 @@ export default function ActivityPage() {
         : null;
 
   const grouped = useMemo(() => groupCommitsByDate(commits), [commits]);
-
   const rows = useMemo(() => FlattenActivityGroupData(grouped), [grouped]);
-
   const parentRef = useRef<HTMLDivElement>(null);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: (index) => (rows[index]?.type === "day" ? 52 : 88),
+    estimateSize: (index) => (rows[index]?.type === "day" ? 44 : 76),
     overscan: 8,
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 py-2 sm:gap-8 sm:px-2 sm:py-4">
-      <header className="nocta-panel relative flex flex-wrap items-end justify-between gap-4 overflow-hidden p-5 sm:p-7">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-landing-peach/25 dark:bg-transparent"
-        />
-        <div className="relative">
+    <section className="flex w-full flex-col gap-3">
+      <div className="nocta-panel flex flex-wrap items-start justify-between gap-3 px-5 py-4 sm:px-6">
+        <div className="min-w-0">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-[10px] font-medium tracking-[0.08em] text-muted-foreground uppercase transition-colors hover:text-nocta-ink"
+            className="inline-flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-nocta-ink"
           >
-            <ArrowLeft className="size-3.5" aria-hidden />
+            <ArrowLeft className="size-3" aria-hidden />
             Dashboard
           </Link>
-          <h1 className="mt-3 font-sans text-sm font-semibold tracking-[-0.02em] text-nocta-ink">
-            Platform activity
+          <h1 className="mt-2 font-sans text-lg font-semibold tracking-tight text-nocta-ink sm:text-xl">
+            Activity
           </h1>
-          <p className="mt-1.5 max-w-md text-xs leading-relaxed text-muted-foreground">
-            Commits landing in the Nocta repo — merges and pushes from the team.
+          <p className="mt-1 max-w-md text-sm text-muted-foreground">
+            Commits in the Nocta repo — merges and pushes from the team.
           </p>
         </div>
         <button
           type="button"
           onClick={() => void refetch()}
           disabled={isFetching}
-          className="relative inline-flex h-9 cursor-pointer items-center rounded-md border border-foreground/10 bg-nocta-paper px-4 text-xs font-semibold text-nocta-ink transition-colors hover:bg-muted/40 disabled:cursor-wait disabled:opacity-50"
+          className={cn(
+            buttonVariants({ variant: "outline", size: "sm" }),
+            "h-8 shrink-0 rounded-md border-border/80 text-xs shadow-none disabled:opacity-50",
+          )}
         >
           {syncing ? "Syncing…" : "Sync"}
         </button>
-      </header>
+      </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start lg:gap-6">
-        <div className="flex flex-col gap-3">
-          <div className="flex h-8 items-end">
-            <h2 className="text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-              Overview
-            </h2>
-          </div>
-          <aside className="nocta-panel overflow-hidden lg:sticky lg:top-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
+        <div className="flex flex-col gap-2">
+          <h2 className="px-0.5 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            Overview
+          </h2>
+          <aside className="nocta-panel overflow-hidden lg:sticky lg:top-2">
             <MetricRow
               icon={Flame}
-              motion="pulse"
-              tone="warm"
               label="Current streak"
               value={
                 isLoading || !stats ? "—" : `${stats.currentStreak} days`
@@ -120,8 +108,6 @@ export default function ActivityPage() {
             />
             <MetricRow
               icon={Trophy}
-              motion="tilt"
-              tone="mint"
               label="Longest streak"
               value={
                 isLoading || !stats ? "—" : `${stats.longestStreak} days`
@@ -130,43 +116,41 @@ export default function ActivityPage() {
             />
             <MetricRow
               icon={GitCommit}
-              motion="rise"
-              tone="glow"
               label="Today"
               value={isLoading || !stats ? "—" : String(stats.todayCount)}
-              hint={todayLabel}
+              hint={todayLabel || undefined}
               bordered
             />
           </aside>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-3">
-          <div className="flex h-8 items-end justify-between gap-3">
-            <h2 className="text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <div className="flex min-w-0 flex-col gap-2">
+          <div className="flex items-end justify-between gap-3 px-0.5">
+            <h2 className="text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Feed
             </h2>
-            <span className="text-xs tabular-nums text-muted-foreground">
+            <span className="text-[11px] tabular-nums text-muted-foreground">
               {isLoading ? "…" : `${totalCommits} total`}
             </span>
           </div>
 
           {isLoading ? (
-            <div className="nocta-panel flex min-h-56 items-center justify-center px-4 py-12">
+            <div className="nocta-panel flex min-h-48 items-center justify-center px-4 py-10">
               <NoctaLoader size="sm" label="Loading activity…" />
             </div>
           ) : error ? (
-            <div className="nocta-panel px-4 py-12 text-center">
-              <p className="text-xs text-muted-foreground">{errorMessage}</p>
+            <div className="nocta-panel px-4 py-10 text-center">
+              <p className="text-sm text-muted-foreground">{errorMessage}</p>
               <button
                 type="button"
                 onClick={() => void refetch()}
-                className="mt-3 cursor-pointer text-xs font-medium text-nocta-glow underline-offset-4 hover:underline"
+                className="mt-2 cursor-pointer text-xs font-medium text-nocta-ink underline-offset-4 hover:underline"
               >
                 Try again
               </button>
             </div>
           ) : commits.length === 0 ? (
-            <p className="nocta-panel px-4 py-12 text-center text-xs text-muted-foreground">
+            <p className="nocta-panel px-4 py-10 text-center text-sm text-muted-foreground">
               No platform activity yet.
             </p>
           ) : (
@@ -189,11 +173,11 @@ export default function ActivityPage() {
                       style={{ transform: `translateY(${vItem.start}px)` }}
                     >
                       {row.type === "day" ? (
-                        <header className="flex items-center justify-between gap-3 border-b border-foreground/10 py-3">
-                          <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                        <header className="flex items-center justify-between gap-3 border-b border-border py-2.5">
+                          <p className="text-[11px] font-medium text-muted-foreground">
                             {row.date === todayLabel ? "Today" : row.date}
                           </p>
-                          <p className="text-xs tabular-nums text-muted-foreground">
+                          <p className="text-[11px] tabular-nums text-muted-foreground">
                             {row.count} {row.count === 1 ? "event" : "events"}
                           </p>
                         </header>
@@ -210,7 +194,7 @@ export default function ActivityPage() {
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -241,17 +225,13 @@ function FlattenActivityGroupData(
 }
 
 function MetricRow({
-  icon,
-  motion: preset,
-  tone,
+  icon: Icon,
   label,
   value,
   hint,
   bordered,
 }: {
   icon: LucideIcon;
-  motion: IconMotionPreset;
-  tone: IconTone;
   label: string;
   value: string;
   hint?: string;
@@ -260,25 +240,13 @@ function MetricRow({
   return (
     <div
       className={cn(
-        "flex items-center gap-3 px-4 py-4",
-        bordered && "border-t border-foreground/10",
+        "flex items-center gap-2.5 px-3.5 py-3",
+        bordered && "border-t border-border",
       )}
     >
-      <div
-        className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-md",
-          ICON_TONE_BG[tone],
-        )}
-      >
-        <AnimatedIcon
-          icon={icon}
-          className="size-4"
-          preset={preset}
-          tone={tone}
-        />
-      </div>
+      <Icon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] text-muted-foreground">{label}</p>
+        <p className="text-[11px] text-muted-foreground">{label}</p>
         <p className="mt-0.5 text-sm font-semibold tracking-tight text-nocta-ink tabular-nums">
           {value}
         </p>
@@ -299,20 +267,11 @@ function CommitItem({ commit }: { commit: Commit }) {
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "group flex items-start gap-3 rounded-xl border border-foreground/8 bg-muted/25 px-3.5 py-3 transition-colors duration-150",
-        "hover:border-foreground/15 hover:bg-muted/45",
-        isMerge &&
-          "border-nocta-glow/20 bg-nocta-glow/5 hover:bg-nocta-glow/10",
+        "group flex items-start gap-2.5 rounded-md px-2.5 py-2.5 transition-colors duration-150",
+        "hover:bg-muted/50",
       )}
     >
-      <span
-        className={cn(
-          "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg",
-          isMerge
-            ? "bg-nocta-glow/15 text-nocta-glow"
-            : "bg-background text-muted-foreground dark:bg-nocta-paper/10",
-        )}
-      >
+      <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground">
         {isMerge ? (
           <GitMerge className="size-3.5" aria-hidden />
         ) : (
@@ -322,30 +281,26 @@ function CommitItem({ commit }: { commit: Commit }) {
 
       <span className="min-w-0 flex-1">
         <span className="flex flex-wrap items-center gap-2">
-          <span className="truncate font-sans text-sm font-medium text-nocta-ink">
+          <span className="truncate text-sm font-medium text-nocta-ink">
             {commit.message}
           </span>
           {isMerge ? (
-            <span className="shrink-0 rounded-md bg-nocta-glow/15 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-nocta-glow uppercase">
+            <span className="shrink-0 text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               merge
             </span>
           ) : null}
         </span>
-        <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-          <code className="rounded-md bg-background/80 px-1.5 py-0.5 font-mono text-[10px] tabular-nums dark:bg-background/40">
-            {commit.sha}
-          </code>
+        <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
+          <code className="font-mono text-[10px] tabular-nums">{commit.sha}</code>
           <span>{commit.time}</span>
           {commit.repository ? (
-            <span className="truncate text-muted-foreground/80">
-              {commit.repository}
-            </span>
+            <span className="truncate">{commit.repository}</span>
           ) : null}
         </span>
       </span>
 
-      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors group-hover:bg-background/60 group-hover:text-nocta-ink">
-        <ArrowUpRight className="size-4" aria-hidden />
+      <span className="inline-flex size-7 shrink-0 items-center justify-center text-muted-foreground group-hover:text-nocta-ink">
+        <ArrowUpRight className="size-3.5" aria-hidden />
         <span className="sr-only">View on GitHub</span>
       </span>
     </a>

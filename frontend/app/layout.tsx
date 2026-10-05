@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import { Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { ThemeSync } from "@/app/store/themeStore";
 import "./globals.css";
 import { Providers } from "./providers";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -38,9 +33,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
         {/* Native script — next/script in <head> trips a client console error in App Router */}
         <script
           id="nocta-theme-boot"
@@ -49,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body
         suppressHydrationWarning
-        className="flex min-h-full flex-col bg-nocta-paper font-sans text-foreground"
+        className="flex min-h-full flex-col bg-nocta-canvas text-foreground"
       >
         <ThemeSync />
         <Providers>{children}</Providers>

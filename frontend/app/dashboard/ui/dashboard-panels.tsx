@@ -1,57 +1,186 @@
-import { MacWindow } from "@/components/ui/mac-window";
-import { dashboardContent } from "../content";
+"use client";
 
-/**
- * Dashboard home — minimal Mac surfaces, quiet copy.
- * Type: body 10–12px, titles 14px.
- */
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  ChevronDown,
+  CircleCheck,
+  MoonStar,
+  Target,
+  TrendingUp,
+} from "lucide-react";
+
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "cn";
+import { dashboardContent } from "../content";
+import { getDisplayName, navbarGreeting } from "../functions/dashboard";
+
+function formatHomeDate(d = new Date()) {
+  return d.toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
+type Stat = {
+  icon: typeof TrendingUp;
+  value: string;
+  label: string;
+};
+
+/** Dashboard home — Blueprint density, honest empty states. */
 export function DashboardPanels() {
-  const { tonight, pulse, tip } = dashboardContent;
+  const c = dashboardContent;
+  const [greeting, setGreeting] = useState(() =>
+    navbarGreeting(12, c.greeting.fallbackName),
+  );
+  const [todayOpen, setTodayOpen] = useState(true);
+  const [dateLabel] = useState(() => formatHomeDate());
+
+  useEffect(() => {
+    let cancelled = false;
+    void getDisplayName().then((name) => {
+      if (!cancelled) setGreeting(navbarGreeting(new Date().getHours(), name));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const stats: Stat[] = [
+    { icon: TrendingUp, value: "—", label: c.stats.momentum },
+    { icon: Target, value: "0", label: c.stats.goals },
+    { icon: CircleCheck, value: "0", label: c.stats.nights },
+    { icon: MoonStar, value: "0", label: c.stats.recovery },
+  ];
 
   return (
-    <section className="grid grid-cols-1 gap-3 lg:grid-cols-5 lg:gap-3">
-      <MacWindow
-        title={tonight.windowTitle}
-        tone="paper"
-        elevation="flat"
-        className="lg:col-span-3"
-      >
-        <div className="max-w-lg p-5 sm:p-6">
-          <p className="text-[10px] text-muted-foreground">{tonight.eyebrow}</p>
-          <h2 className="mt-2 font-sans text-sm font-semibold tracking-[-0.02em] text-nocta-ink">
-            {tonight.title}
-          </h2>
-          <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-            {tonight.body}
-          </p>
-          <p className="mt-4 text-xs text-muted-foreground">{tonight.emptyCta}</p>
+    <section className="flex w-full flex-col gap-3">
+      {/* Greeting + headline numbers */}
+      <div className="nocta-panel overflow-hidden">
+        <div className="flex flex-wrap items-start justify-between gap-3 px-5 pt-5 sm:px-6 sm:pt-6">
+          <div className="min-w-0">
+            <p className="text-[11px] text-muted-foreground">{dateLabel}</p>
+            <p className="mt-1.5 text-2xl font-semibold tracking-tight text-nocta-ink sm:text-3xl">
+              {greeting}
+            </p>
+            <p className="mt-1.5 max-w-lg text-sm text-muted-foreground">
+              {c.greeting.emptySupport}
+            </p>
+          </div>
+          <Link
+            href="/activity"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "h-8 shrink-0 rounded-md border-border/80 text-xs shadow-none",
+            )}
+          >
+            {c.actions.browseActivity}
+          </Link>
         </div>
-      </MacWindow>
 
-      <div className="flex flex-col gap-3 lg:col-span-2">
-        <MacWindow title={pulse.windowTitle} tone="paper" elevation="flat">
-          <div className="p-5 sm:p-6">
-            <p className="text-[10px] text-muted-foreground">{pulse.eyebrow}</p>
-            <h3 className="mt-2 font-sans text-sm font-semibold tracking-[-0.02em] text-nocta-ink">
-              {pulse.title}
-            </h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              {pulse.body}
+        <div className="mt-6 grid grid-cols-2 gap-px border-t border-border bg-border sm:grid-cols-4">
+          {stats.map(({ icon: Icon, value, label }) => (
+            <div
+              key={label}
+              className="flex items-center gap-3 bg-card px-4 py-4 sm:px-5"
+            >
+              <Icon
+                className="size-4 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
+              <div className="min-w-0">
+                <p className="text-lg font-semibold tabular-nums tracking-tight text-nocta-ink">
+                  {value}
+                </p>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  {label}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Continue */}
+      <div className="nocta-panel px-5 py-5 sm:px-6 sm:py-6">
+        <p className="text-[11px] font-medium text-muted-foreground">
+          {c.continue.eyebrow}
+        </p>
+        <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 max-w-xl">
+            <h2 className="font-sans text-base font-semibold tracking-tight text-nocta-ink sm:text-lg">
+              {c.continue.emptyTitle}
+            </h2>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              {c.continue.emptyBody}
+            </p>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              {c.continue.meta}
             </p>
           </div>
-        </MacWindow>
+          <Link
+            href="/dashboard#goals"
+            className={cn(
+              buttonVariants({ variant: "default", size: "lg" }),
+              "h-9 shrink-0 rounded-md px-4 text-xs shadow-none",
+            )}
+          >
+            {c.actions.addGoals}
+            <span aria-hidden className="ml-1">
+              →
+            </span>
+          </Link>
+        </div>
+      </div>
 
-        <MacWindow title={tip.windowTitle} tone="paper" elevation="flat">
-          <div className="p-5 sm:p-6">
-            <p className="text-[10px] text-muted-foreground">{tip.eyebrow}</p>
-            <h3 className="mt-2 font-sans text-sm font-semibold tracking-[-0.02em] text-nocta-ink">
-              {tip.title}
-            </h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              {tip.body}
-            </p>
+      {/* Today */}
+      <div className="nocta-panel overflow-hidden">
+        <button
+          type="button"
+          className="flex w-full items-center gap-2 px-5 py-3.5 text-left sm:px-6"
+          aria-expanded={todayOpen}
+          onClick={() => setTodayOpen((o) => !o)}
+        >
+          <ChevronDown
+            className={cn(
+              "size-4 text-muted-foreground transition-transform duration-150",
+              !todayOpen && "-rotate-90",
+            )}
+            aria-hidden
+          />
+          <span className="text-sm font-semibold tracking-tight text-nocta-ink">
+            {c.today.title}
+          </span>
+        </button>
+
+        {todayOpen ? (
+          <div className="grid gap-px border-t border-border bg-border sm:grid-cols-2">
+            <div className="bg-card px-5 py-5 sm:px-6">
+              <p className="text-[11px] font-medium text-muted-foreground">
+                {c.today.plannerLabel}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {c.today.plannerEmpty}
+              </p>
+            </div>
+            <div className="bg-card px-5 py-5 sm:px-6">
+              <p className="text-[11px] font-medium text-muted-foreground">
+                {c.today.planLabel}
+              </p>
+              <p className="mt-2 text-sm font-medium text-nocta-ink">
+                {c.today.planEmptyTitle}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {c.today.planEmptyBody}
+              </p>
+              <p className="mt-4 text-[11px] text-muted-foreground">
+                {c.today.tip}
+              </p>
+            </div>
           </div>
-        </MacWindow>
+        ) : null}
       </div>
     </section>
   );

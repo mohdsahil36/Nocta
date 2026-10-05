@@ -4,7 +4,7 @@
 const PRODUCT_PREVIEW = {
   live: "Live preview",
   header: "Quiet steps.",
-  streak: "12 day streak",
+  momentum: "Momentum 12",
   commits: "48",
   quiet: "6",
   repos: "3",
@@ -161,7 +161,7 @@ export function RhythmProductPanel() {
             {product.header}
           </p>
           <span className="border border-white/25 bg-black/30 px-2 py-1 font-mono text-[10px] tracking-widest text-white/80 uppercase shadow-[2px_2px_0_rgba(255,255,255,0.08)]">
-            {product.streak}
+            {product.momentum}
           </span>
         </div>
 

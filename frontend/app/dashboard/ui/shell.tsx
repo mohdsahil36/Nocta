@@ -13,8 +13,7 @@ type DashboardShellProps = {
 };
 
 /**
- * App shell — light canvas with a calm dotted grid (panels float above).
- * Pin / hover sidebar state unchanged.
+ * App shell — edge-flush chrome (Blueprint desk). Pin / hover unchanged.
  */
 export function DashboardShell({ children }: DashboardShellProps) {
   const reduceMotion = useReducedMotion();
@@ -28,18 +27,15 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   return (
     <motion.div
-      className="relative flex min-h-svh w-full gap-3 bg-nocta-canvas p-3 text-nocta-ink transition-[background-color,color] duration-300 ease-out sm:gap-3.5 sm:p-3.5"
-      initial={playEnter ? { opacity: 0, y: 8 } : false}
-      animate={{ opacity: 1, y: 0 }}
+      className="relative flex min-h-svh w-full bg-nocta-canvas text-nocta-ink"
+      initial={playEnter ? { opacity: 0 } : false}
+      animate={{ opacity: 1 }}
       transition={{
-        duration: 0.35,
+        duration: 0.25,
         ease: authEaseOut,
-        delay: playEnter ? 0.04 : 0,
+        delay: playEnter ? 0.02 : 0,
       }}
     >
-      {/* Light-mode canvas texture — hidden in dark via CSS */}
-      <div aria-hidden className="nocta-shell-dotgrid" />
-
       <DashboardSidebar
         pinned={pinned}
         expanded={expanded}
@@ -64,7 +60,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         }}
       />
 
-      <div className="relative z-10 flex min-w-0 flex-1 flex-col gap-3 sm:gap-3.5">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         <DashboardNavbar
           sidebarPinned={pinned}
           onOpenSidebar={() => {
@@ -73,7 +69,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
             setHoverExpand(false);
           }}
         />
-        <main className="flex-1 px-0.5 pb-1 sm:px-1">{children}</main>
+        <main className="flex-1 overflow-auto px-3 py-3 sm:px-4 sm:py-4">
+          {children}
+        </main>
       </div>
     </motion.div>
   );

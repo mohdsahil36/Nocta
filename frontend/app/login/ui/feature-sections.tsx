@@ -401,17 +401,18 @@ function ScoringDemoShell() {
     0,
   );
   const perfect = total >= 100;
+  const celebrate = perfect && inView;
 
-  // Brief overlay toast — does not resize the panel; auto-dismisses.
+  // Brief overlay toast — open/dismiss only in timers (no sync setState in effect).
   useEffect(() => {
-    if (!perfect || !inView) {
-      setToastOpen(false);
-      return;
-    }
-    setToastOpen(true);
-    const id = window.setTimeout(() => setToastOpen(false), 2400);
-    return () => window.clearTimeout(id);
-  }, [perfect, inView]);
+    if (!celebrate) return;
+    const showId = window.setTimeout(() => setToastOpen(true), 0);
+    const hideId = window.setTimeout(() => setToastOpen(false), 2400);
+    return () => {
+      window.clearTimeout(showId);
+      window.clearTimeout(hideId);
+    };
+  }, [celebrate]);
 
   const pressFactor =
     manual == null &&
@@ -444,7 +445,7 @@ function ScoringDemoShell() {
       ].join(" ")}
     >
       <PanelToast
-        open={toastOpen}
+        open={celebrate && toastOpen}
         title={c.celebrate}
         description={c.celebrateBody}
         type="success"
@@ -1003,17 +1004,18 @@ export function LogParserSection() {
     };
   }, [full, animate, loop]);
 
-  // Brief overlay — auto-dismiss; no layout growth.
+  const shouldToast = Boolean(savedShown && inView && (animate || manual));
+
+  // Brief overlay — open/dismiss only in timers (no sync setState in effect).
   useEffect(() => {
-    const shouldShow = Boolean(savedShown && inView && (animate || manual));
-    if (!shouldShow) {
-      setToastOpen(false);
-      return;
-    }
-    setToastOpen(true);
-    const id = window.setTimeout(() => setToastOpen(false), 2400);
-    return () => window.clearTimeout(id);
-  }, [savedShown, inView, animate, manual]);
+    if (!shouldToast) return;
+    const showId = window.setTimeout(() => setToastOpen(true), 0);
+    const hideId = window.setTimeout(() => setToastOpen(false), 2400);
+    return () => {
+      window.clearTimeout(showId);
+      window.clearTimeout(hideId);
+    };
+  }, [shouldToast]);
 
   const onParse = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1048,7 +1050,7 @@ export function LogParserSection() {
         <MacWindow title={c.windowTitle} tone="lavender">
           <div className="relative flex min-h-88 flex-col gap-4 p-4 sm:min-h-80 sm:p-5">
             <PanelToast
-              open={toastOpen}
+              open={shouldToast && toastOpen}
               align="start"
               title={c.saved}
               description="Tonight's log is confirmed."
@@ -1232,7 +1234,7 @@ export function LogParserSection() {
   );
 }
 
-/* 07 — rest ↔ action nights cycle; streak dots mark the current day */
+/* 07 — rest ↔ action nights; momentum gauge (no broken / greyed-out state) */
 export function RecoverySection() {
   const c = loginContent.recovery;
   const scenes = c.scenes;
@@ -1240,7 +1242,7 @@ export function RecoverySection() {
   const scene = scenes[idx];
   const swap = useSwap();
   const reduceMotion = useReducedMotion();
-  const weekLen = 7;
+  const segments = 7;
 
   useEffect(() => {
     if (reduceMotion) return;
@@ -1267,7 +1269,7 @@ export function RecoverySection() {
           aria-hidden
           className="pointer-events-none absolute top-0 left-1/2 size-56 -translate-x-1/2 -translate-y-1/3 rounded-full bg-nocta-glow/15 blur-3xl"
         />
-        {/* Fixed week chrome + reserved copy height — rest/action body length must not jump. */}
+        {/* Fixed chrome + reserved copy height — rest/action body length must not jump. */}
         <div className="relative min-h-56 sm:min-h-52">
           <AnimatePresence mode="sync" initial={false}>
             <motion.div
@@ -1280,45 +1282,39 @@ export function RecoverySection() {
                 className={[
                   "mx-auto mt-5 flex size-16 items-center justify-center rounded-full border",
                   scene.kind === "rest"
-                    ? "border-nocta-glow/30 bg-landing-mint"
-                    : "border-nocta-glow/30 bg-landing-sky",
+                    ? "border-primary/30 bg-landing-mint"
+                    : "border-primary/30 bg-landing-sky",
                 ].join(" ")}
               >
                 {scene.kind === "rest" ? (
-                  <MoonStar aria-hidden className="size-7 text-nocta-glow" />
+                  <MoonStar aria-hidden className="size-7 text-primary" />
                 ) : (
-                  <Check aria-hidden className="size-7 text-nocta-glow" />
+                  <Check aria-hidden className="size-7 text-primary" />
                 )}
               </span>
               <p className="mx-auto mt-5 min-h-16 max-w-xs text-sm leading-6 text-muted-foreground">
                 {scene.body}
               </p>
               <div
-                className="mt-7 flex items-center justify-center gap-2"
-                aria-label={scene.streak}
+                className="mx-auto mt-7 flex h-2 w-full max-w-48 items-center gap-1"
+                aria-label={scene.momentumLabel}
               >
-                {Array.from({ length: weekLen }, (_, i) => {
-                  const day = i + 1;
-                  const inStreak = day <= scene.streakDays;
-                  const active = day === scene.streakDays;
+                {Array.from({ length: segments }, (_, i) => {
+                  const filled = i < scene.momentumLevel;
                   return (
                     <span
                       key={i}
                       aria-hidden
                       className={[
-                        "rounded-full transition-all duration-300",
-                        active
-                          ? "size-3.5 border-2 border-nocta-glow bg-nocta-glow/25"
-                          : inStreak
-                            ? "size-2.5 bg-nocta-glow/55"
-                            : "size-2.5 bg-foreground/15",
+                        "h-full flex-1 rounded-sm transition-colors duration-300",
+                        filled ? "bg-primary/70" : "bg-primary/15",
                       ].join(" ")}
                     />
                   );
                 })}
               </div>
               <p className="mt-2 text-xs font-medium text-foreground">
-                {scene.streak}
+                {scene.momentumLabel}
               </p>
             </motion.div>
           </AnimatePresence>

@@ -6,10 +6,10 @@ import { usePathname } from "next/navigation";
 import {
   Activity,
   BookOpen,
+  LayoutDashboard,
   Moon,
   PanelLeftClose,
   Pin,
-  Sparkles,
   Target,
   type LucideIcon,
 } from "lucide-react";
@@ -23,19 +23,11 @@ import {
 import { dashboardContent } from "../content";
 import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
 
-/** Collapsed rail = icon column. Must stay in sync. */
-const ICON_COL = "3.5rem";
-const SIDEBAR_H = "h-[calc(100svh-1rem)]";
-/**
- * Expanded width — full class strings so Tailwind emits them.
- * Rail, spacer, and aside must all use SIDEBAR_EXPANDED_W.
- */
-const SIDEBAR_EXPANDED_W = "w-[13rem]";
-const EXPANDED_W = "w-[13rem] translate-x-0";
+const SIDEBAR_H = "h-svh";
+const SIDEBAR_EXPANDED_W = "w-[15rem]";
+const EXPANDED_W = "w-[15rem] translate-x-0";
 const COLLAPSED_W =
-  "max-md:w-[13rem] max-md:-translate-x-[calc(100%+0.5rem)] md:w-14 md:translate-x-0";
-
-/** Collapse only after the pointer has really left (avoids width-flap jitter). */
+  "max-md:w-[15rem] max-md:-translate-x-full md:w-14 md:translate-x-0";
 const HOVER_LEAVE_MS = 280;
 
 type NavItem = {
@@ -45,13 +37,16 @@ type NavItem = {
   motion: IconMotionPreset;
 };
 
-const PRIMARY_NAV: NavItem[] = [
+const TOP_NAV: NavItem[] = [
   {
     href: "/dashboard",
-    label: dashboardContent.nav.tonight,
-    icon: Sparkles,
-    motion: "pulse",
+    label: dashboardContent.nav.dashboard,
+    icon: LayoutDashboard,
+    motion: "nudge",
   },
+];
+
+const PLAN_NAV: NavItem[] = [
   {
     href: "/dashboard#goals",
     label: dashboardContent.nav.goals,
@@ -66,12 +61,14 @@ const PRIMARY_NAV: NavItem[] = [
   },
 ];
 
-const PLATFORM_NAV: NavItem = {
-  href: "/activity",
-  label: dashboardContent.nav.activity,
-  icon: Activity,
-  motion: "wiggle",
-};
+const WORKSPACE_NAV: NavItem[] = [
+  {
+    href: "/activity",
+    label: dashboardContent.nav.activity,
+    icon: Activity,
+    motion: "wiggle",
+  },
+];
 
 type DashboardSidebarProps = {
   pinned: boolean;
@@ -91,10 +88,12 @@ function NavLink({
   item,
   pathname,
   onNavigate,
+  collapsed,
 }: {
   item: NavItem;
   pathname: string;
   onNavigate: () => void;
+  collapsed: boolean;
 }) {
   const active = isNavActive(pathname, item.href);
   const Icon = item.icon;
@@ -104,86 +103,51 @@ function NavLink({
       href={item.href}
       title={item.label}
       onClick={onNavigate}
-      className="nocta-nav-pill grid h-10 shrink-0 items-center rounded-lg tracking-tight"
-      style={{
-        gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
-      }}
+      className={cn(
+        "nocta-nav-pill flex h-9 shrink-0 items-center gap-2.5 rounded-lg px-2.5 tracking-tight",
+        collapsed && "mx-auto size-9 justify-center gap-0 rounded-md p-0",
+      )}
       data-active={active ? "true" : undefined}
     >
-      <span className="nocta-nav-icon flex size-8 items-center justify-center justify-self-center rounded-md">
+      <span className="nocta-nav-icon flex size-5 shrink-0 items-center justify-center">
         <AnimatedIcon
           icon={Icon}
           active={active}
           preset={item.motion}
           tone="neutral"
           inheritColor
+          className="size-4"
         />
       </span>
-      <span className="flex items-center truncate pr-3 text-xs leading-none font-medium tracking-tight">
-        {item.label}
-      </span>
+      {!collapsed ? (
+        <span className="truncate text-[13px] leading-none font-medium tracking-tight">
+          {item.label}
+        </span>
+      ) : (
+        <span className="sr-only">{item.label}</span>
+      )}
     </Link>
   );
 }
 
-function BrandMark({ onNavigate }: { onNavigate: () => void }) {
-  return (
-    <Link
-      href="/dashboard"
-      className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
-      aria-label={dashboardContent.brand}
-      onClick={onNavigate}
-    >
-      <AnimatedIcon
-        icon={Moon}
-        className="size-3.5"
-        preset="tilt"
-        tone="neutral"
-        inheritColor
-      />
-    </Link>
-  );
-}
-
-/** Matches navbar icon chip — size-10 muted surface in light and dark. */
-const SIDEBAR_ICON_CHIP =
-  "size-10 shrink-0 rounded-lg border border-border/60 bg-muted/45 text-nocta-ink shadow-none hover:border-border hover:bg-muted/70 dark:border-border dark:bg-muted/50 dark:hover:bg-muted/70";
-
-function SidebarChromeIcon({
-  icon,
-  preset,
-  label,
-  onClick,
+function SectionLabel({
+  children,
+  hidden,
 }: {
-  icon: LucideIcon;
-  preset: IconMotionPreset;
-  label: string;
-  onClick: () => void;
+  children: string;
+  hidden?: boolean;
 }) {
+  if (hidden) return null;
   return (
-    <ChromeButton
-      iconOnly
-      className={SIDEBAR_ICON_CHIP}
-      aria-label={label}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-    >
-      <AnimatedIcon
-        icon={icon}
-        className="size-3.5"
-        preset={preset}
-        tone="neutral"
-      />
-    </ChromeButton>
+    <p className="mt-4 mb-1.5 px-2.5 text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+      {children}
+    </p>
   );
 }
 
 /**
- * Fixed viewport sidebar. Hover peeks overlay content — spacer only follows
- * pin, so main content never shifts (that was the jitter).
- * Grid rows keep Platform + profile pinned to the bottom on every route.
+ * Blueprint-style sidebar — brand row, section groups, flush rail.
+ * Pin / hover peek behavior unchanged.
  */
 export function DashboardSidebar({
   pinned,
@@ -194,6 +158,7 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
   const leaveTimerRef = useRef<number | null>(null);
+  const collapsed = !expanded;
   const [profile, setProfile] = useState<SessionProfile>(() => ({
     name: dashboardContent.greeting.fallbackName,
     email: null,
@@ -263,14 +228,13 @@ export function DashboardSidebar({
         aria-label="Close sidebar backdrop"
         tabIndex={pinned ? 0 : -1}
         className={cn(
-          "fixed inset-0 z-40 bg-nocta-night/50 backdrop-blur-sm md:hidden",
+          "fixed inset-0 z-40 bg-nocta-night/40 md:hidden",
           "transition-opacity duration-300 ease-out",
           pinned ? "opacity-100" : "pointer-events-none opacity-0",
         )}
         onClick={onPinClose}
       />
 
-      {/* Spacer follows pin only — hover peek overlays, does not shove page content */}
       <div
         className={cn(
           "hidden shrink-0 md:block",
@@ -281,145 +245,156 @@ export function DashboardSidebar({
 
       <div
         className={cn(
-          "fixed top-2 left-2 z-50",
+          "fixed inset-y-0 left-0 z-50",
           SIDEBAR_H,
-          "overflow-hidden transition-[width,transform,box-shadow] duration-300 ease-out",
+          "overflow-hidden transition-[width,transform] duration-300 ease-out",
           expanded ? EXPANDED_W : COLLAPSED_W,
-          !pinned && expanded && "shadow-md",
         )}
         onMouseEnter={startHover}
         onMouseLeave={endHover}
       >
         <aside
-          className={cn("nocta-sidebar grid py-3", SIDEBAR_EXPANDED_W, SIDEBAR_H)}
-          style={{
-            gridTemplateRows: "auto auto auto minmax(0, 1fr) auto",
-          }}
-          data-collapsed={expanded ? undefined : "true"}
+          className={cn("nocta-sidebar flex h-full w-full flex-col")}
+          data-collapsed={collapsed ? "true" : undefined}
         >
-          {/* Brand */}
+          {/* Brand — icon only when collapsed */}
           <div
-            className="mb-4 grid items-center"
-            style={{ gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)` }}
-          >
-            <div className="flex items-center justify-center">
-              <BrandMark onNavigate={closeIfMobile} />
-            </div>
-
-            <div className="flex min-w-0 items-center justify-between gap-2 pr-3">
-              <div className="min-w-0">
-                <p className="text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase">
-                  {dashboardContent.sidebar.eyebrow}
-                </p>
-                <p className="mt-1 truncate font-sans text-sm leading-none font-semibold tracking-tight text-nocta-ink">
-                  {dashboardContent.brand}
-                </p>
-              </div>
-
-              {pinned ? (
-                <SidebarChromeIcon
-                  icon={PanelLeftClose}
-                  preset="nudge"
-                  label={dashboardContent.actions.closeSidebar}
-                  onClick={onPinClose}
-                />
-              ) : (
-                <SidebarChromeIcon
-                  icon={Pin}
-                  preset="tilt"
-                  label="Keep sidebar open"
-                  onClick={onPinOpen}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Rule */}
-          <div
-            className="mb-3 grid items-center"
-            style={{ gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)` }}
-            aria-hidden
-          >
-            <div className="flex justify-center">
-              <div className="h-px w-6 bg-border/80" />
-            </div>
-            <div className="pr-3">
-              <div className="h-px w-full bg-border/80" />
-            </div>
-          </div>
-
-          {/* Nav label */}
-          <p
-            className="mb-2 truncate pr-3 text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase"
-            style={{ paddingLeft: ICON_COL }}
-          >
-            {dashboardContent.sidebar.navLabel}
-          </p>
-
-          {/* Primary nav — only this row scrolls */}
-          <nav
             className={cn(
-              "flex min-h-0 flex-col gap-1 overflow-y-auto overscroll-contain",
-              expanded && "px-2",
+              "flex h-12 shrink-0 items-center gap-2 px-3",
+              collapsed && "justify-center px-0",
             )}
-            aria-label="Primary"
           >
-            {PRIMARY_NAV.map((item) => (
-              <NavLink
-                key={item.href}
-                item={item}
-                pathname={pathname}
-                onNavigate={closeIfMobile}
-              />
-            ))}
-          </nav>
+            <Link
+              href="/dashboard"
+              className="flex size-9 shrink-0 items-center justify-center rounded-md text-nocta-ink"
+              aria-label={dashboardContent.brand}
+              onClick={closeIfMobile}
+            >
+              <Moon className="size-4" aria-hidden />
+            </Link>
+            {!collapsed ? (
+              <>
+                <span className="min-w-0 flex-1 truncate text-[14px] font-semibold tracking-tight text-nocta-ink">
+                  {dashboardContent.brand}
+                </span>
+                <ChromeButton
+                  iconOnly
+                  className="size-7 rounded-md"
+                  aria-label={
+                    pinned
+                      ? dashboardContent.actions.closeSidebar
+                      : dashboardContent.actions.pinSidebar
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (pinned) onPinClose();
+                    else onPinOpen();
+                  }}
+                >
+                  <AnimatedIcon
+                    icon={pinned ? PanelLeftClose : Pin}
+                    className="size-3.5"
+                    preset="nudge"
+                    tone="neutral"
+                  />
+                </ChromeButton>
+              </>
+            ) : null}
+          </div>
 
-          {/* Footer — always last grid row, never clipped by page length */}
+          <div
+            className={cn(
+              "flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain px-2 pb-2",
+              collapsed && "items-center px-1",
+            )}
+          >
+            <nav
+              className={cn(
+                "flex flex-col gap-0.5",
+                collapsed && "w-full items-center",
+              )}
+              aria-label="Primary"
+            >
+              {TOP_NAV.map((item) => (
+                <NavLink
+                  key={item.href}
+                  item={item}
+                  pathname={pathname}
+                  onNavigate={closeIfMobile}
+                  collapsed={collapsed}
+                />
+              ))}
+            </nav>
+
+            <SectionLabel hidden={collapsed}>
+              {dashboardContent.sidebar.planLabel}
+            </SectionLabel>
+            <nav
+              className={cn(
+                "flex flex-col gap-0.5",
+                collapsed && "w-full items-center",
+              )}
+              aria-label="Plan"
+            >
+              {PLAN_NAV.map((item) => (
+                <NavLink
+                  key={item.href}
+                  item={item}
+                  pathname={pathname}
+                  onNavigate={closeIfMobile}
+                  collapsed={collapsed}
+                />
+              ))}
+            </nav>
+
+            <SectionLabel hidden={collapsed}>
+              {dashboardContent.sidebar.workspaceLabel}
+            </SectionLabel>
+            <nav
+              className={cn(
+                "flex flex-col gap-0.5",
+                collapsed && "w-full items-center",
+              )}
+              aria-label="Workspace"
+            >
+              {WORKSPACE_NAV.map((item) => (
+                <NavLink
+                  key={item.href}
+                  item={item}
+                  pathname={pathname}
+                  onNavigate={closeIfMobile}
+                  collapsed={collapsed}
+                />
+              ))}
+            </nav>
+          </div>
+
           <footer
             className={cn(
-              "flex flex-col gap-2 border-t border-border/50 pt-3",
-              expanded && "px-2",
+              "mt-auto shrink-0 border-t border-border px-2 py-2",
+              collapsed && "flex justify-center px-1",
             )}
           >
-            <p
-              className={cn(
-                "px-1 text-[10px] leading-none font-medium tracking-[0.14em] text-muted-foreground uppercase",
-                !expanded &&
-                  "pointer-events-none invisible h-0 overflow-hidden p-0",
-              )}
-            >
-              {dashboardContent.sidebar.workspaceLabel}
-            </p>
-
-            <NavLink
-              item={PLATFORM_NAV}
-              pathname={pathname}
-              onNavigate={closeIfMobile}
-            />
-
             <div
-              className="grid h-11 items-center rounded-lg border border-border/50 bg-muted/35 px-0 transition-colors duration-150 hover:bg-muted/55 dark:border-border dark:bg-muted/40 dark:hover:bg-muted/60"
-              style={{
-                gridTemplateColumns: `${ICON_COL} minmax(0, 1fr)`,
-              }}
+              className={cn(
+                "flex items-center gap-2.5 rounded-lg px-2 py-1.5",
+                collapsed && "justify-center px-0",
+              )}
               title={profile.email ?? profile.name}
             >
-              <span className="flex size-8 items-center justify-center justify-self-center rounded-md bg-primary text-[10px] font-semibold tracking-wide text-primary-foreground">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[10px] font-semibold text-background">
                 {profile.initials}
               </span>
-              <span
-                className={cn(
-                  "min-w-0 pr-2",
-                  !expanded && "pointer-events-none invisible",
-                )}
-              >
-                <span className="block truncate text-xs leading-tight font-medium tracking-tight text-nocta-ink">
-                  {profile.name}
+              {!collapsed ? (
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[13px] leading-tight font-medium text-nocta-ink">
+                    {profile.name}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[10px] leading-tight text-muted-foreground">
+                    {profile.email ?? dashboardContent.sidebar.profileLabel}
+                  </span>
                 </span>
-                <span className="mt-0.5 block truncate text-[10px] leading-tight tracking-tight text-muted-foreground">
-                  {profile.email ?? dashboardContent.sidebar.profileLabel}
-                </span>
-              </span>
+              ) : null}
             </div>
           </footer>
         </aside>

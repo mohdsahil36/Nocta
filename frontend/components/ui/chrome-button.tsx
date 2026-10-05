@@ -6,16 +6,16 @@ import type { ComponentProps, MouseEventHandler, ReactNode } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
 
-/** Quiet icon chrome — transparent by default; callers may pass a chip surface. */
+/** Quiet icon chrome — no chip border by default. */
 const chromeIconClass =
-  "border-transparent bg-transparent text-nocta-ink shadow-none transition-[background-color,border-color,color,box-shadow] duration-150 ease-out hover:border-border/40 hover:bg-muted/55 hover:text-foreground dark:hover:border-border dark:hover:bg-muted/50";
+  "border-transparent bg-transparent text-muted-foreground shadow-none transition-[background-color,color] duration-150 ease-out hover:bg-muted/60 hover:text-foreground";
 
 /**
- * Labeled chrome — green primary + white text in both themes.
- * Locked size: h-10 · gap-1.5 · px-3.5 (override only with care).
+ * Labeled chrome — outline / muted, not a solid marketing CTA.
+ * Primary solid stays for real actions (Continue, etc.) via Button.
  */
 const chromeLabelClass =
-  "h-10 border-transparent bg-primary text-primary-foreground shadow-none transition-[background-color,color] duration-150 ease-out hover:bg-primary/88 hover:text-primary-foreground";
+  "h-9 border border-border/80 bg-transparent text-nocta-ink shadow-none transition-[background-color,border-color] duration-150 ease-out hover:bg-muted/50";
 
 /** Shared across <button> and <Link> — element-agnostic handlers. */
 type Shared = {
@@ -43,13 +43,13 @@ type AsLink = Shared & {
 };
 
 export type ChromeButtonProps = (AsButton | AsLink) & {
-  /** Square icon control (`size-10`) vs padded labeled control. */
+  /** Square icon control (`size-9`) vs padded labeled control. */
   iconOnly?: boolean;
 };
 
 /**
  * Shared chrome control for app shells (dashboard header, sidebar, etc.).
- * Icon = quiet; labeled = solid primary green + white (light and dark).
+ * Icon + labeled stay quiet; use Shadcn Button for primary CTAs.
  */
 export function ChromeButton({
   children,
@@ -58,9 +58,9 @@ export function ChromeButton({
   href,
   ...rest
 }: ChromeButtonProps) {
-  const sizeClass = iconOnly ? "size-10 shrink-0 px-0" : "gap-1.5 px-3.5";
+  const sizeClass = iconOnly ? "size-9 shrink-0 px-0" : "gap-1.5 px-3";
   const classes = cn(
-    buttonVariants({ variant: iconOnly ? "ghost" : "default" }),
+    buttonVariants({ variant: iconOnly ? "ghost" : "outline" }),
     iconOnly ? chromeIconClass : chromeLabelClass,
     sizeClass,
     className,
