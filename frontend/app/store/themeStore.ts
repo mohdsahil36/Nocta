@@ -14,6 +14,8 @@ type ThemeState = {
   /** False until client rehydrate — keeps SSR and first client paint aligned. */
   hydrated: boolean;
   setDark: (next: boolean) => void;
+  /** `"light"` | `"dark"` | `null` (system). */
+  setPreference: (next: ThemePreference) => void;
   toggle: () => void;
 };
 
@@ -76,6 +78,10 @@ const useThemeStore = create<ThemeState>()(
       setDark: (next) => {
         set({ preference: next ? "dark" : "light" });
         applyDomTheme(next);
+      },
+      setPreference: (next) => {
+        set({ preference: next });
+        applyDomTheme(resolveIsDark(next));
       },
       toggle: () => {
         get().setDark(!resolveIsDark(get().preference));

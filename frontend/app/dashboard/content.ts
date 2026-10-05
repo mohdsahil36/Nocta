@@ -46,6 +46,16 @@ export const dashboardContent = {
     addGoals: "Add goals",
     continueTonight: "Continue",
   },
+  account: {
+    menuLabel: "Account menu",
+    theme: "Theme",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeSystem: "System",
+    themeLightHint: "Always light",
+    themeDarkHint: "Always dark",
+    themeSystemHint: "Match system",
+  },
   stats: {
     momentum: "Momentum",
     goals: "Goals",
@@ -57,7 +67,7 @@ export const dashboardContent = {
     emptyTitle: "Nothing queued for tonight",
     emptyBody:
       "When goals and a check-in are in place, your one next step shows up here.",
-    meta: "Tonight · scored pick",
+    meta: "Tonight · scored pick · Add goals to begin",
   },
   today: {
     title: "Today",

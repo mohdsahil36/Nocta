@@ -7,7 +7,6 @@ import {
   Activity,
   BookOpen,
   LayoutDashboard,
-  Moon,
   PanelLeftClose,
   Pin,
   Target,
@@ -20,6 +19,7 @@ import {
   AnimatedIcon,
   type IconMotionPreset,
 } from "@/components/ui/animated-icon";
+import { NoctaMark } from "@/components/ui/nocta-mark";
 import { dashboardContent } from "../content";
 import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
 
@@ -270,7 +270,7 @@ export function DashboardSidebar({
               aria-label={dashboardContent.brand}
               onClick={closeIfMobile}
             >
-              <Moon className="size-4" aria-hidden />
+              <NoctaMark className="size-4" />
             </Link>
             {!collapsed ? (
               <>
