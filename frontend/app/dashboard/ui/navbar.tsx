@@ -8,7 +8,6 @@ import { AnimatedIcon } from "@/components/ui/animated-icon";
 import { cn } from "cn";
 
 import { dashboardContent } from "../content";
-import { AccountMenu } from "./account-menu";
 
 type DashboardNavbarProps = {
   sidebarPinned: boolean;
@@ -23,7 +22,7 @@ function isSearchHotkey(event: KeyboardEvent) {
 }
 
 /**
- * Blueprint-style top bar — search + account menu.
+ * Blueprint-style top bar — search. Account lives in the sidebar footer.
  * ⌘K / Ctrl+K focuses search. Query handling deferred to v2.
  */
 export function DashboardNavbar({
@@ -99,10 +98,6 @@ export function DashboardNavbar({
             {dashboardContent.navbar.searchHint}
           </kbd>
         </label>
-      </div>
-
-      <div className="relative flex shrink-0 items-center">
-        <AccountMenu />
       </div>
     </header>
   );

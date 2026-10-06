@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/animated-icon";
 import { NoctaMark } from "@/components/ui/nocta-mark";
 import { dashboardContent } from "../content";
-import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
+import { AccountMenu } from "./account-menu";
 
 const SIDEBAR_H = "h-svh";
 const SIDEBAR_EXPANDED_W = "w-[15rem]";
@@ -183,21 +183,7 @@ export function DashboardSidebar({
   const pathname = usePathname();
   const leaveTimerRef = useRef<number | null>(null);
   const collapsed = !expanded;
-  const [profile, setProfile] = useState<SessionProfile>(() => ({
-    name: dashboardContent.greeting.fallbackName,
-    email: null,
-    initials: "N",
-  }));
-
-  useEffect(() => {
-    let cancelled = false;
-    void getSessionProfile().then((next) => {
-      if (!cancelled) setProfile(next);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -232,6 +218,8 @@ export function DashboardSidebar({
 
   const endHover = () => {
     if (window.matchMedia("(max-width: 767px)").matches) return;
+    // keep rail open while account menu is up
+    if (accountMenuOpen) return;
     clearLeaveTimer();
     leaveTimerRef.current = window.setTimeout(() => {
       leaveTimerRef.current = null;
@@ -383,27 +371,17 @@ export function DashboardSidebar({
               collapsed && "flex justify-center px-1",
             )}
           >
-            <div
-              className={cn(
-                "flex items-center gap-2.5 rounded-lg px-2 py-1.5",
-                collapsed && "justify-center px-0",
-              )}
-              title={profile.email ?? profile.name}
-            >
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[10px] font-semibold text-background">
-                {profile.initials}
-              </span>
-              {!collapsed ? (
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] leading-tight font-medium text-nocta-ink">
-                    {profile.name}
-                  </span>
-                  <span className="mt-0.5 block truncate text-[10px] leading-tight text-muted-foreground">
-                    {profile.email ?? dashboardContent.sidebar.profileLabel}
-                  </span>
-                </span>
-              ) : null}
-            </div>
+            <AccountMenu
+              collapsed={collapsed}
+              onExpandSidebar={onPinOpen}
+              onMenuOpenChange={(open) => {
+                setAccountMenuOpen(open);
+                if (open) {
+                  clearLeaveTimer();
+                  onHoverExpandChange(true);
+                }
+              }}
+            />
           </footer>
         </aside>
       </div>
