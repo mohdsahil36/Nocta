@@ -17,7 +17,7 @@ import type { LucideIcon } from "lucide-react";
 import type { Commit } from "../data/activity";
 import { fetchPlatformCommits, formatActivityDate } from "@/lib/activity-api";
 import { buttonVariants } from "@/components/ui/button";
-import { NoctaLoader } from "@/components/ui/nocta-loader";
+import { DeskLoader } from "@/components/ui/desk-loader";
 import { cn } from "cn";
 
 const EMPTY_COMMITS: Commit[] = [];
@@ -136,7 +136,7 @@ export default function ActivityPage() {
 
           {isLoading ? (
             <div className="nocta-panel flex min-h-48 items-center justify-center px-4 py-10">
-              <NoctaLoader size="sm" label="Loading activity…" />
+              <DeskLoader size="sm" label="Loading activity…" />
             </div>
           ) : error ? (
             <div className="nocta-panel px-4 py-10 text-center">

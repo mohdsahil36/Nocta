@@ -74,7 +74,7 @@ export function DashboardNavbar({
 
         <label
           className={cn(
-            "hidden max-w-md flex-1 items-center gap-2 rounded-lg sm:flex",
+            "hidden max-w-63 flex-1 items-center gap-2 rounded-lg sm:flex",
             "border border-border bg-background px-2.5 py-1.5 text-muted-foreground",
             "transition-[border-color,box-shadow] duration-150",
             "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/40",

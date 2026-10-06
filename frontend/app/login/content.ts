@@ -10,37 +10,37 @@ export const loginContent = {
     theme: "Toggle theme",
   },
   hero: {
-    headline: "One meaningful action, every night.",
-    tagline: "One meaningful action, every night.",
-    body: "Nocta works with the night you actually have. Check in after work, get one scored next step, or take a night off — without rebuilding your list.",
-    primaryCta: "Start tonight",
+    headline: "One meaningful action, when it counts.",
+    tagline: "One meaningful action, when it counts.",
+    body: "Nocta works with the time and energy you actually have. Check in, get one scored next step, or rest — without rebuilding your list.",
+    primaryCta: "Get started",
     secondaryCta: "See how it works",
     tryItLabel: "Try it",
     tryItHint:
-      "Set tonight's time and energy below. Nocta picks one action and tells you why.",
+      "Set your time and energy below. Nocta picks one action and tells you why.",
   },
   product: {
     index: "01",
     eyebrow: "Product",
-    title: "A nightly decision, not another backlog.",
-    body: "You bring the goals that matter. Each evening Nocta asks for time and energy, scores what you gave it, and returns one clear step — or a recovery night. Tomorrow reshapes from what you actually did.",
+    title: "A clear decision, not another backlog.",
+    body: "You bring the goals that matter. Each check-in Nocta asks for time and energy, scores what you gave it, and returns one clear step — or recovery. The next session reshapes from what you actually did.",
   },
   onboarding: {
     index: "02",
     eyebrow: "Onboarding",
     title: "Start with the goals you already have.",
-    body: "Add what you are working on — a PR, a habit, a call you keep postponing. Nocta does not force fixed life buckets. Priority comes from the goals you enter, plus tonight's check-in.",
+    body: "Add what you are working on — a PR, a habit, a call you keep postponing. Nocta does not force fixed life buckets. Priority comes from the goals you enter, plus your check-in.",
   },
   process: {
     index: "03",
-    eyebrow: "Tonight's loop",
+    eyebrow: "The loop",
     title: "Check in. Get one step. Log it. Repeat.",
-    body: "After onboarding, every night follows the same calm loop: time and energy, a deterministic score, one AI-written step you can swap, a one-line log, and room to rest.",
+    body: "After onboarding, each check-in follows the same calm loop: time and energy, a deterministic score, one AI-written step you can swap, a one-line log, and room to rest.",
   },
   demo: {
-    windowTitle: "Nocta · Tonight",
+    windowTitle: "Nocta · Check-in",
     checkIn: "Check-in",
-    timeLabel: "Time left tonight",
+    timeLabel: "Time available",
     energyLabel: "Energy",
     minutes: [20, 45, 90] as Minutes[],
     energy: [
@@ -48,7 +48,7 @@ export const loginContent = {
       { id: "steady", label: "Steady" },
       { id: "high", label: "High" },
     ] as { id: Energy; label: string }[],
-    pickLabel: "Tonight's pick",
+    pickLabel: "Your pick",
     oneAction: "One action",
     scoreLabel: "Score",
     whyLabel: "Why this",
@@ -65,10 +65,10 @@ export const loginContent = {
       } as Record<Minutes, string>,
     },
     recovery: {
-      title: "Recovery night",
-      step: "Close the laptop. A short walk, then sleep.",
+      title: "Recovery",
+      step: "Close the laptop. A short walk, then rest.",
       reason:
-        "Low energy and little time. A recovery night doesn't cost you momentum.",
+        "Low energy and little time. Recovery doesn't cost you momentum.",
     },
     others: [
       { title: "Evening run", area: "Health", score: 64 },
@@ -82,25 +82,25 @@ export const loginContent = {
     body: "Goals come from you — not from a fixed set of life areas. Deadlines, neglect and what you finished reshape what surfaces next.",
     points: [
       {
-        title: "Your list, scored nightly",
-        body: "Add the work that matters. Tonight’s pick is scored from those goals plus your check-in — never from a canned board.",
+        title: "Your list, scored each check-in",
+        body: "Add the work that matters. Your pick is scored from those goals plus your check-in — never from a canned board.",
       },
       {
         title: "Evolves with finishes",
-        body: "Accomplishments, skipped nights and shifting focus change priority without you rebuilding anything.",
+        body: "Accomplishments, skipped check-ins and shifting focus change priority without you rebuilding anything.",
       },
       {
         title: "Rest counts",
-        body: "Recovery nights feed the model too. Nocta learns when to push and when rest should hold your momentum.",
+        body: "Recovery feeds the model too. Nocta learns when to push and when rest should hold your momentum.",
       },
     ],
     lastTouchedLabel: "Last touched",
-    liveLabel: "Tonight reshapes to",
+    liveLabel: "Reshapes to",
     scenes: [
       {
         id: "career",
         area: "Career",
-        badge: "After a deep work night",
+        badge: "After a deep work session",
         title: "Write tests for the deadline rules",
         detail: "Scoring PR is close. Neglect + deadline pull this goal up.",
         idleDays: 4,
@@ -110,7 +110,7 @@ export const loginContent = {
         id: "rest",
         area: "Rest",
         badge: "Low energy · 20 min",
-        title: "Recovery night",
+        title: "Recovery",
         detail: "Nothing hard due tomorrow. Rest is the scored choice.",
         idleDays: 0,
         due: "Momentum holds",
@@ -127,9 +127,9 @@ export const loginContent = {
       {
         id: "health",
         area: "Health",
-        badge: "After two action nights",
+        badge: "After two action sessions",
         title: "Easy 30-minute run",
-        detail: "Momentum is up; this goal fits a steady 45-minute evening.",
+        detail: "Momentum is up; this goal fits a steady 45-minute block.",
         idleDays: 3,
         due: "2 of 3",
       },
@@ -163,8 +163,8 @@ export const loginContent = {
   checkIn: {
     index: "05",
     eyebrow: "Check in",
-    title: "Nightly Time & Energy Check-in",
-    body: "Each night starts with how much time you have and how much energy is left. Nothing gets suggested until you answer.",
+    title: "Time & Energy Check-in",
+    body: "Each check-in starts with how much time you have and how much energy is left. Nothing gets suggested until you answer.",
     points: [
       {
         title: "Time you actually have",
@@ -172,19 +172,19 @@ export const loginContent = {
       },
       {
         title: "Energy, honestly",
-        body: "Low, steady or high. A tired night gets a lighter step.",
+        body: "Low, steady or high. Low energy gets a lighter step.",
       },
     ],
-    question: "How's tonight?",
+    question: "How are you?",
     sheetLead: "Two answers. That's the whole check-in.",
     sheetHint:
-      "Nocta sizes tonight's step from these — nothing is suggested until you pick.",
-    previewLabel: "Tonight's step size",
+      "Nocta sizes your step from these — nothing is suggested until you pick.",
+    previewLabel: "Your step size",
     sizes: {
       small: "Small step: one quick, low-effort task",
       medium: "Medium step: one focused block",
       large: "Large step: finish something real",
-      rest: "Recovery night: rest is the plan",
+      rest: "Recovery: rest is the plan",
     },
   },
   scoring: {
@@ -199,9 +199,9 @@ export const loginContent = {
       { factor: "Goal weight", detail: "High · you set it", points: 20 },
       { factor: "Momentum", detail: "2 steps this week", points: 15 },
     ],
-    totalLabel: "Tonight's score",
+    totalLabel: "Your score",
     celebrate: "Perfect 100",
-    celebrateBody: "Every factor lined up for tonight.",
+    celebrateBody: "Every factor lined up for this session.",
     footnote: "Deterministic. You can check every point.",
     apply: "Applied",
     pending: "Tap to apply",
@@ -210,21 +210,21 @@ export const loginContent = {
     index: "07",
     eyebrow: "Decide",
     title: "Action Generator, Time-Fit Adapter & Recommendation Reasoning",
-    body: "The step you see is not from a canned list. It rewrites itself from tonight's score, your recent finishes, rest days and which of your goals needs attention.",
-    liveEyebrow: "Tonight writes",
+    body: "The step you see is not from a canned list. It rewrites itself from your score, your recent finishes, rest days and which of your goals needs attention.",
+    liveEyebrow: "This session writes",
     windowTitle: "Nocta · Decide",
     cells: [
       {
         id: "generator",
         title: "Action Generator",
-        body: "Turns whatever is highest tonight into one concrete step — then rewrites it when your week changes.",
+        body: "Turns whatever is highest into one concrete step — then rewrites it when your week changes.",
         from: "Ship the scoring PR",
         to: "Open the scoring PR for review",
         scenes: [
           {
             from: "Ship the scoring PR",
             to: "Open the scoring PR for review",
-            why: "Tests landed last night · Deadline still Friday",
+            why: "Tests landed yesterday · Deadline still Friday",
           },
           {
             from: "Update portfolio case study",
@@ -256,7 +256,7 @@ export const loginContent = {
         title: "Recommendation Reasoning",
         body: "A single line explaining the pick, built from the score.",
         quote:
-          "Tests landed last night and Friday is still close. 45 minutes is enough to open the PR.",
+          "Tests landed yesterday and Friday is still close. 45 minutes is enough to open the PR.",
         fit: "Fits 45 min",
       },
     ],
@@ -270,8 +270,8 @@ export const loginContent = {
     back: "Back to first pick",
     optionLabel: "Option",
     of: "of",
-    remaining: "more fit tonight",
-    exhausted: "No more swaps tonight",
+    remaining: "more fit this session",
+    exhausted: "No more swaps this session",
     options: [
       {
         title: "Open the scoring PR for review",
@@ -303,11 +303,11 @@ export const loginContent = {
     body: "Type one line about what you did. Nocta works out the goal, time, energy and progress, then asks you to confirm.",
     windowTitle: "Nocta · Quick log",
     input: "did 30 min of tests, pretty tired, PR draft is up",
-    placeholder: "What did you do tonight?",
-    inputLabel: "Tonight's log",
+    placeholder: "What did you do?",
+    inputLabel: "Your log",
     parse: "Parse",
     confirm: "Looks right",
-    saved: "Logged for tonight",
+    saved: "Logged for this session",
     edit: "Edit",
     fieldLabels: {
       goal: "Goal",
@@ -320,21 +320,21 @@ export const loginContent = {
   recovery: {
     index: "10",
     eyebrow: "Rest",
-    title: "Recovery Night Mode",
-    body: "Rest is part of the model, not a gap. When time and energy are low, recovery is scored like any other choice — momentum holds, and tomorrow reshapes without punishment.",
+    title: "Recovery Mode",
+    body: "Rest is part of the model, not a gap. When time and energy are low, recovery is scored like any other choice — momentum holds, and the next session reshapes without punishment.",
     points: [
       {
         title: "Momentum holds",
-        body: "A recovery night doesn't cost you momentum and doesn't drop your scores.",
+        body: "Recovery doesn't cost you momentum and doesn't drop your scores.",
       },
       {
         title: "No catch-up pile",
-        body: "Tomorrow starts with a fresh score, not yesterday's leftovers.",
+        body: "The next session starts with a fresh score, not yesterday's leftovers.",
       },
     ],
     card: {
-      label: "Tonight",
-      title: "Recovery night",
+      label: "This session",
+      title: "Recovery",
       body: "Energy is low and you have 20 minutes. Nothing important is due tomorrow.",
       momentumLabel: "Momentum holds",
       momentumLevel: 6,
@@ -342,8 +342,8 @@ export const loginContent = {
     scenes: [
       {
         id: "rest",
-        label: "Tonight",
-        title: "Recovery night",
+        label: "This session",
+        title: "Recovery",
         body: "Energy is low and you have 20 minutes. Nothing important is due tomorrow.",
         momentumLabel: "Momentum holds",
         momentumLevel: 6,
@@ -351,7 +351,7 @@ export const loginContent = {
       },
       {
         id: "back",
-        label: "Next night",
+        label: "Next session",
         title: "Open the scoring PR for review",
         body: "After rest, your top goal is still due Friday. Focus returns without a catch-up pile.",
         momentumLabel: "Momentum rising",
@@ -364,7 +364,7 @@ export const loginContent = {
     index: "11",
     eyebrow: "Reflect",
     title: "AI Weekly Reflection & Pattern Insights",
-    body: "The week is the proof: action nights, recovery, skips and minutes — Nocta reads the pattern and adjusts focus. Nothing is a frozen checklist.",
+    body: "The week is the proof: action sessions, recovery, skips and minutes — Nocta reads the pattern and adjusts focus. Nothing is a frozen checklist.",
     week: [
       { day: "Mon", kind: "action", minutes: 45 },
       { day: "Tue", kind: "action", minutes: 20 },
@@ -379,15 +379,15 @@ export const loginContent = {
       minutes: number;
     }[],
     legend: {
-      action: "Action nights",
+      action: "Action sessions",
       recovery: "Recovery",
       skip: "Skipped",
       minutes: "Minutes",
     },
     insights: [
-      "You finish more on 45-minute nights than on 90-minute ones.",
+      "You finish more on 45-minute sessions than on 90-minute ones.",
       "One goal has gone quiet for 9 days. It'll score higher next week.",
-      "One recovery night on Wednesday, then your longest session on Thursday.",
+      "One recovery on Wednesday, then your longest session on Thursday.",
     ],
   },
   faq: {
@@ -396,11 +396,11 @@ export const loginContent = {
     items: [
       {
         q: "How does goal management work?",
-        a: "You add the goals that matter to you. There is no fixed nightly list and no required set of life areas — accomplishments, rest days, deadlines and neglect reshape what Nocta surfaces next.",
+        a: "You add the goals that matter to you. There is no fixed checklist and no required set of life areas — accomplishments, rest days, deadlines and neglect reshape what Nocta surfaces next.",
       },
       {
-        q: "What is the nightly check-in?",
-        a: "Two quick answers: how much time you have (20, 45 or 90 minutes) and how much energy is left. Every suggestion that night is based on them.",
+        q: "What is the check-in?",
+        a: "Two quick answers: how much time you have (20, 45 or 90 minutes) and how much energy is left. Every suggestion that session is based on them.",
       },
       {
         q: "How is priority scored?",
@@ -408,18 +408,18 @@ export const loginContent = {
       },
       {
         q: "Does a model decide what matters?",
-        a: "No. Scores come first. The Action Generator only writes the step for whatever is highest tonight — and that step changes when your week does.",
+        a: "No. Scores come first. The Action Generator only writes the step for whatever is highest — and that step changes when your week does.",
       },
       {
         q: "What does the Time-Fit Adapter do?",
-        a: "It changes the size of the step to fit your time. The goal stays the same; a 20-minute night just gets a smaller step than a 90-minute one.",
+        a: "It changes the size of the step to fit your time. The goal stays the same; a 20-minute session just gets a smaller step than a 90-minute one.",
       },
       {
         q: "Why does Nocta explain its pick?",
         a: "So you can trust it. Recommendation Reasoning gives one sentence built from the actual score, such as the deadline, the neglect and the time fit.",
       },
       {
-        q: "What if I don't like tonight's pick?",
+        q: "What if I don't like the pick?",
         a: "Use Alternative Option Swap to get the next best option that still fits your time and energy. You still get one action, not a list.",
       },
       {
@@ -427,31 +427,31 @@ export const loginContent = {
         a: "Type one line in plain words. The AI Quick Log Parser works out the goal, time, energy and progress, and you confirm before it saves.",
       },
       {
-        q: "What is a recovery night?",
-        a: "When time and energy are both low, Nocta may suggest resting. A recovery night doesn't cost you momentum and doesn't count against your scores — rest is part of the model, not a gap.",
+        q: "What is recovery?",
+        a: "When time and energy are both low, Nocta may suggest resting. Recovery doesn't cost you momentum and doesn't count against your scores — rest is part of the model, not a gap.",
       },
       {
         q: "What's in the weekly reflection?",
-        a: "A short summary of the week: nights you acted, nights you rested, and a few patterns, such as which session length works best for you.",
+        a: "A short summary of the week: days you acted, days you rested, and a few patterns, such as which session length works best for you.",
       },
     ],
   },
   close: {
-    title: "Tonight, do one thing that matters",
-    body: "Check in, see the score, do one step before you sleep.",
+    title: "Do one thing that matters",
+    body: "Check in, see the score, do one step.",
     cta: "Get started",
     trust: "Built by a developer job-hunting after work.",
   },
   footer: {
     copyright: "© 2026 Nocta. All rights reserved.",
-    tagline: "One meaningful action, every night.",
+    tagline: "One meaningful action, when it counts.",
     exploreLabel: "Explore",
     startLabel: "Start",
   },
   auth: {
     panelEyebrow: "Enter",
-    panelTitle: "One meaningful action, every night.",
-    panelBody: "The calm way to decide what matters before you sleep.",
+    panelTitle: "One meaningful action, when it counts.",
+    panelBody: "The calm way to decide what matters next.",
     google: "Continue with Google",
     or: "or",
     email: "Email",
@@ -460,8 +460,15 @@ export const loginContent = {
     passwordPlaceholder: "Your password",
     showPassword: "Show password",
     hidePassword: "Hide password",
-    handoff: "Opening your night…",
+    handoff: "Opening Nocta…",
     close: "Close",
+    theme: "Theme",
+    themeLight: "Light",
+    themeLightHint: "Light theme",
+    themeDark: "Dark",
+    themeDarkHint: "Dark theme",
+    themeSystem: "System",
+    themeSystemHint: "Match system theme",
     error: {
       title: "Couldn't continue",
       dismiss: "Try again",
@@ -470,7 +477,7 @@ export const loginContent = {
     login: {
       tab: "Sign in",
       title: "Welcome back",
-      body: "Sign in to continue your evening.",
+      body: "Sign in to continue.",
       forgot: "Forgot password?",
       cta: "Sign in",
       switchPrompt: "New to Nocta?",
@@ -479,7 +486,7 @@ export const loginContent = {
     signup: {
       tab: "Sign up",
       title: "Create your account",
-      body: "Start with one clear action tonight.",
+      body: "Start with one clear next action.",
       name: "Name",
       namePlaceholder: "Your name",
       confirmPassword: "Confirm password",

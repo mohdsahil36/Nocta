@@ -469,19 +469,17 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   box-shadow: none;
 }
 
-/* Blueprint content row — muted wash hover; title goes primary */
+/* Blueprint content row — title goes primary on hover; no muted wash (wash = buttons only) */
 .nocta-content-row {
   display: block;
   width: 100%;
   border-radius: 0.5rem;
   padding: 0.875rem 1rem;
   text-align: left;
-  transition: background-color 150ms ease;
 }
-.nocta-content-row:hover,
 .nocta-content-row:focus-visible {
-  background-color: var(--muted);
-  outline: none;
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 .nocta-content-row .nocta-content-intro {
   font-size: 0.8125rem;
@@ -520,7 +518,7 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   color: var(--muted-foreground);
 }
 
-/* Shell texture — off for utilitarian app; kept as no-op hook */
+/* Shell texture — off for main canvas; sidebar uses its own grid */
 .nocta-shell-dotgrid {
   display: none;
 }
@@ -560,13 +558,14 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 .nocta-nav-pill[data-active="true"],
 .nocta-nav-pill[data-active="true"]:hover {
   background-color: var(--muted);
-  color: var(--nocta-ink);
+  color: var(--primary);
+}
+.nocta-nav-pill[data-active="true"] .nocta-nav-icon {
+  color: var(--primary);
 }
 
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill,
-.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover,
-.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"],
-.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"]:hover {
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover {
   color: var(--muted-foreground);
 }
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill:hover {
@@ -576,6 +575,9 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"],
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"]:hover {
   background-color: var(--muted);
-  color: var(--nocta-ink);
+  color: var(--primary);
+}
+.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"] .nocta-nav-icon {
+  color: var(--primary);
 }
 

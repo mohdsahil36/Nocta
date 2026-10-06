@@ -106,7 +106,7 @@ export function DashboardPanels() {
       {/* Continue — Blueprint content row: intro · main · desc · meta */}
       <div className="nocta-panel p-2 sm:p-2.5">
         <Link
-          href="/dashboard#goals"
+          href="/goals"
           className="nocta-content-row"
           aria-label={`${c.continue.emptyTitle}. ${c.actions.addGoals}`}
         >

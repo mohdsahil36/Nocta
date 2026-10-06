@@ -5,20 +5,15 @@ import { useRouter } from "next/navigation";
 import { Menu } from "@base-ui/react/menu";
 import { LogOut, Monitor, Sun, type LucideIcon } from "lucide-react";
 
-import { NoctaLoader } from "@/components/ui/nocta-loader";
+import { DeskLoader } from "@/components/ui/desk-loader";
 import { NoctaMark } from "@/components/ui/nocta-mark";
 import { Separator } from "@/components/ui/separator";
 import { BEFORE_AUTH_PATH, logout } from "@/app/login/functions/auth";
-import useThemeStore, {
-  type ThemePreference,
-} from "@/app/store/themeStore";
+import useThemeStore, { type ThemePreference } from "@/app/store/themeStore";
 import { cn } from "cn";
 
 import { dashboardContent } from "../content";
-import {
-  getSessionProfile,
-  type SessionProfile,
-} from "../functions/dashboard";
+import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
 
 type ThemeMode = "light" | "dark" | "system";
 
@@ -219,7 +214,10 @@ export function AccountMenu() {
                     void handleLogout();
                   }}
                 >
-                  <LogOut className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                  <LogOut
+                    className="size-3.5 shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
                   {dashboardContent.actions.logout}
                 </Menu.Item>
               </div>
@@ -229,15 +227,17 @@ export function AccountMenu() {
       </Menu.Root>
 
       {logoutError ? (
-        <p className="absolute right-3 top-full mt-1 text-[11px] text-destructive" role="alert">
+        <p
+          className="absolute right-3 top-full mt-1 text-[11px] text-destructive"
+          role="alert"
+        >
           {logoutError}
         </p>
       ) : null}
 
-      <NoctaLoader
+      <DeskLoader
         variant="overlay"
         open={loggingOut}
-        title={dashboardContent.brand}
         label="Signing out…"
       />
     </>

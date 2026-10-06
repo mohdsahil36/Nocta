@@ -1,6 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { Monitor, Sun, type LucideIcon } from "lucide-react";
+
+import useThemeStore, { type ThemePreference } from "@/app/store/themeStore";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +15,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NoctaMark } from "@/components/ui/nocta-mark";
+import { cn } from "cn";
+
 import { loginContent } from "../content";
 import { loginWithGoogle, type AuthMode } from "../functions/auth";
 import { GoogleMark } from "./google-mark";
@@ -20,6 +26,20 @@ import { easeOut } from "./motion";
 
 const AUTH_INPUT_CLASS =
   "auth-input h-11 rounded-xl border px-3.5 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0";
+
+type ThemeMode = "light" | "dark" | "system";
+type ThemeIcon = LucideIcon | typeof NoctaMark;
+
+function preferenceToMode(preference: ThemePreference): ThemeMode {
+  if (preference === "light") return "light";
+  if (preference === "dark") return "dark";
+  return "system";
+}
+
+function modeToPreference(mode: ThemeMode): ThemePreference {
+  if (mode === "system") return null;
+  return mode;
+}
 
 type AuthDialogProps = {
   open: boolean;
@@ -73,6 +93,35 @@ export function AuthDialog({
   const reduceMotion = useReducedMotion();
   const c = loginContent.auth;
   const isSignup = authMode === "signup";
+  const preference = useThemeStore((s) => s.preference);
+  const setPreference = useThemeStore((s) => s.setPreference);
+  const activeTheme = preferenceToMode(preference);
+
+  const themeOptions: {
+    mode: ThemeMode;
+    label: string;
+    hint: string;
+    icon: ThemeIcon;
+  }[] = [
+    {
+      mode: "light",
+      label: c.themeLight,
+      hint: c.themeLightHint,
+      icon: Sun,
+    },
+    {
+      mode: "dark",
+      label: c.themeDark,
+      hint: c.themeDarkHint,
+      icon: NoctaMark,
+    },
+    {
+      mode: "system",
+      label: c.themeSystem,
+      hint: c.themeSystemHint,
+      icon: Monitor,
+    },
+  ];
 
   return (
     <>
@@ -179,11 +228,39 @@ export function AuthDialog({
                       className="auth-traffic auth-traffic-max"
                     />
                   </div>
-                  <p className="flex-1 truncate text-center text-xs font-medium text-(--auth-soft)">
+                  <p className="min-w-0 flex-1 truncate text-center text-xs font-medium text-(--auth-soft)">
                     {loginContent.brand} ·{" "}
                     {isSignup ? c.signup.tab : c.login.tab}
                   </p>
-                  <span className="w-10 shrink-0" aria-hidden />
+                  <div
+                    role="group"
+                    aria-label={c.theme}
+                    className="flex shrink-0 items-center rounded-lg border border-(--auth-line) bg-(--auth-field) p-0.5"
+                  >
+                    {themeOptions.map(({ mode, label, hint, icon: Icon }) => {
+                      const selected = activeTheme === mode;
+                      return (
+                        <button
+                          key={mode}
+                          type="button"
+                          aria-label={hint}
+                          aria-pressed={selected}
+                          title={hint}
+                          className={cn(
+                            "flex size-6 items-center justify-center rounded-md outline-none transition-colors duration-150",
+                            "focus-visible:ring-2 focus-visible:ring-(--auth-glow)",
+                            selected
+                              ? "bg-(--auth-muted) text-(--auth-ink)"
+                              : "text-(--auth-soft) hover:text-(--auth-ink)",
+                          )}
+                          onClick={() => setPreference(modeToPreference(mode))}
+                        >
+                          <Icon className="size-3" aria-hidden />
+                          <span className="sr-only">{label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Scrollable fields */}

@@ -766,7 +766,7 @@ export function AiSubGrid() {
                               AI_ACCENT[0],
                             ].join(" ")}
                           >
-                            <PanelLabel>From tonight&apos;s score</PanelLabel>
+                            <PanelLabel>From your score</PanelLabel>
                             <p className="mt-2 min-h-10 text-sm font-medium text-foreground">
                               {scene.from}
                             </p>
@@ -853,7 +853,7 @@ export function AiSubGrid() {
                               AI_ACCENT[2],
                             ].join(" ")}
                           >
-                            <PanelLabel>Why this night</PanelLabel>
+                            <PanelLabel>Why this pick</PanelLabel>
                             <p className="mt-2 min-h-16 text-sm leading-6 text-muted-foreground">
                               Built from deadlines, neglect, rest days and focus
                               — not a preset list of actions.
@@ -1053,7 +1053,7 @@ export function LogParserSection() {
               open={shouldToast && toastOpen}
               align="start"
               title={c.saved}
-              description="Tonight's log is confirmed."
+              description="Your log is confirmed."
               type="success"
             />
             <form
@@ -1216,8 +1216,8 @@ export function LogParserSection() {
                   >
                     <p className="text-sm font-medium text-foreground">
                       {phaseShown === "type"
-                        ? "Type what you did tonight…"
-                        : "Parse a line to fill tonight's fields"}
+                        ? "Type what you did…"
+                        : "Parse a line to fill the fields"}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {c.fieldLabels.goal} · {c.fieldLabels.time} ·{" "}

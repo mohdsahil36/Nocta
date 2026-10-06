@@ -30,7 +30,7 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
     <ToastPrimitive.Viewport
       data-slot="toast-viewport"
       className={cn(
-        "pointer-events-none fixed inset-x-4 bottom-4 z-50 mx-auto w-auto max-w-sm outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
+        "pointer-events-none fixed inset-x-4 bottom-4 z-[200] mx-auto w-auto max-w-sm font-sans outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
         className,
       )}
       {...props}
@@ -43,7 +43,7 @@ function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
     <ToastPrimitive.Root
       data-slot="toast"
       className={cn(
-        "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-2xl border bg-popover text-popover-foreground shadow-lg will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-lg border border-border bg-card text-nocta-ink shadow-none will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
         "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
         "h-(--height) transform-[translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_500ms_cubic-bezier(0.22,1,0.36,1),opacity_500ms,height_150ms]",
         "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
@@ -82,7 +82,7 @@ function ToastTitle({ className, ...props }: ToastPrimitive.Title.Props) {
   return (
     <ToastPrimitive.Title
       data-slot="toast-title"
-      className={cn("text-sm font-medium", className)}
+      className={cn("font-sans text-sm font-medium tracking-normal", className)}
       {...props}
     />
   );
@@ -95,7 +95,10 @@ function ToastDescription({
   return (
     <ToastPrimitive.Description
       data-slot="toast-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn(
+        "font-sans text-sm tracking-normal text-muted-foreground",
+        className,
+      )}
       {...props}
     />
   );
@@ -242,19 +245,21 @@ function PanelToast({
           exit={{ opacity: 0, y: 8, scale: 0.98 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "pointer-events-none absolute bottom-3 z-30",
+            "pointer-events-none absolute bottom-3 z-30 font-sans",
             align === "stretch"
               ? "inset-x-3 sm:inset-x-4"
               : "left-3 right-auto w-max max-w-[min(calc(100%-5.5rem),16rem)] sm:left-4",
             className,
           )}
         >
-          <div className="pointer-events-auto flex items-center gap-2.5 rounded-2xl border border-foreground/15 bg-popover/95 px-3 py-2.5 text-popover-foreground shadow-lg backdrop-blur-sm outline-none">
+          <div className="pointer-events-auto flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5 text-nocta-ink shadow-none outline-none">
             <ToastIcon type={type} />
             <div className="min-w-0">
-              <p className="text-sm font-medium">{title}</p>
+              <p className="font-sans text-sm font-medium tracking-normal">
+                {title}
+              </p>
               {description ? (
-                <p className="text-xs leading-snug text-muted-foreground">
+                <p className="font-sans text-xs leading-snug tracking-normal text-muted-foreground">
                   {description}
                 </p>
               ) : null}

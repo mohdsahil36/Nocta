@@ -5,7 +5,7 @@ const deadlineSchema = z.iso.datetime().optional().nullable();
 export const createGoalSchema = z.object({
   userId: z.string().min(1),
   name: z.string().trim().min(1).max(120),
-  weight: z.number().int().min(1).max(100),
+  weight: z.number().int().min(1).max(5),
   deadline: deadlineSchema,
   nextAction: z.string().trim().min(1).max(240),
   status: z.enum(GoalStatus).default(GoalStatus.active),
@@ -13,7 +13,7 @@ export const createGoalSchema = z.object({
 
 export const updateGoalSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
-  weight: z.number().int().min(1).max(100).optional(),
+  weight: z.number().int().min(1).max(5).optional(),
   deadline: deadlineSchema,
   nextAction: z.string().trim().min(1).max(240).optional(),
   status: z.enum(GoalStatus).optional(),
