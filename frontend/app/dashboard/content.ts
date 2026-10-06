@@ -48,6 +48,7 @@ export const dashboardContent = {
   },
   account: {
     menuLabel: "Account menu",
+    sheetTitle: "Account",
     theme: "Theme",
     themeLight: "Light",
     themeDark: "Dark",

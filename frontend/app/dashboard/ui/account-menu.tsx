@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Menu } from "@base-ui/react/menu";
-import { LogOut, Monitor, Sun, type LucideIcon } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  LogOut,
+  Monitor,
+  Sun,
+  type LucideIcon,
+} from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { DeskLoader } from "@/components/ui/desk-loader";
 import { NoctaMark } from "@/components/ui/nocta-mark";
@@ -14,6 +21,8 @@ import { cn } from "cn";
 
 import { dashboardContent } from "../content";
 import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
+
+const easeOut = [0.22, 1, 0.36, 1] as const;
 
 type ThemeMode = "light" | "dark" | "system";
 
@@ -56,12 +65,25 @@ const THEME_OPTIONS: {
   },
 ];
 
+type AccountMenuProps = {
+  /** Icon-only trigger when the sidebar rail is collapsed. */
+  collapsed?: boolean;
+  /** Notify parent when the panel is open (hover-peek lock, etc.). */
+  onMenuOpenChange?: (open: boolean) => void;
+  /** Expand / pin the rail when opening from the collapsed icon. */
+  onExpandSidebar?: () => void;
+};
+
 /**
- * Navbar account menu — profile, theme (light/dark/system), log out.
- * Replaces the old standalone theme + logout icon buttons.
+ * Sidebar account — inline expand in the footer (no dialog / popover).
  */
-export function AccountMenu() {
+export function AccountMenu({
+  collapsed = false,
+  onMenuOpenChange,
+  onExpandSidebar,
+}: AccountMenuProps) {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
   const preference = useThemeStore((s) => s.preference);
   const hydrated = useThemeStore((s) => s.hydrated);
   const setPreference = useThemeStore((s) => s.setPreference);
@@ -84,13 +106,36 @@ export function AccountMenu() {
     };
   }, []);
 
+  // panel needs the expanded rail — close if the rail collapses
+  useEffect(() => {
+    if (collapsed && open) {
+      setOpen(false);
+      onMenuOpenChange?.(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when rail collapses
+  }, [collapsed]);
+
   const activeMode = hydrated ? preferenceToMode(preference) : "system";
+
+  function setPanelOpen(next: boolean) {
+    setOpen(next);
+    onMenuOpenChange?.(next);
+  }
+
+  function handleTriggerClick() {
+    if (collapsed) {
+      onExpandSidebar?.();
+      setPanelOpen(true);
+      return;
+    }
+    setPanelOpen(!open);
+  }
 
   async function handleLogout() {
     if (loggingOut) return;
     setLoggingOut(true);
     setLogoutError(null);
-    setOpen(false);
+    setPanelOpen(false);
     try {
       await logout();
       router.push(BEFORE_AUTH_PATH);
@@ -104,142 +149,190 @@ export function AccountMenu() {
 
   return (
     <>
-      <Menu.Root open={open} onOpenChange={setOpen}>
-        <Menu.Trigger
+      <div className={cn("flex w-full flex-col", collapsed && "items-center")}>
+        <button
+          type="button"
           className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-full",
-            "bg-foreground text-[11px] font-semibold text-background",
-            "outline-none transition-shadow duration-150",
-            "hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring",
-            "data-popup-open:ring-2 data-popup-open:ring-ring",
+            "flex w-full items-center gap-2.5 rounded-lg outline-none",
+            "transition-[background-color,box-shadow] duration-150",
+            "hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring",
+            open && "bg-muted/50",
+            collapsed ? "size-9 justify-center gap-0 p-0" : "px-2 py-1.5",
           )}
           aria-label={dashboardContent.account.menuLabel}
+          aria-expanded={open}
+          aria-controls="nocta-account-panel"
+          onClick={handleTriggerClick}
         >
-          {profile.initials}
-        </Menu.Trigger>
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[10px] font-semibold text-background">
+            {profile.initials}
+          </span>
+          {!collapsed ? (
+            <>
+              <span className="min-w-0 flex-1 text-left">
+                <span className="block truncate text-[13px] leading-tight font-medium text-nocta-ink">
+                  {profile.name}
+                </span>
+                <span className="mt-0.5 block truncate text-[10px] leading-tight text-muted-foreground">
+                  {profile.email ?? dashboardContent.sidebar.profileLabel}
+                </span>
+              </span>
+              <motion.span
+                className="inline-flex size-3.5 shrink-0 text-muted-foreground"
+                animate={{ rotate: open ? 180 : 0 }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.24, ease: easeOut }
+                }
+                aria-hidden
+              >
+                <ChevronDown className="size-3.5" />
+              </motion.span>
+            </>
+          ) : (
+            <span className="sr-only">{profile.name}</span>
+          )}
+        </button>
 
-        <Menu.Portal>
-          <Menu.Positioner
-            side="bottom"
-            align="end"
-            sideOffset={6}
-            alignOffset={0}
-            collisionPadding={12}
-            collisionAvoidance={{ side: "flip", align: "none" }}
-            className="z-50 outline-none"
-          >
-            <Menu.Popup
-              className={cn(
-                "w-[min(calc(100vw-1.5rem),16.5rem)] overflow-hidden rounded-xl",
-                "border border-border bg-card text-card-foreground shadow-none",
-                "origin-(--transform-origin) outline-none",
-                "data-starting-style:scale-95 data-starting-style:opacity-0",
-                "data-ending-style:scale-95 data-ending-style:opacity-0",
-                "transition-[transform,opacity] duration-150 ease-out",
-              )}
+        <AnimatePresence initial={false}>
+          {!collapsed && open ? (
+            <motion.div
+              key="account-panel"
+              id="nocta-account-panel"
+              initial={
+                reduceMotion ? false : { height: 0, opacity: 0, marginTop: 0 }
+              }
+              animate={{ height: "auto", opacity: 1, marginTop: 4 }}
+              exit={
+                reduceMotion
+                  ? undefined
+                  : { height: 0, opacity: 0, marginTop: 0 }
+              }
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.3, ease: easeOut }
+              }
+              className="w-full overflow-hidden"
             >
-              <div className="flex items-center gap-3 px-3.5 py-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground text-[12px] font-semibold text-background">
-                  {profile.initials}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] font-semibold leading-tight text-nocta-ink">
-                    {profile.name}
-                  </span>
-                  {profile.email ? (
-                    <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted-foreground">
-                      {profile.email}
-                    </span>
-                  ) : null}
-                </span>
-              </div>
-
-              <Separator />
-
-              <div className="px-2 py-2">
-                <div className="flex items-center gap-2 rounded-lg px-2 py-1.5">
-                  <span className="min-w-0 flex-1 text-[13px] text-nocta-ink">
-                    {dashboardContent.account.theme}
-                  </span>
-                  <div
-                    role="group"
-                    aria-label={dashboardContent.account.theme}
-                    className="flex shrink-0 items-center rounded-lg border border-border bg-muted/40 p-0.5"
-                  >
-                    {THEME_OPTIONS.map(({ mode, label, hint, icon: Icon }) => {
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.22, delay: 0.04, ease: easeOut }
+                }
+                className="rounded-lg border border-border bg-card"
+              >
+                <p className="px-2.5 pt-2 pb-1 text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+                  {dashboardContent.account.theme}
+                </p>
+                <div
+                  className="flex flex-col gap-0.5 px-1 pb-1"
+                  role="listbox"
+                  aria-label={dashboardContent.account.theme}
+                >
+                  {THEME_OPTIONS.map(
+                    ({ mode, label, hint, icon: Icon }, index) => {
                       const selected = activeMode === mode;
                       return (
-                        <button
+                        <motion.button
                           key={mode}
                           type="button"
-                          aria-label={hint}
-                          aria-pressed={selected}
+                          role="option"
+                          aria-selected={selected}
                           title={hint}
+                          initial={
+                            reduceMotion ? false : { opacity: 0, y: 6 }
+                          }
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={
+                            reduceMotion
+                              ? { duration: 0 }
+                              : {
+                                  duration: 0.2,
+                                  delay: 0.08 + index * 0.04,
+                                  ease: easeOut,
+                                }
+                          }
                           className={cn(
-                            "flex size-7 items-center justify-center rounded-md",
-                            "text-muted-foreground transition-[background-color,color] duration-150",
-                            "outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                            selected
-                              ? "bg-card text-nocta-ink shadow-none"
-                              : "hover:text-nocta-ink",
+                            "flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left",
+                            "text-[12px] text-nocta-ink outline-none transition-colors",
+                            "hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring",
+                            selected && "bg-muted/50",
                           )}
                           onClick={() => {
                             setPreference(modeToPreference(mode));
                           }}
                         >
-                          <Icon className="size-3.5" aria-hidden />
-                          <span className="sr-only">{label}</span>
-                        </button>
+                          <Icon
+                            className="size-3.5 shrink-0 text-muted-foreground"
+                            aria-hidden
+                          />
+                          <span className="min-w-0 flex-1">{label}</span>
+                          {selected ? (
+                            <Check
+                              className="size-3 shrink-0 text-primary"
+                              aria-hidden
+                            />
+                          ) : null}
+                        </motion.button>
                       );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="p-1.5">
-                <Menu.Item
-                  className={cn(
-                    "flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2",
-                    "text-[13px] text-nocta-ink outline-none select-none",
-                    "transition-[background-color,box-shadow] duration-150",
-                    "hover:bg-muted/60 focus:bg-muted/60",
-                    "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset",
-                    "data-highlighted:bg-muted/60 data-highlighted:ring-2 data-highlighted:ring-primary data-highlighted:ring-inset",
-                    "disabled:pointer-events-none disabled:opacity-50",
+                    },
                   )}
-                  disabled={loggingOut}
-                  onClick={() => {
-                    void handleLogout();
-                  }}
+                </div>
+
+                <Separator />
+
+                <motion.div
+                  className="p-1"
+                  initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.2, delay: 0.22, ease: easeOut }
+                  }
                 >
-                  <LogOut
-                    className="size-3.5 shrink-0 text-muted-foreground"
-                    aria-hidden
-                  />
-                  {dashboardContent.actions.logout}
-                </Menu.Item>
-              </div>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </Menu.Root>
+                  <button
+                    type="button"
+                    disabled={loggingOut}
+                    className={cn(
+                      "flex w-full items-center gap-2.5 rounded-md px-2 py-2",
+                      "text-[12px] text-nocta-ink outline-none transition-colors",
+                      "hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring",
+                      "disabled:pointer-events-none disabled:opacity-50",
+                    )}
+                    onClick={() => {
+                      void handleLogout();
+                    }}
+                  >
+                    <LogOut
+                      className="size-3.5 shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                    {dashboardContent.actions.logout}
+                  </button>
+                </motion.div>
 
-      {logoutError ? (
-        <p
-          className="absolute right-3 top-full mt-1 text-[11px] text-destructive"
-          role="alert"
-        >
-          {logoutError}
-        </p>
-      ) : null}
+                {logoutError ? (
+                  <p
+                    className="px-2.5 pb-2 text-[11px] text-destructive"
+                    role="alert"
+                  >
+                    {logoutError}
+                  </p>
+                ) : null}
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
 
-      <DeskLoader
-        variant="overlay"
-        open={loggingOut}
-        label="Signing out…"
-      />
+      <DeskLoader variant="overlay" open={loggingOut} label="Signing out…" />
     </>
   );
 }
