@@ -153,7 +153,7 @@ export default function LoginPage() {
         reduceMotion={reduceMotion}
         onHowItWorks={() => scrollToId("how-it-works")}
         onFaq={() => scrollToId("faq")}
-        onOpenAuth={() => openAuth()}
+        onOpenAuth={(mode) => openAuth(mode ?? "login")}
         onToggleTheme={toggleTheme}
       />
 
@@ -170,7 +170,7 @@ export default function LoginPage() {
           {/* Hero sits outside the rail band — wider, no vertical grid lines */}
           <Hero
             reduceMotion={reduceMotion}
-            onOpenAuth={() => openAuth()}
+            onOpenAuth={(mode) => openAuth(mode ?? "signup")}
             onHowItWorks={() => scrollToId("how-it-works")}
           />
 

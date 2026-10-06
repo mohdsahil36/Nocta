@@ -3,22 +3,24 @@
 import { Moon, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
+import { NoctaMark } from "@/components/ui/nocta-mark";
 import { loginContent } from "../content";
 import { navReveal } from "./motion";
 import { FRAME_PAD, Frame } from "./page-frame";
 
 type LandingNavProps = {
-  scrolled: boolean;
+  scrolled?: boolean;
   reduceMotion: boolean | null;
   onHowItWorks: () => void;
   onFaq: () => void;
-  onOpenAuth: () => void;
+  onOpenAuth: (mode?: "login" | "signup") => void;
   onToggleTheme: () => void;
 };
 
-/** Frosted glass nav across the full viewport; content aligned to the 1080 frame. */
+/**
+ * Landing nav — mark + wordmark; theme · Log in · Get started.
+ */
 export function LandingNav({
-  scrolled,
   reduceMotion,
   onHowItWorks,
   onFaq,
@@ -28,9 +30,8 @@ export function LandingNav({
   return (
     <motion.header
       className={[
-        "sticky top-0 z-50 w-full border-b border-foreground/10",
-        "bg-nocta-paper/65 backdrop-blur-2xl supports-backdrop-filter:bg-nocta-paper/50",
-        scrolled ? "shadow-[0_8px_30px_color-mix(in_oklab,var(--foreground)_4%,transparent)]" : "",
+        "sticky top-0 z-50 w-full border-b border-border/70",
+        "bg-nocta-paper/90 backdrop-blur-xl supports-backdrop-filter:bg-nocta-paper/80",
       ].join(" ")}
       variants={navReveal}
       initial={reduceMotion ? false : "hidden"}
@@ -39,22 +40,23 @@ export function LandingNav({
       <Frame>
         <div
           className={[
-            "flex h-14 w-full items-center justify-between gap-3 sm:h-16",
+            "flex h-14 w-full items-center justify-between gap-2 sm:gap-3",
             FRAME_PAD,
           ].join(" ")}
         >
           <a
             href="#top"
-            className="cursor-pointer font-sans text-base font-semibold tracking-[-0.02em] text-foreground sm:text-lg"
+            className="flex min-w-0 items-center gap-2 font-sans text-base font-semibold tracking-[-0.02em] text-foreground"
           >
-            {loginContent.brand}
+            <NoctaMark className="size-4 shrink-0 text-primary" />
+            <span className="truncate">{loginContent.brand}</span>
           </a>
 
-          <nav className="flex items-center gap-0.5 sm:gap-1">
+          <nav className="flex shrink-0 items-center gap-0.5 sm:gap-1">
             <Button
               variant="ghost"
               size="sm"
-              className="hidden cursor-pointer rounded-md px-3 text-muted-foreground hover:bg-foreground/5 hover:text-foreground sm:inline-flex"
+              className="hidden cursor-pointer rounded-md px-3 text-muted-foreground hover:bg-muted/60 hover:text-foreground md:inline-flex"
               onClick={onHowItWorks}
             >
               {loginContent.nav.howItWorks}
@@ -62,7 +64,7 @@ export function LandingNav({
             <Button
               variant="ghost"
               size="sm"
-              className="hidden cursor-pointer rounded-md px-3 text-muted-foreground hover:bg-foreground/5 hover:text-foreground sm:inline-flex"
+              className="hidden cursor-pointer rounded-md px-3 text-muted-foreground hover:bg-muted/60 hover:text-foreground md:inline-flex"
               onClick={onFaq}
             >
               {loginContent.nav.faq}
@@ -70,7 +72,7 @@ export function LandingNav({
             <Button
               variant="ghost"
               size="icon"
-              className="size-9 cursor-pointer rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+              className="size-9 cursor-pointer rounded-md text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               onClick={onToggleTheme}
               aria-label={loginContent.nav.theme}
               title={loginContent.nav.theme}
@@ -79,9 +81,17 @@ export function LandingNav({
               <Moon className="hidden size-4 dark:block" />
             </Button>
             <Button
+              variant="ghost"
               size="sm"
-              className="ml-1 h-9 cursor-pointer rounded-lg px-4 text-sm font-semibold"
-              onClick={onOpenAuth}
+              className="hidden h-9 cursor-pointer rounded-md px-3 text-sm font-medium sm:inline-flex"
+              onClick={() => onOpenAuth("login")}
+            >
+              {loginContent.nav.login}
+            </Button>
+            <Button
+              size="sm"
+              className="ml-0.5 h-9 cursor-pointer rounded-md px-3.5 text-sm font-semibold sm:ml-1"
+              onClick={() => onOpenAuth("signup")}
             >
               {loginContent.nav.cta}
             </Button>

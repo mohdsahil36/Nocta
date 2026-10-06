@@ -1,78 +1,101 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { EncryptedText } from "@/components/ui/encrypted-text";
+import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { loginContent } from "../content";
 import { fadeUp, stagger } from "./motion";
 import { FRAME_PAD, Frame } from "./page-frame";
 
 type HeroProps = {
   reduceMotion: boolean | null;
-  onOpenAuth: () => void;
+  onOpenAuth: (mode?: "login" | "signup") => void;
   onHowItWorks: () => void;
 };
 
+const brandTypeSize =
+  "text-[clamp(2.75rem,8vw,4.5rem)] leading-none font-semibold tracking-[-0.045em] text-left";
+
+/** Type-in (~5 chars × 100ms) + hold before remount loop. */
+const TYPEWRITER_LOOP_MS = 3200;
+
 /**
- * Same 1080 column as TRY IT / product (no vertical rails drawn here).
- * Headline + body/CTA row span the full frame — body left, buttons right.
+ * Nocta desk hero — brand with looping TypewriterEffect (remount cycle).
  */
 export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
   const c = loginContent.hero;
+  const [typeCycle, setTypeCycle] = useState(0);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const id = window.setInterval(() => {
+      setTypeCycle((n) => n + 1);
+    }, TYPEWRITER_LOOP_MS);
+    return () => window.clearInterval(id);
+  }, [reduceMotion]);
+
   return (
-    <section id="top" className="relative isolate bg-nocta-paper">
-      {/* Same paper + blue linear wash as footer (top → transparent) */}
+    <section id="top" className="relative isolate scroll-mt-16">
       <div
         aria-hidden
-        className="nocta-hero-wash pointer-events-none absolute inset-0 -z-10"
+        className="nocta-dusk-field pointer-events-none absolute inset-0"
       />
-      <Frame>
+
+      <Frame className="relative z-10">
         <motion.div
           className={[
-            "overflow-x-clip pt-24 pb-16 sm:pt-32 sm:pb-24",
+            "flex flex-col pt-12 pb-16 sm:pt-16 sm:pb-20",
             FRAME_PAD,
           ].join(" ")}
           variants={stagger}
           initial={reduceMotion ? false : "hidden"}
           animate="show"
         >
-          <h1 className="w-full min-h-[2.5em] font-sans text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[1.12] font-semibold tracking-[-0.035em] text-foreground sm:min-h-[2.25em]">
-            {reduceMotion ? (
-              c.headline
-            ) : (
-              <EncryptedText
-                text={c.headline}
-                playOnMount
-                loop
-                loopDelayMs={2800}
-                revealDelayMs={32}
-                flipDelayMs={42}
-                className="max-w-full font-sans text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[1.12] font-semibold tracking-[-0.035em]"
-                revealedClassName="text-foreground"
-                encryptedClassName="text-[color-mix(in_oklab,oklch(0.58_0.11_45)_65%,var(--muted-foreground))] dark:text-[color-mix(in_oklab,oklch(0.78_0.1_55)_55%,var(--muted-foreground))]"
-              />
-            )}
-          </h1>
+          <motion.div variants={fadeUp} className="min-w-0 max-w-2xl">
+            <p className="font-sans text-[11px] font-medium tracking-[0.16em] text-primary uppercase">
+              {c.eyebrow}
+            </p>
 
-          <motion.div
-            variants={fadeUp}
-            className="mt-10 flex w-full flex-col gap-8 sm:mt-14 sm:flex-row sm:items-end sm:justify-between"
-          >
-            <p className="max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <div className="mt-5 min-h-[1.05em] font-sans text-foreground">
+              {reduceMotion ? (
+                <p className={brandTypeSize}>{loginContent.brand}</p>
+              ) : (
+                <TypewriterEffect
+                  key={typeCycle}
+                  words={[
+                    {
+                      text: loginContent.brand,
+                      className:
+                        "font-sans font-semibold tracking-[-0.045em] text-foreground dark:text-foreground",
+                    },
+                  ]}
+                  className={brandTypeSize}
+                  cursorClassName="h-[0.85em] w-[3px] translate-y-[0.08em] rounded-sm bg-primary md:h-[0.85em] lg:h-[0.85em]"
+                />
+              )}
+            </div>
+
+            <h1 className="mt-4 max-w-xl font-sans text-[clamp(1.35rem,3.2vw,1.75rem)] leading-snug font-medium tracking-[-0.025em] text-foreground">
+              {c.headline}
+            </h1>
+
+            <p className="mt-4 max-w-md font-sans text-base leading-relaxed text-muted-foreground sm:text-[15px]">
               {c.body}
             </p>
-            <div className="flex shrink-0 flex-col gap-2.5 sm:flex-row sm:justify-end">
+
+            <div className="mt-8 flex flex-col gap-2.5 sm:mt-9 sm:flex-row sm:items-center">
               <Button
                 size="lg"
                 className="h-11 rounded-lg px-6 text-sm font-semibold"
-                onClick={onOpenAuth}
+                onClick={() => onOpenAuth("signup")}
               >
                 {c.primaryCta}
               </Button>
               <Button
                 size="lg"
-                variant="secondary"
-                className="h-11 rounded-lg px-6 text-sm font-semibold"
+                variant="ghost"
+                className="h-11 rounded-lg px-4 text-sm font-medium text-muted-foreground hover:text-foreground"
                 onClick={onHowItWorks}
               >
                 {c.secondaryCta}
@@ -86,23 +109,25 @@ export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
 }
 
 /**
- * TRY IT strip — full-bleed peach wash; badge + copy stay on the 1080 rail.
+ * TRY IT — quiet ink rail into the demo.
  */
 export function HeroTryIt() {
   const c = loginContent.hero;
   return (
-    <div className="w-full bg-landing-peach/80">
+    <div className="w-full border-y border-border bg-muted/30">
       <Frame>
         <div
           className={[
-            "flex flex-wrap items-center gap-3 py-4",
+            "flex flex-col gap-2 py-5 sm:flex-row sm:items-center sm:gap-4",
             FRAME_PAD,
           ].join(" ")}
         >
-          <span className="inline-flex h-6 items-center rounded-full bg-foreground px-2.5 text-[10px] font-semibold tracking-[0.12em] text-background uppercase">
+          <span className="inline-flex h-6 w-fit items-center rounded-md bg-primary px-2.5 text-[10px] font-semibold tracking-[0.14em] text-primary-foreground uppercase">
             {c.tryItLabel}
           </span>
-          <p className="text-sm text-muted-foreground">{c.tryItHint}</p>
+          <p className="text-sm leading-snug text-muted-foreground">
+            {c.tryItHint}
+          </p>
         </div>
       </Frame>
     </div>

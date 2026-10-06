@@ -6,15 +6,22 @@ import cors from "cors";
 
 const app = express();
 app.use(express.json());
+
+/** Origins always allowed (local + known production web). Env can add more. */
+const DEFAULT_CORS_ORIGINS = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://nocta-two-theta.vercel.app",
+];
+
 const allowedOrigins = new Set(
-  (
-    process.env.CORS_ORIGINS ??
-    process.env.CLIENT_URL ??
-    "http://localhost:3000,http://127.0.0.1:3000"
-  )
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean),
+  [
+    ...DEFAULT_CORS_ORIGINS,
+    ...(process.env.CORS_ORIGINS ?? process.env.CLIENT_URL ?? "")
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+  ],
 );
 
 // Local Next often flips between localhost / 127.0.0.1 — allow both in dev.
@@ -26,11 +33,33 @@ for (const origin of [...allowedOrigins]) {
   }
 }
 
+/** Vercel prod + preview hosts for this app (goals, users, activity share this). */
+function isNoctaVercelOrigin(origin: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    if (protocol !== "https:") return false;
+    // nocta-two-theta.vercel.app · nocta-*-*.vercel.app previews
+    return (
+      hostname === "nocta-two-theta.vercel.app" ||
+      (hostname.endsWith(".vercel.app") && hostname.startsWith("nocta"))
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedOrigin(origin: string | undefined): boolean {
+  // Non-browser clients (curl, health checks) send no Origin.
+  if (!origin) return true;
+  if (allowedOrigins.has(origin)) return true;
+  if (isNoctaVercelOrigin(origin)) return true;
+  return false;
+}
+
 app.use(
   cors({
     origin(origin, callback) {
-      // Non-browser clients (curl, health checks) send no Origin.
-      if (!origin || allowedOrigins.has(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
@@ -39,6 +68,7 @@ app.use(
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
   }),
 );
 

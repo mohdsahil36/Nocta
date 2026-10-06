@@ -431,6 +431,83 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   );
 }
 
+/* Nocta evening desk — soft dusk field (not graph paper / Blueprint) */
+.nocta-dusk-field {
+  background-color: var(--nocta-paper);
+  background-image:
+    radial-gradient(
+      ellipse 90% 70% at 70% -10%,
+      color-mix(in oklab, var(--primary) 16%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 0% 100%,
+      color-mix(in oklab, var(--landing-dusk-blue) 55%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--landing-dusk-blue) 35%, transparent) 0%,
+      transparent 55%
+    );
+}
+.dark .nocta-dusk-field {
+  background-image:
+    radial-gradient(
+      ellipse 90% 70% at 70% -10%,
+      color-mix(in oklab, var(--primary) 22%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 10% 110%,
+      color-mix(in oklab, var(--primary) 12%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--primary) 10%, transparent) 0%,
+      transparent 50%
+    );
+}
+
+/* Soft mark halo in the hero */
+.nocta-dusk-orb {
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      color-mix(in oklab, var(--primary) 18%, transparent) 0%,
+      color-mix(in oklab, var(--primary) 6%, transparent) 42%,
+      transparent 68%
+    );
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 14%, transparent);
+}
+.dark .nocta-dusk-orb {
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      color-mix(in oklab, var(--primary) 28%, transparent) 0%,
+      color-mix(in oklab, var(--primary) 10%, transparent) 45%,
+      transparent 70%
+    );
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 22%, transparent);
+}
+
+/* Auth atmosphere — deep night panel (distinct from landing paper) */
+.nocta-auth-dusk {
+  background-color: var(--nocta-night, rgb(14, 14, 14));
+  background-image:
+    radial-gradient(
+      ellipse 80% 60% at 30% 0%,
+      color-mix(in oklab, rgb(0, 109, 221) 35%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 90% 80%,
+      color-mix(in oklab, rgb(0, 109, 221) 12%, transparent),
+      transparent 50%
+    );
+}
+
 /* Bento card surface */
 /* Legacy elevated bento (illustrations may still reference) */
 .nocta-bento-card {
