@@ -45,7 +45,7 @@ export async function fetchNoctaCommits() {
         "GITHUB_KEY_INVALID",
         "GitHub App private key is invalid",
         {
-          hint: "Set NOCTA_PRIVATE_KEY to the full App .pem. On Render, paste as one line with literal \\n between PEM lines.",
+          hint: "Set NOCTA_PRIVATE_KEY_BASE64 (base64 of the App .pem) or a valid NOCTA_PRIVATE_KEY / PATH.",
           cause: error,
         },
       );
