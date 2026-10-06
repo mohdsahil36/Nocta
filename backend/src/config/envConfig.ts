@@ -14,14 +14,25 @@ const parsed = z
       .number()
       .int()
       .positive() /**Env will recieved strong this will convert it o number format**/,
+    /** Render — base64 of the GitHub App `.pem` (avoids newline mangling) */
+    NOCTA_PRIVATE_KEY_BASE64: z.string().min(1).optional(),
     /** Inline PEM — use this on Render (secret env var) */
     NOCTA_PRIVATE_KEY: z.string().min(1).optional(),
     /** Path to `.pem` — local only; file is gitignored and not on Render */
     NOCTA_PRIVATE_KEY_PATH: z.string().min(1).optional(),
   })
-  .refine((env) => Boolean(env.NOCTA_PRIVATE_KEY || env.NOCTA_PRIVATE_KEY_PATH), {
-    message: "Set NOCTA_PRIVATE_KEY (Render) or NOCTA_PRIVATE_KEY_PATH (local)",
-  })
+  .refine(
+    (env) =>
+      Boolean(
+        env.NOCTA_PRIVATE_KEY_BASE64 ||
+          env.NOCTA_PRIVATE_KEY ||
+          env.NOCTA_PRIVATE_KEY_PATH,
+      ),
+    {
+      message:
+        "Set NOCTA_PRIVATE_KEY_BASE64 (Render), NOCTA_PRIVATE_KEY, or NOCTA_PRIVATE_KEY_PATH (local)",
+    },
+  )
   .parse(process.env);
 
 /** Rebuild PEM so Render one-line / space-mangled secrets still parse. */
@@ -55,16 +66,21 @@ function normalizePem(raw: string): string {
 }
 
 function loadPrivateKey(): string {
-  const raw = parsed.NOCTA_PRIVATE_KEY
-    ? parsed.NOCTA_PRIVATE_KEY
-    : readFileSync(parsed.NOCTA_PRIVATE_KEY_PATH!, "utf8");
+  const raw = parsed.NOCTA_PRIVATE_KEY_BASE64
+    ? Buffer.from(
+        parsed.NOCTA_PRIVATE_KEY_BASE64.replace(/\s+/g, ""),
+        "base64",
+      ).toString("utf8")
+    : parsed.NOCTA_PRIVATE_KEY
+      ? parsed.NOCTA_PRIVATE_KEY
+      : readFileSync(parsed.NOCTA_PRIVATE_KEY_PATH!, "utf8");
 
   const pem = normalizePem(raw);
   try {
     createPrivateKey(pem);
   } catch {
     throw new Error(
-      "NOCTA_PRIVATE_KEY is invalid — paste the full GitHub App .pem (or use literal \\n between lines on Render)",
+      "NOCTA_PRIVATE_KEY is invalid — use NOCTA_PRIVATE_KEY_BASE64 on Render, or paste the full GitHub App .pem",
     );
   }
   return pem;

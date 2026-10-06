@@ -10,7 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useMemo, useRef, useSyncExternalStore } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { LucideIcon } from "lucide-react";
 
@@ -33,11 +33,21 @@ function useTodayLabel() {
 
 export default function ActivityPage() {
   const todayLabel = useTodayLabel();
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["activity", "platform-commits"],
     queryFn: fetchPlatformCommits,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
+
+  const sync = () => {
+    void queryClient.invalidateQueries({
+      queryKey: ["activity", "platform-commits"],
+    });
+  };
 
   const commits = data?.commits ?? EMPTY_COMMITS;
   const totalCommits = data?.count ?? 0;
@@ -82,7 +92,7 @@ export default function ActivityPage() {
         </div>
         <button
           type="button"
-          onClick={() => void refetch()}
+          onClick={sync}
           disabled={isFetching}
           className={cn(
             buttonVariants({ variant: "outline", size: "sm" }),
