@@ -25,7 +25,15 @@ const parsed = z
 
 function loadPrivateKey(): string {
   if (parsed.NOCTA_PRIVATE_KEY) {
-    return parsed.NOCTA_PRIVATE_KEY.replace(/\\n/g, "\n");
+    let key = parsed.NOCTA_PRIVATE_KEY.trim();
+    // Render / dashboards often wrap secrets in quotes or use literal \n
+    if (
+      (key.startsWith('"') && key.endsWith('"')) ||
+      (key.startsWith("'") && key.endsWith("'"))
+    ) {
+      key = key.slice(1, -1);
+    }
+    return key.replace(/\\n/g, "\n").replace(/\r\n/g, "\n").trim();
   }
   return readFileSync(parsed.NOCTA_PRIVATE_KEY_PATH!, "utf8");
 }

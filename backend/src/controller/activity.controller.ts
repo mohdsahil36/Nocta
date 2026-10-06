@@ -12,9 +12,11 @@ export async function fetchNoctaCommitHistoryController(
       data: commit,
     });
   } catch (error) {
-    console.error("Error fetching commit history", error);
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error("Error fetching commit history", detail);
     res.status(500).json({
       error: "Failed to fetch commit history",
+      detail,
     });
   }
 }
