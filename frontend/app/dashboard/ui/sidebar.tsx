@@ -48,7 +48,7 @@ const TOP_NAV: NavItem[] = [
 
 const PLAN_NAV: NavItem[] = [
   {
-    href: "/dashboard#goals",
+    href: "/goals",
     label: dashboardContent.nav.goals,
     icon: Target,
     motion: "tilt",
@@ -81,6 +81,9 @@ type DashboardSidebarProps = {
 function isNavActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
   if (href.startsWith("/dashboard#")) return false;
+  if (href === "/goals") {
+    return pathname === "/goals" || pathname.startsWith("/goals/");
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -130,18 +133,39 @@ function NavLink({
   );
 }
 
-function SectionLabel({
+function SidebarSection({
+  label,
+  collapsed,
+  ariaLabel,
   children,
-  hidden,
 }: {
-  children: string;
-  hidden?: boolean;
+  label?: string;
+  collapsed: boolean;
+  ariaLabel: string;
+  children: React.ReactNode;
 }) {
-  if (hidden) return null;
   return (
-    <p className="mt-4 mb-1.5 px-2.5 text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-      {children}
-    </p>
+    <section
+      className={cn(
+        "border-b border-border py-2 last:border-b-0",
+        collapsed ? "px-1" : "px-2",
+      )}
+    >
+      {!collapsed && label ? (
+        <p className="mb-1.5 px-2.5 text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+          {label}
+        </p>
+      ) : null}
+      <nav
+        className={cn(
+          "flex flex-col gap-0.5",
+          collapsed && "w-full items-center",
+        )}
+        aria-label={ariaLabel}
+      >
+        {children}
+      </nav>
+    </section>
   );
 }
 
@@ -260,7 +284,7 @@ export function DashboardSidebar({
           {/* Brand — icon only when collapsed */}
           <div
             className={cn(
-              "flex h-12 shrink-0 items-center gap-2 px-3",
+              "flex h-12 shrink-0 items-center gap-2 border-b border-border px-3",
               collapsed && "justify-center px-0",
             )}
           >
@@ -304,17 +328,11 @@ export function DashboardSidebar({
 
           <div
             className={cn(
-              "flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain px-2 pb-2",
-              collapsed && "items-center px-1",
+              "flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain",
+              collapsed && "items-center",
             )}
           >
-            <nav
-              className={cn(
-                "flex flex-col gap-0.5",
-                collapsed && "w-full items-center",
-              )}
-              aria-label="Primary"
-            >
+            <SidebarSection collapsed={collapsed} ariaLabel="Primary">
               {TOP_NAV.map((item) => (
                 <NavLink
                   key={item.href}
@@ -324,17 +342,12 @@ export function DashboardSidebar({
                   collapsed={collapsed}
                 />
               ))}
-            </nav>
+            </SidebarSection>
 
-            <SectionLabel hidden={collapsed}>
-              {dashboardContent.sidebar.planLabel}
-            </SectionLabel>
-            <nav
-              className={cn(
-                "flex flex-col gap-0.5",
-                collapsed && "w-full items-center",
-              )}
-              aria-label="Plan"
+            <SidebarSection
+              collapsed={collapsed}
+              label={dashboardContent.sidebar.planLabel}
+              ariaLabel="Plan"
             >
               {PLAN_NAV.map((item) => (
                 <NavLink
@@ -345,17 +358,12 @@ export function DashboardSidebar({
                   collapsed={collapsed}
                 />
               ))}
-            </nav>
+            </SidebarSection>
 
-            <SectionLabel hidden={collapsed}>
-              {dashboardContent.sidebar.workspaceLabel}
-            </SectionLabel>
-            <nav
-              className={cn(
-                "flex flex-col gap-0.5",
-                collapsed && "w-full items-center",
-              )}
-              aria-label="Workspace"
+            <SidebarSection
+              collapsed={collapsed}
+              label={dashboardContent.sidebar.workspaceLabel}
+              ariaLabel="Workspace"
             >
               {WORKSPACE_NAV.map((item) => (
                 <NavLink
@@ -366,7 +374,7 @@ export function DashboardSidebar({
                   collapsed={collapsed}
                 />
               ))}
-            </nav>
+            </SidebarSection>
           </div>
 
           <footer

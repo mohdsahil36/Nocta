@@ -11,7 +11,7 @@ export const dashboardContent = {
     workspaceLabel: "Workspace",
     profileLabel: "Signed in",
     tagline: "One action",
-    taglineSupport: "Close the night with clarity.",
+    taglineSupport: "One clear next step.",
   },
   nav: {
     dashboard: "Dashboard",
@@ -59,23 +59,23 @@ export const dashboardContent = {
   stats: {
     momentum: "Momentum",
     goals: "Goals",
-    nights: "Nights logged",
+    nights: "Sessions logged",
     recovery: "Recovery",
   },
   continue: {
     eyebrow: "Continue where you left off",
-    emptyTitle: "Nothing queued for tonight",
+    emptyTitle: "Nothing queued yet",
     emptyBody:
       "When goals and a check-in are in place, your one next step shows up here.",
-    meta: "Tonight · scored pick · Add goals to begin",
+    meta: "Scored pick · Add goals to begin",
   },
   today: {
     title: "Today",
     plannerLabel: "Check-in",
-    plannerEmpty: "No check-in yet tonight.",
+    plannerEmpty: "No check-in yet today.",
     planLabel: "Week",
     planEmptyTitle: "No pulse yet",
-    planEmptyBody: "Momentum and nights appear once you start logging.",
-    tip: "A recovery night doesn’t cost you momentum.",
+    planEmptyBody: "Momentum and sessions appear once you start logging.",
+    tip: "Recovery doesn’t cost you momentum.",
   },
 };

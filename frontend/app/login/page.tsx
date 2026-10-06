@@ -9,8 +9,13 @@ import {
   AFTER_AUTH_PATH,
   loginWithEmail,
   signupWithEmail,
+  syncWithUserTable,
   type AuthMode,
 } from "./functions/auth";
+import {
+  getCurrentUserId,
+  shouldEnterGoalsOnboarding,
+} from "@/app/goals/functions/goals";
 import { AuthDialog } from "./ui/auth-dialog";
 import { FaqSection } from "./ui/faq";
 import {
@@ -30,7 +35,7 @@ import { OptionSwapSection } from "./ui/option-swap";
 import { FullRule } from "./ui/section";
 import { FRAME_PAD, Frame, PageFrameRails } from "./ui/page-frame";
 import { TonightDemo } from "./ui/tonight-demo";
-import { NoctaLoader } from "@/components/ui/nocta-loader";
+import { DeskLoader } from "@/components/ui/desk-loader";
 import useThemeStore from "@/app/store/themeStore";
 import {
   AUTH_EXIT_MS,
@@ -92,7 +97,19 @@ export default function LoginPage() {
         window.setTimeout(resolve, AUTH_EXIT_MS);
       });
     }
-    router.push(AFTER_AUTH_PATH);
+
+    let nextPath = AFTER_AUTH_PATH;
+    try {
+      await syncWithUserTable();
+      const userId = await getCurrentUserId();
+      if (await shouldEnterGoalsOnboarding(userId)) {
+        nextPath = "/goals/onboarding";
+      }
+    } catch {
+      // Backend / session hiccup — still enter the app
+      nextPath = "/dashboard";
+    }
+    router.push(nextPath);
   };
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -242,10 +259,9 @@ export default function LoginPage() {
           onAuthErrorChange={setAuthError}
         />
       </motion.div>
-      <NoctaLoader
+      <DeskLoader
         variant="overlay"
         open={authBusy || routeLeaving}
-        title={loginContent.brand}
         label={loginContent.auth.handoff}
       />
     </>

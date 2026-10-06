@@ -96,3 +96,27 @@ export async function logout(): Promise<void> {
     throw new Error(error.message);
   }
 }
+
+/** Sync the logged in user with the db User table */
+export async function syncWithUserTable() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    throw new Error(error.message);
+  }
+  if (!data.user?.id || !data.user.email) throw new Error("Not signed in");
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/users`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: data.user.id,
+        email: data.user.email,
+      }),
+    },
+  );
+
+  if (!response.ok)
+    throw new Error("Failed to sync the user with the database");
+}
