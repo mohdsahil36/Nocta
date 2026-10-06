@@ -4,7 +4,7 @@ export const metadata: Metadata = {
   title: {
     absolute: "Nocta",
   },
-  description: "One meaningful action, every night.",
+  description: "One meaningful action, when it counts.",
 };
 
 /**

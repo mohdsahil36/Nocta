@@ -128,52 +128,37 @@ export function AuthDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
           showCloseButton={false}
-          overlayClassName="bg-nocta-night/75 duration-200 supports-backdrop-filter:backdrop-blur-md"
-          className="flex! w-[calc(100%-1.5rem)] max-w-lg flex-col gap-0 overflow-hidden rounded-2xl border-0 bg-nocta-night p-0 text-zinc-900 shadow-[0_28px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/10 sm:rounded-3xl md:max-w-240"
+          overlayClassName="bg-nocta-night/70 duration-200 supports-backdrop-filter:backdrop-blur-md"
+          className="flex! w-[calc(100%-1.5rem)] max-w-lg flex-col gap-0 overflow-hidden rounded-2xl border-0 bg-nocta-night p-0 text-zinc-900 shadow-none ring-1 ring-white/10 sm:rounded-3xl md:max-w-240"
           style={{
             height: "min(48rem, 94svh)",
             maxHeight: "min(48rem, 94svh)",
           }}
         >
           <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden md:flex-row">
-            {/* Desktop full-bleed atmosphere */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/nocta-auth-panel.jpg"
-              alt=""
-              className="pointer-events-none absolute inset-0 hidden h-full w-full object-cover object-[center_40%] md:block"
-            />
-            <div className="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-nocta-night/70 via-nocta-night/35 to-nocta-night/50 md:block" />
-            <div className="pointer-events-none absolute inset-0 hidden bg-linear-to-t from-nocta-night/80 via-transparent to-nocta-night/40 md:block" />
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(ellipse_at_20%_20%,color-mix(in_oklab,oklch(0.78_0.08_230)_28%,transparent),transparent_50%),radial-gradient(ellipse_at_70%_85%,color-mix(in_oklab,oklch(0.8_0.1_55)_18%,transparent),transparent_45%)] md:block"
+              className="nocta-auth-dusk pointer-events-none absolute inset-0 hidden md:block"
             />
 
-            {/* Mobile — image band above the form */}
+            {/* Mobile — dusk band above the form */}
             <div className="relative h-36 shrink-0 overflow-hidden sm:h-40 md:hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/nocta-auth-panel.jpg"
-                alt=""
-                className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_35%]"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-nocta-night/85 via-nocta-night/25 to-nocta-night/40" />
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_20%,color-mix(in_oklab,oklch(0.78_0.08_230)_28%,transparent),transparent_55%),radial-gradient(ellipse_at_80%_80%,color-mix(in_oklab,oklch(0.8_0.1_55)_16%,transparent),transparent_50%)]"
+                className="nocta-auth-dusk pointer-events-none absolute inset-0"
               />
-              <div className="relative z-10 flex h-full flex-col justify-between p-5">
+              <div className="relative z-10 flex h-full flex-col justify-between p-5 text-white">
                 <div>
-                  <p className="text-[11px] font-medium tracking-[0.14em] text-white/55 uppercase">
+                  <p className="text-[11px] font-medium tracking-[0.16em] text-white/55 uppercase">
                     {c.panelEyebrow}
                   </p>
-                  <p className="mt-1.5 font-sans text-lg font-semibold tracking-[-0.03em] text-white">
+                  <p className="mt-2 flex items-center gap-2 font-sans text-lg font-semibold tracking-[-0.03em]">
+                    <NoctaMark className="size-4 text-white" />
                     {loginContent.brand}
                   </p>
                 </div>
                 <div className="max-w-72">
-                  <p className="font-sans text-base leading-snug font-semibold tracking-[-0.03em] text-white">
+                  <p className="font-sans text-base leading-snug font-semibold tracking-[-0.03em]">
                     {c.panelTitle}
                   </p>
                   <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-white/70">
@@ -183,13 +168,14 @@ export function AuthDialog({
               </div>
             </div>
 
-            {/* Desktop — left atmosphere copy */}
+            {/* Desktop — left dusk copy */}
             <div className="relative z-10 hidden min-h-0 min-w-0 flex-1 flex-col justify-between overflow-hidden p-8 text-white md:flex lg:p-10">
               <div>
-                <p className="text-[11px] font-medium tracking-[0.14em] text-white/50 uppercase">
+                <p className="text-[11px] font-medium tracking-[0.16em] text-white/50 uppercase">
                   {c.panelEyebrow}
                 </p>
-                <p className="mt-3 font-sans text-xl font-semibold tracking-[-0.03em]">
+                <p className="mt-3 flex items-center gap-2 font-sans text-xl font-semibold tracking-[-0.03em]">
+                  <NoctaMark className="size-4 text-white" />
                   {loginContent.brand}
                 </p>
               </div>
