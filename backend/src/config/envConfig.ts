@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { createPrivateKey } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { z } from "zod";
 
@@ -23,19 +24,50 @@ const parsed = z
   })
   .parse(process.env);
 
-function loadPrivateKey(): string {
-  if (parsed.NOCTA_PRIVATE_KEY) {
-    let key = parsed.NOCTA_PRIVATE_KEY.trim();
-    // Render / dashboards often wrap secrets in quotes or use literal \n
-    if (
-      (key.startsWith('"') && key.endsWith('"')) ||
-      (key.startsWith("'") && key.endsWith("'"))
-    ) {
-      key = key.slice(1, -1);
-    }
-    return key.replace(/\\n/g, "\n").replace(/\r\n/g, "\n").trim();
+/** Rebuild PEM so Render one-line / space-mangled secrets still parse. */
+function normalizePem(raw: string): string {
+  let key = raw.trim();
+  if (
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"))
+  ) {
+    key = key.slice(1, -1);
   }
-  return readFileSync(parsed.NOCTA_PRIVATE_KEY_PATH!, "utf8");
+  key = key.replace(/\\n/g, "\n").replace(/\r\n/g, "\n").trim();
+
+  const match = key.match(
+    /-----BEGIN ([A-Z0-9 ]+)-----([\s\S]+?)-----END \1-----/,
+  );
+  if (!match) {
+    throw new Error(
+      "NOCTA_PRIVATE_KEY is not a PEM (missing BEGIN/END PRIVATE KEY headers)",
+    );
+  }
+
+  const type = match[1]!;
+  const body = match[2]!.replace(/\s+/g, "");
+  if (!body) {
+    throw new Error("NOCTA_PRIVATE_KEY PEM body is empty");
+  }
+
+  const lines = body.match(/.{1,64}/g) ?? [body];
+  return `-----BEGIN ${type}-----\n${lines.join("\n")}\n-----END ${type}-----`;
+}
+
+function loadPrivateKey(): string {
+  const raw = parsed.NOCTA_PRIVATE_KEY
+    ? parsed.NOCTA_PRIVATE_KEY
+    : readFileSync(parsed.NOCTA_PRIVATE_KEY_PATH!, "utf8");
+
+  const pem = normalizePem(raw);
+  try {
+    createPrivateKey(pem);
+  } catch {
+    throw new Error(
+      "NOCTA_PRIVATE_KEY is invalid — paste the full GitHub App .pem (or use literal \\n between lines on Render)",
+    );
+  }
+  return pem;
 }
 
 export const envConfig = {

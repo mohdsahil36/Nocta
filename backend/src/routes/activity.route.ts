@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { fetchNoctaCommitHistoryController } from "../controller/activity.controller.js";
+import { asyncHandler } from "../lib/async-handler.js";
 
 const router = Router();
 
-router.get("/activity/commits", fetchNoctaCommitHistoryController);
+router.get(
+  "/activity/commits",
+  asyncHandler(fetchNoctaCommitHistoryController),
+);
 
 export default router;

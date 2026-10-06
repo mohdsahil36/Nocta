@@ -3,6 +3,9 @@ import "dotenv/config";
 import prisma from "./lib/prisma.js";
 import routes from "./routes/index.js";
 import cors from "cors";
+import { HttpError } from "./lib/http-error.js";
+import { asyncHandler } from "./lib/async-handler.js";
+import { errorHandler } from "./middleware/error-handler.js";
 
 const app = express();
 app.use(express.json());
@@ -77,25 +80,31 @@ app.use("/api", routes);
 // Render injects PORT (often 10000). Local default 3001 — do not set PORT in Render env.
 const PORT = Number(process.env.PORT) || 3001;
 
-app.get("/health", async (req, res) => {
-  try {
-    // Execute the raw SQL query "SELECT 1" to ask the database to return the value 1.
-    const response = await prisma.$queryRaw`SELECT 1`;
+app.get(
+  "/health",
+  asyncHandler(async (_req, res) => {
+    try {
+      // Execute the raw SQL query "SELECT 1" to ask the database to return the value 1.
+      const response = await prisma.$queryRaw`SELECT 1`;
+      res.status(200).json({
+        status: "ok",
+        database: "Supabase Connected!",
+        response,
+      });
+    } catch (error) {
+      throw HttpError.internal(
+        "DATABASE_UNAVAILABLE",
+        "Database health check failed",
+        {
+          hint: "Check DATABASE_URL and that Supabase is reachable from this host.",
+          cause: error,
+        },
+      );
+    }
+  }),
+);
 
-    res.status(200).json({
-      status: "ok",
-      database: "Supabase Connected!",
-      response,
-    });
-  } catch (error) {
-    console.error("Error :", error);
-
-    res.status(500).json({
-      status: "error",
-      database: "Supabase Disconnected!",
-    });
-  }
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Backend server is running at port ${PORT}`);
