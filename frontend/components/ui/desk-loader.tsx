@@ -69,9 +69,7 @@ export function DeskLoader({
           !reduceMotion && "animate-spin",
         )}
       />
-      {label ? (
-        <p className="text-sm text-muted-foreground">{label}</p>
-      ) : null}
+      {label ? <p className="text-sm text-muted-foreground">{label}</p> : null}
     </div>
   );
 
@@ -98,7 +96,7 @@ export function DeskLoader({
           role="status"
           aria-live="polite"
           aria-label={labelText}
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-nocta-paper/92 dark:bg-nocta-canvas/92"
+          className="fixed inset-0 z-200 flex items-center justify-center bg-nocta-paper/92 dark:bg-nocta-canvas/92"
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={reduceMotion ? undefined : { opacity: 0 }}
