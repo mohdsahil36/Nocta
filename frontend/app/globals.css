@@ -386,32 +386,43 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   background-color: var(--auth-surface);
 }
 
-/* Login landing — soft multi-hue wells (time.fyi craft) + dark canvas tweak */
+/*
+ * Login landing — locked B&W craft (not in-app blue).
+ * Soft xs/sm radius on sections · traffic lights stay fully round.
+ */
 .nocta-landing {
-  --landing-sky: oklch(0.96 0.018 240);
-  --landing-mint: oklch(0.96 0.028 165);
-  --landing-peach: oklch(0.96 0.03 55);
-  --landing-lavender: oklch(0.96 0.022 290);
-  --landing-sand: oklch(0.97 0.014 90);
+  --radius: 0.375rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.5rem;
+  --radius-3xl: 0.625rem;
+  --radius-4xl: 0.75rem;
+  --primary: rgb(10, 10, 10);
+  --ring: rgb(10, 10, 10);
+  --nocta-glow: rgb(10, 10, 10);
+  --landing-sky: oklch(0.96 0 0);
+  --landing-mint: oklch(0.95 0 0);
+  --landing-peach: oklch(0.94 0 0);
+  --landing-lavender: oklch(0.95 0 0);
+  --landing-sand: oklch(0.96 0 0);
+  --landing-dusk-blue: oklch(0.92 0 0);
 }
 .dark .nocta-landing {
-  --landing-sky: rgb(32, 32, 36);
-  --landing-mint: rgb(30, 34, 32);
-  --landing-peach: rgb(36, 32, 30);
-  --landing-lavender: rgb(34, 32, 38);
-  --landing-sand: rgb(34, 34, 32);
+  --primary: rgb(245, 245, 245);
+  --ring: rgb(245, 245, 245);
+  --nocta-glow: rgb(245, 245, 245);
+  --landing-sky: rgb(28, 28, 28);
+  --landing-mint: rgb(32, 32, 32);
+  --landing-peach: rgb(30, 30, 30);
+  --landing-lavender: rgb(34, 34, 34);
+  --landing-sand: rgb(32, 32, 32);
+  --landing-dusk-blue: rgb(38, 38, 38);
 }
-
-/* Shared blue dusk — paper stays nocta-paper; wash is blue-only linear */
-.nocta-landing {
-  --landing-dusk-blue: color-mix(in srgb, rgb(0, 109, 221) 18%, white);
-}
-.dark .nocta-landing {
-  --landing-dusk-blue: color-mix(
-    in srgb,
-    rgb(0, 109, 221) 28%,
-    var(--nocta-paper)
-  );
+/* Mac traffic lights — always round */
+.nocta-landing .nocta-traffic {
+  border-radius: 9999px !important;
 }
 .nocta-footer-dusk {
   background-color: var(--nocta-paper);

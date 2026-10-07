@@ -82,11 +82,23 @@ export function usePageScroll(reduceMotion: boolean | null, authOpen: boolean) {
   }, [authOpen]);
 
   const scrollToId = (id: string) => {
+    const lenis = lenisRef.current;
+    if (id === "top") {
+      if (lenis) {
+        lenis.scrollTo(0, { duration: 1.35, easing: (t) => 1 - (1 - t) ** 3 });
+        return;
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     const el = document.getElementById(id);
     if (!el) return;
-    const lenis = lenisRef.current;
     if (lenis) {
-      lenis.scrollTo(el, { offset: -64, duration: 1.2 });
+      lenis.scrollTo(el, {
+        offset: -64,
+        duration: 1.25,
+        easing: (t) => 1 - (1 - t) ** 3,
+      });
       return;
     }
     el.scrollIntoView({ behavior: "smooth", block: "start" });

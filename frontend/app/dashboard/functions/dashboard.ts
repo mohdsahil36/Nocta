@@ -42,7 +42,9 @@ export type SessionProfile = {
   initials: string;
 };
 
-function firstNameFromMeta(meta: Record<string, unknown> | undefined): string | null {
+function firstNameFromMeta(
+  meta: Record<string, unknown> | undefined,
+): string | null {
   if (!meta) return null;
   for (const key of ["name", "full_name", "display_name"] as const) {
     const value = meta[key];

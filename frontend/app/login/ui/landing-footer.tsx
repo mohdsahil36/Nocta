@@ -1,110 +1,118 @@
 "use client";
 
-import { Moon } from "lucide-react";
-
+import type { MouseEvent } from "react";
 import { loginContent } from "../content";
 import { FRAME_PAD, Frame } from "./page-frame";
 
 const LINK =
-  "text-[13px] tracking-tight text-foreground/70 transition-colors duration-150 hover:text-foreground";
+  "block text-[14px] tracking-tight text-neutral-400 transition-colors duration-150 hover:text-neutral-100";
+
+type LandingFooterProps = {
+  /** Lenis-aware smooth scroll (hash without #). */
+  onNavigate?: (id: string) => void;
+};
+
+type FooterItem = {
+  href: string;
+  label: string;
+  plain?: boolean;
+};
 
 /**
- * Minimal brand/nav chrome; lower band is a calm CSS dusk wash (theme tokens).
+ * Actuity-style black footer — evenly spaced columns + full-bleed brand wordmark.
  */
-export function LandingFooter() {
+export function LandingFooter({ onNavigate }: LandingFooterProps) {
+  const f = loginContent.footer;
+
+  const cols: { n: string; items: FooterItem[] }[] = [
+    {
+      n: "01",
+      items: [
+        { href: "#how-it-works", label: loginContent.nav.howItWorks },
+        { href: "#faq", label: loginContent.nav.faq },
+        { href: "#close", label: loginContent.nav.cta },
+      ],
+    },
+    {
+      n: "02",
+      items: [{ href: "#top", label: f.tagline, plain: true }],
+    },
+    {
+      n: "03",
+      items: [{ href: "#close", label: loginContent.close.trust }],
+    },
+    {
+      n: "04",
+      items: [
+        { href: "#top", label: "Back to top" },
+        { href: "#close", label: loginContent.nav.cta },
+      ],
+    },
+  ];
+
+  const go = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!onNavigate || !href.startsWith("#")) return;
+    e.preventDefault();
+    onNavigate(href.slice(1));
+  };
+
   return (
     <footer
       id="site-footer"
-      className="nocta-footer relative z-30 isolate overflow-hidden bg-nocta-paper"
+      className="relative z-30 isolate overflow-hidden bg-neutral-950 text-neutral-100"
     >
       <Frame>
         <div
           className={[
-            "relative z-10 grid gap-4 py-4 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] sm:items-center sm:gap-8 sm:py-5",
+            "relative z-10 grid grid-cols-2 gap-x-6 gap-y-10 pt-12 pb-8 sm:grid-cols-4 sm:gap-8 sm:pt-16 sm:pb-10",
             FRAME_PAD,
           ].join(" ")}
         >
-          <div className="min-w-0 max-w-sm text-left">
-            <a
-              href="#top"
-              className="inline-flex items-center gap-2 text-foreground transition-opacity duration-150 hover:opacity-80"
-            >
-              <span className="flex size-6 items-center justify-center rounded-sm bg-nocta-ink text-nocta-paper">
-                <Moon className="size-3" aria-hidden />
-              </span>
-              <span className="font-sans text-sm font-semibold tracking-tight">
-                {loginContent.brand}
-              </span>
-            </a>
-            <p className="mt-1.5 text-xs leading-snug tracking-tight text-muted-foreground">
-              {loginContent.footer.tagline}
-            </p>
-          </div>
-
-          <nav
-            className="grid grid-cols-2 gap-6 sm:justify-self-end sm:gap-10"
-            aria-label="Footer"
-          >
-            <div>
-              <p className="text-[10px] font-medium tracking-[0.16em] text-muted-foreground/70 uppercase">
-                {loginContent.footer.exploreLabel}
+          {cols.map((col) => (
+            <div key={col.n} className="min-w-0 text-center sm:text-left">
+              <p className="font-mono text-[11px] tracking-[0.14em] text-neutral-600">
+                {col.n}
               </p>
-              <ul className="mt-2 flex flex-col gap-2">
-                <li>
-                  <a href="#how-it-works" className={LINK}>
-                    {loginContent.nav.howItWorks}
-                  </a>
-                </li>
-                <li>
-                  <a href="#faq" className={LINK}>
-                    {loginContent.nav.faq}
-                  </a>
-                </li>
+              <ul className="mt-4 flex flex-col items-center gap-2.5 sm:items-start">
+                {col.items.map((item) => (
+                  <li key={`${col.n}-${item.label}`}>
+                    {item.plain ? (
+                      <span className={LINK}>{item.label}</span>
+                    ) : (
+                      <a
+                        href={item.href}
+                        className={LINK}
+                        onClick={(e) => go(e, item.href)}
+                      >
+                        {item.label}
+                      </a>
+                    )}
+                  </li>
+                ))}
               </ul>
             </div>
-            <div>
-              <p className="text-[10px] font-medium tracking-[0.16em] text-muted-foreground/70 uppercase">
-                {loginContent.footer.startLabel}
-              </p>
-              <ul className="mt-2 flex flex-col gap-2">
-                <li>
-                  <a href="#close" className={LINK}>
-                    {loginContent.nav.cta}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </nav>
+          ))}
         </div>
       </Frame>
 
-      {/* Dusk band — dedicated wash tokens (stronger in light); no mid hairline seam */}
-      <div className="nocta-footer-dusk relative z-10 min-h-44 overflow-hidden sm:min-h-52 md:min-h-60">
-        <div aria-hidden className="nocta-footer-dusk-wash pointer-events-none absolute inset-0" />
-
+      <div className="relative overflow-hidden pt-4">
         <Frame>
           <div
-            className={[
-              "relative z-10 flex flex-col gap-1.5 pt-2 pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:pb-5",
-              FRAME_PAD,
-            ].join(" ")}
+            className={["relative z-10 pb-2 text-center", FRAME_PAD].join(" ")}
           >
-            <p className="text-[11px] tracking-tight text-foreground/55">
-              {loginContent.footer.copyright}
-            </p>
-            <p className="text-[11px] tracking-tight text-foreground/55">
-              {loginContent.close.trust}
+            <p className="text-[11px] tracking-tight text-neutral-500">
+              {f.copyright}
             </p>
           </div>
         </Frame>
 
-        <a
-          href="#top"
-          aria-label="Back to top"
-          className="absolute right-4 bottom-3 z-10 flex size-7 items-center justify-center rounded-lg bg-nocta-ink text-[10px] font-semibold tracking-tight text-nocta-paper shadow-sm transition-transform duration-150 hover:scale-105 sm:right-6 sm:bottom-3.5"
+        <p
+          aria-hidden
+          className="pointer-events-none relative z-[1] select-none pb-5 text-center font-sans text-[clamp(5.5rem,18vw,16rem)] leading-[0.82] font-black tracking-[-0.05em] whitespace-nowrap text-[#f4f4f2] lowercase sm:pb-7"
+          style={{ marginBottom: "-0.04em" }}
         >
-          N
-        </a>
+          {loginContent.brand.toLowerCase()}
+        </p>
       </div>
     </footer>
   );

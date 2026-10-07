@@ -245,9 +245,7 @@ export function AccountMenu({
                           role="option"
                           aria-selected={selected}
                           title={hint}
-                          initial={
-                            reduceMotion ? false : { opacity: 0, y: 6 }
-                          }
+                          initial={reduceMotion ? false : { opacity: 0, y: 6 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={
                             reduceMotion
