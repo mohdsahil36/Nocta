@@ -145,6 +145,7 @@ export default function LoginPage() {
         onHowItWorks={() => scrollToId("how-it-works")}
         onFaq={() => scrollToId("faq")}
         onOpenAuth={(mode) => openAuth(mode ?? "login")}
+        onBackToTop={() => scrollToId("top")}
       />
 
       {/*

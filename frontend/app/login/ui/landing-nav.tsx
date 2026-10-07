@@ -14,6 +14,7 @@ type LandingNavProps = {
   onHowItWorks: () => void;
   onFaq: () => void;
   onOpenAuth: (mode?: "login" | "signup") => void;
+  onBackToTop?: () => void;
 };
 
 /**
@@ -24,6 +25,7 @@ export function LandingNav({
   onHowItWorks,
   onFaq,
   onOpenAuth,
+  onBackToTop,
 }: LandingNavProps) {
   return (
     <motion.header
@@ -46,6 +48,11 @@ export function LandingNav({
           <a
             href="#top"
             className="flex min-w-0 items-center gap-2 font-sans text-base font-semibold tracking-[-0.02em] text-neutral-950 dark:text-neutral-50"
+            onClick={(e) => {
+              if (!onBackToTop) return;
+              e.preventDefault();
+              onBackToTop();
+            }}
           >
             <NoctaMark className="size-4 shrink-0 text-neutral-950 dark:text-neutral-50" />
             <span className="truncate">{loginContent.brand.toLowerCase()}</span>

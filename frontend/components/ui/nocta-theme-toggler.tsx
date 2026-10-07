@@ -35,6 +35,7 @@ export function NoctaThemeToggler({
   // themeBoot may already set `dark` on <html> before zustand rehydrates
   const [bootDark, setBootDark] = useState(false);
   useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBootDark(document.documentElement.classList.contains("dark"));
   }, []);
   const theme = (hydrated ? isDark : bootDark) ? "dark" : "light";

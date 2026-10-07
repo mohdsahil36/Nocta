@@ -52,9 +52,23 @@ export function LandingFooter({ onNavigate }: LandingFooterProps) {
   ];
 
   const go = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (!onNavigate || !href.startsWith("#")) return;
+    if (!href.startsWith("#")) return;
     e.preventDefault();
-    onNavigate(href.slice(1));
+    e.stopPropagation();
+    const id = href.slice(1);
+    if (onNavigate) {
+      onNavigate(id);
+      return;
+    }
+    // Fallback if parent didn’t pass Lenis scroll
+    if (id === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (

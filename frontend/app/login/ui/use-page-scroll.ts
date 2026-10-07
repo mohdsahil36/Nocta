@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
+
+const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
+
+/** Longer trip → longer animation (clamped), so footer → top doesn’t snap. */
+function durationForDistance(distancePx: number) {
+  return Math.min(2.6, Math.max(1.2, distancePx / 2200));
+}
 
 /** Lenis smooth scroll + modal scroll lock for the login landing page. */
 export function usePageScroll(reduceMotion: boolean | null, authOpen: boolean) {
@@ -81,28 +88,50 @@ export function usePageScroll(reduceMotion: boolean | null, authOpen: boolean) {
     };
   }, [authOpen]);
 
-  const scrollToId = (id: string) => {
+  const scrollToId = useCallback((id: string) => {
     const lenis = lenisRef.current;
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
     if (id === "top") {
-      if (lenis) {
-        lenis.scrollTo(0, { duration: 1.35, easing: (t) => 1 - (1 - t) ** 3 });
+      const current = lenis?.scroll ?? window.scrollY;
+      if (lenis && !prefersReduced) {
+        lenis.scrollTo(0, {
+          immediate: false,
+          force: true,
+          lock: true,
+          duration: durationForDistance(current),
+          easing: easeOutCubic,
+        });
         return;
       }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
       return;
     }
+
     const el = document.getElementById(id);
     if (!el) return;
-    if (lenis) {
+
+    if (lenis && !prefersReduced) {
+      const top = el.getBoundingClientRect().top + (lenis.scroll ?? 0);
+      const distance = Math.abs((lenis.scroll ?? 0) - (top - 64));
       lenis.scrollTo(el, {
         offset: -64,
-        duration: 1.25,
-        easing: (t) => 1 - (1 - t) ** 3,
+        immediate: false,
+        force: true,
+        lock: true,
+        duration: durationForDistance(distance),
+        easing: easeOutCubic,
       });
       return;
     }
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+
+    el.scrollIntoView({
+      behavior: prefersReduced ? "auto" : "smooth",
+      block: "start",
+    });
+  }, []);
 
   return { scrolled, scrollToId };
 }
