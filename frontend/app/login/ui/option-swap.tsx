@@ -9,7 +9,21 @@ import { AreaTag, DeepDive, PanelLabel } from "./section";
 import { useDemoLoop } from "./use-demo-loop";
 
 /* 05 — card deck: auto-swaps through options; click pauses. */
-export function OptionSwapSection() {
+type RailMeta = {
+  rail?: boolean;
+  railIndex?: string;
+  railEyebrow?: string;
+  railTitle?: string;
+  railBody?: string;
+};
+
+export function OptionSwapSection({
+  rail = false,
+  railIndex,
+  railEyebrow,
+  railTitle,
+  railBody,
+}: RailMeta = {}) {
   const c = loginContent.swap;
   const { index, select, reduceMotion } = useDemoLoop(c.options.length, 3400);
   const option = c.options[index];
@@ -17,7 +31,16 @@ export function OptionSwapSection() {
   const isLast = remaining === 0;
 
   return (
-    <DeepDive {...c} tone="lavender" layout="split">
+    <DeepDive
+      {...c}
+      index={railIndex ?? c.index}
+      eyebrow={railEyebrow ?? c.eyebrow}
+      title={railTitle ?? c.title}
+      body={railBody ?? c.body}
+      tone="paper"
+      layout="split"
+      rail={rail}
+    >
       <div className="relative isolate mx-auto max-w-md pb-6">
         {Array.from({ length: remaining }, (_, i) => (
           <div

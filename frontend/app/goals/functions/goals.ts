@@ -1,3 +1,7 @@
+import {
+  ensureAuthListener,
+  waitForAuthReady,
+} from "@/app/store/authStore";
 import { deadlineToIso, isoToDeadlineInput } from "@/lib/dates";
 import { supabase } from "@/lib/supabase";
 
@@ -32,8 +36,13 @@ function toGoalDraft(row: GoalApiRow): GoalDraft {
   };
 }
 
-/** Return the signed-in Supabase user id. */
+/** Return the signed-in Supabase user id (waits for auth hydration). */
 export async function getCurrentUserId(): Promise<string> {
+  ensureAuthListener();
+  const state = await waitForAuthReady();
+  if (state.userId) return state.userId;
+
+  // Fallback if the store timed out before INITIAL_SESSION.
   const { data, error } = await supabase.auth.getUser();
   if (error) throw new Error(error.message);
   if (!data.user?.id) throw new Error("Not signed in");

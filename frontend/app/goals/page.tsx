@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
+import useAuthStore from "@/app/store/authStore";
 import { cn } from "cn";
 
 import {
@@ -56,20 +57,22 @@ export default function GoalsPage() {
   const [saving, setSaving] = useState(false);
 
   const queryClient = useQueryClient(); // helper to refresh or patch the cached list
+  const authReady = useAuthStore((s) => s.ready);
+  const userId = useAuthStore((s) => s.userId);
 
   const {
     data: goals = [], // the shell for the data storing
-    isLoading, // true while first load is happening
+    isLoading: goalsLoading, // true while first load is happening, goalLoading is another name for isLoading
     error, // set when the load fails
     refetch, // run the load again (retry button)
   } = useQuery({
-    queryKey: ["goals"], // label so we can find this data later
-    queryFn: async () => {
-      // how to load it
-      const userId = await getCurrentUserId();
-      return listAllGoals(userId);
-    },
+    queryKey: ["goals", userId],
+    enabled: authReady && !!userId,
+    queryFn: async () => listAllGoals(userId!),
   });
+
+  const isLoading = !authReady || (Boolean(userId) && goalsLoading);
+  const signedOut = authReady && !userId;
 
   const openCreate = () => {
     setDraft(emptyGoalDraft());
@@ -376,8 +379,8 @@ export default function GoalsPage() {
           <div className="flex items-center justify-center px-5 py-10 sm:px-6">
             <DeskLoader size="sm" label="Loading goals…" />
           </div>
-        ) : error ? (
-          // load failed — button runs refetch
+        ) : signedOut || error ? (
+          // load failed or no session — button runs refetch
           <div className="px-5 py-8 text-center sm:px-6">
             <p className="text-sm text-muted-foreground">{c.loadError}</p>
             <button

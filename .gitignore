@@ -15,6 +15,7 @@ frontend/app/login/DESIGN_BACKLOG.md
 
 # Local feature scratchpad — never commit
 docs/todo-features.md
+docs/decision-model.md
 
 # Dependencies (any package root)
 node_modules/

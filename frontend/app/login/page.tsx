@@ -19,30 +19,23 @@ import {
 import { AuthDialog } from "./ui/auth-dialog";
 import { FaqSection } from "./ui/faq";
 import {
-  AiSubGrid,
-  CheckInSection,
   GoalsSection,
   LogParserSection,
   NarrativeBand,
   RecoverySection,
-  ReflectionSection,
-  ScoringSection,
 } from "./ui/feature-sections";
-import { Hero, HeroTryIt } from "./ui/hero";
+import { Hero } from "./ui/hero";
 import { LandingFooter } from "./ui/landing-footer";
 import { LandingNav } from "./ui/landing-nav";
-import { OptionSwapSection } from "./ui/option-swap";
-import { FullRule } from "./ui/section";
-import { FRAME_PAD, Frame, PageFrameRails } from "./ui/page-frame";
-import { TonightDemo } from "./ui/tonight-demo";
+import { PathSection } from "./ui/path-section";
+import { FRAME_PAD, Frame } from "./ui/page-frame";
 import { DeskLoader } from "@/components/ui/desk-loader";
-import useThemeStore from "@/app/store/themeStore";
 import {
   AUTH_EXIT_MS,
   authEaseOut,
   markAuthEnter,
+  markAuthWelcome,
 } from "@/lib/auth-transition";
-import { toast } from "@/components/ui/toast";
 import { usePageScroll } from "./ui/use-page-scroll";
 
 export default function LoginPage() {
@@ -59,7 +52,6 @@ export default function LoginPage() {
   const [authBusy, setAuthBusy] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [routeLeaving, setRouteLeaving] = useState(false);
-  const toggleTheme = useThemeStore((s) => s.toggle);
   const { scrolled, scrollToId } = usePageScroll(reduceMotion, authOpen);
 
   const openAuth = (mode: AuthMode = "login") => {
@@ -106,7 +98,6 @@ export default function LoginPage() {
         nextPath = "/goals/onboarding";
       }
     } catch {
-      // Backend / session hiccup — still enter the app
       nextPath = "/dashboard";
     }
     router.push(nextPath);
@@ -119,11 +110,8 @@ export default function LoginPage() {
     try {
       if (authMode === "login") {
         const displayName = await loginWithEmail({ email, password });
-        toast.add({
-          title: `Welcome back, ${displayName}`,
-          type: "success",
-          timeout: 2200,
-        });
+        // Toast after desk mounts — not under the handoff loader.
+        markAuthWelcome(`Welcome back, ${displayName}`);
       } else {
         const displayName = await signupWithEmail({
           name,
@@ -131,11 +119,7 @@ export default function LoginPage() {
           password,
           confirmPassword,
         });
-        toast.add({
-          title: `Welcome, ${displayName}`,
-          type: "success",
-          timeout: 2200,
-        });
+        markAuthWelcome(`Welcome, ${displayName}`);
       }
       await enterDashboard();
     } catch (err) {
@@ -154,78 +138,72 @@ export default function LoginPage() {
         onHowItWorks={() => scrollToId("how-it-works")}
         onFaq={() => scrollToId("faq")}
         onOpenAuth={(mode) => openAuth(mode ?? "login")}
-        onToggleTheme={toggleTheme}
+        onBackToTop={() => scrollToId("top")}
       />
 
+      {/*
+        Opacity-only exit: transform/filter on this wrapper breaks
+        position:sticky inside the Actuity pin scroll.
+      */}
       <motion.div
-        className="relative isolate w-full bg-nocta-paper text-foreground"
+        className="relative isolate w-full bg-white text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50"
         animate={
-          routeLeaving && !reduceMotion
-            ? { opacity: 0.35, filter: "blur(6px)", scale: 0.99 }
-            : { opacity: 1, filter: "blur(0px)", scale: 1 }
+          routeLeaving && !reduceMotion ? { opacity: 0.35 } : { opacity: 1 }
         }
         transition={{ duration: AUTH_EXIT_MS / 1000, ease: authEaseOut }}
       >
         <main className="relative z-10 w-full">
-          {/* Hero sits outside the rail band — wider, no vertical grid lines */}
           <Hero
             reduceMotion={reduceMotion}
             onOpenAuth={(mode) => openAuth(mode ?? "signup")}
             onHowItWorks={() => scrollToId("how-it-works")}
           />
 
-          {/* Rails: TRY IT → FAQ only (not wide hero, not close CTA, not footer) */}
-          <div className="relative w-full overflow-hidden">
-            <PageFrameRails />
-            <FullRule />
-            <HeroTryIt />
+          {/* Pin scroll: section stays; slides advance on vertical scroll */}
+          <PathSection />
 
-            <NarrativeBand which="product" />
-            <TonightDemo />
-            <NarrativeBand which="onboarding" />
-            <GoalsSection />
-            <CheckInSection />
-            <NarrativeBand which="process" />
-            <ScoringSection />
-            <AiSubGrid />
-            <OptionSwapSection />
-            <LogParserSection />
-            <RecoverySection />
-            <ReflectionSection />
+          {/* Remaining demos stay as normal vertical bands */}
+          <NarrativeBand which="onboarding" />
+          <GoalsSection />
+          <LogParserSection />
+          <RecoverySection />
+
+          <div id="faq" className="scroll-mt-16">
             <FaqSection />
-            <FullRule />
           </div>
 
-          {/* Close + footer — no vertical grid lines */}
-          <section id="close" className="scroll-mt-16">
+          <section
+            id="close"
+            className="scroll-mt-16 border-t border-neutral-200 dark:border-neutral-800"
+          >
             <Frame>
               <div
                 className={[
-                  "mx-auto max-w-2xl pt-28 pb-20 text-center sm:pt-36 sm:pb-24",
+                  "mx-auto max-w-2xl pt-16 pb-14 text-center sm:pt-20 sm:pb-18",
                   FRAME_PAD,
                 ].join(" ")}
               >
-                <h2 className="font-sans text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-foreground">
+                <h2 className="font-sans text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.1] font-semibold tracking-[-0.03em]">
                   {loginContent.close.title}
                 </h2>
-                <p className="mx-auto mt-5 max-w-md text-base leading-7 text-muted-foreground sm:text-lg">
+                <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-neutral-500">
                   {loginContent.close.body}
                 </p>
                 <Button
                   size="lg"
-                  className="mt-10 h-12 min-w-40 rounded-lg px-8 text-sm font-semibold"
+                  className="mt-8 h-11 min-w-40 bg-neutral-950 px-8 text-sm font-semibold text-white hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
                   onClick={() => openAuth("signup")}
                 >
                   {loginContent.close.cta}
                 </Button>
-                <p className="mt-5 text-xs text-muted-foreground">
+                <p className="mt-4 text-xs text-neutral-500">
                   {loginContent.close.trust}
                 </p>
               </div>
             </Frame>
           </section>
 
-          <LandingFooter />
+          <LandingFooter onNavigate={scrollToId} />
         </main>
 
         <AuthDialog

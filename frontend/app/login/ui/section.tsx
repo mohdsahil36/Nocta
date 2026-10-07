@@ -64,15 +64,15 @@ export function SectionHeader({
     >
       <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
         {index ? (
-          <span className="mr-2 text-nocta-glow tabular-nums">{index}</span>
+          <span className="mr-2 tabular-nums text-foreground">{index}</span>
         ) : null}
         {eyebrow}
       </p>
-      <h2 className="mt-4 min-h-[2.6em] font-sans text-3xl leading-[1.15] font-semibold tracking-[-0.03em] text-foreground sm:min-h-[2.4em] sm:text-4xl">
+      <h2 className="mt-3 font-sans text-2xl leading-[1.15] font-semibold tracking-[-0.03em] text-foreground sm:text-3xl">
         {titleSlot ?? title}
       </h2>
       {body ? (
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
           {body}
         </p>
       ) : null}
@@ -80,15 +80,16 @@ export function SectionHeader({
   );
 }
 
+/** Landing tones resolve to paper / light grey via `.nocta-landing` CSS vars. */
 const TONE = {
-  paper: { copy: "bg-nocta-paper", panel: "bg-landing-sand/70" },
-  mist: { copy: "bg-muted/40", panel: "bg-landing-sky/70" },
-  sky: { copy: "bg-landing-sky/50", panel: "bg-nocta-paper" },
-  mint: { copy: "bg-landing-mint/50", panel: "bg-nocta-paper" },
-  peach: { copy: "bg-landing-peach/50", panel: "bg-nocta-paper" },
-  lavender: { copy: "bg-landing-lavender/50", panel: "bg-nocta-paper" },
-  glow: { copy: "bg-nocta-glow/5", panel: "bg-landing-mint/60" },
-  canvas: { copy: "bg-nocta-canvas", panel: "bg-landing-peach/50" },
+  paper: { copy: "bg-nocta-paper", panel: "bg-neutral-100/80 dark:bg-neutral-900/50" },
+  mist: { copy: "bg-neutral-50 dark:bg-neutral-900/40", panel: "bg-nocta-paper" },
+  sky: { copy: "bg-neutral-50 dark:bg-neutral-900/40", panel: "bg-nocta-paper" },
+  mint: { copy: "bg-neutral-50 dark:bg-neutral-900/40", panel: "bg-nocta-paper" },
+  peach: { copy: "bg-neutral-50 dark:bg-neutral-900/40", panel: "bg-nocta-paper" },
+  lavender: { copy: "bg-neutral-50 dark:bg-neutral-900/40", panel: "bg-nocta-paper" },
+  glow: { copy: "bg-neutral-50 dark:bg-neutral-900/40", panel: "bg-nocta-paper" },
+  canvas: { copy: "bg-nocta-canvas", panel: "bg-nocta-paper" },
 } as const;
 
 export type BandTone = keyof typeof TONE;
@@ -107,6 +108,11 @@ type DeepDiveProps = {
   layout?: BandLayout;
   /** Use the wide breakout frame (past the rail column). */
   wide?: boolean;
+  /**
+   * Actuity-style story card: outlined index + copy + demo, no SectionShell.
+   * Used inside the horizontal story rail.
+   */
+  rail?: boolean;
   titleSlot?: ReactNode;
   children: ReactNode;
 };
@@ -141,12 +147,12 @@ function CopyBlock({
         titleSlot={titleSlot}
       />
       {points?.length ? (
-        <ul className="mt-10 space-y-5">
+        <ul className="mt-6 space-y-4">
           {points.map((p) => (
             <li key={p.title} className="flex gap-3">
               <span
                 aria-hidden
-                className="mt-2 size-1.5 shrink-0 rounded-full bg-nocta-glow/80"
+                className="mt-2 size-1.5 shrink-0 bg-foreground"
               />
               <div>
                 <p className="text-sm font-semibold text-foreground">
@@ -183,7 +189,7 @@ export function SectionShell({
       <section
         id={id}
         className={[
-          "relative z-2 scroll-mt-16 py-12 sm:py-16",
+          "relative z-2 scroll-mt-16 py-8 sm:py-10",
           className,
         ].join(" ")}
       >
@@ -196,7 +202,7 @@ export function SectionShell({
 }
 
 const CARD =
-  "overflow-hidden rounded-2xl border border-foreground/12 shadow-[0_12px_40px_-18px_rgba(0,0,0,0.28)]";
+  "overflow-hidden rounded-sm border border-neutral-200 bg-white shadow-none dark:border-neutral-800 dark:bg-neutral-950";
 
 /**
  * Text-only band — title + paragraph, no illustration panel.
@@ -217,7 +223,7 @@ export function TextBand({
   return (
     <SectionShell id={id}>
       <div
-        className={[CARD, "bg-nocta-paper px-6 py-12 sm:px-10 sm:py-14"].join(
+        className={[CARD, "bg-nocta-paper px-6 py-8 sm:px-8 sm:py-10"].join(
           " ",
         )}
       >
@@ -246,13 +252,59 @@ export function DeepDive({
   tone = "paper",
   layout = "split",
   wide = false,
+  rail = false,
   titleSlot,
   children,
 }: DeepDiveProps) {
   const t = TONE[tone];
-  const copyPad = "p-8 sm:p-10 md:p-12";
-  const panelPad = "flex items-center p-8 sm:p-10 md:p-12";
+  const copyPad = "p-6 sm:p-7 md:p-8";
+  const panelPad = "flex items-center p-6 sm:p-7 md:p-8";
   const demoWidth = wide ? "mx-auto w-full" : "mx-auto w-full max-w-2xl";
+
+  if (rail) {
+    return (
+      <article
+        id={id}
+        data-story-panel
+        className="grid h-full w-full grid-rows-[auto_1fr] gap-4 sm:grid-cols-[0.9fr_1.1fr] sm:grid-rows-1 sm:items-center sm:gap-6"
+      >
+        <div className="min-w-0 order-2 sm:order-1">
+          <p
+            aria-hidden
+            className="font-sans text-[clamp(1.75rem,4vw,2.5rem)] leading-none font-semibold tracking-[-0.03em] text-neutral-950 tabular-nums dark:text-neutral-50"
+          >
+            {index}
+          </p>
+          <p className="mt-2 text-[10px] font-medium tracking-[0.14em] text-neutral-500 uppercase">
+            {eyebrow}
+          </p>
+          <h3 className="mt-2 font-sans text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-xl">
+            {titleSlot ?? title}
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-neutral-500">
+            {body}
+          </p>
+          {points?.length ? (
+            <ul className="mt-3 space-y-1">
+              {points.slice(0, 3).map((p) => (
+                <li
+                  key={p.title}
+                  className="text-[12px] text-neutral-500 before:mr-2 before:text-neutral-950 before:content-['·'] dark:before:text-neutral-50"
+                >
+                  {p.title}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+        <div className="order-1 flex min-w-0 items-center justify-center sm:order-2">
+          <div className="w-full origin-center scale-[0.88] sm:scale-[0.92]">
+            {children}
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   if (layout === "stack" || layout === "normal") {
     return (
@@ -340,7 +392,7 @@ export function PanelLabel({ children }: { children: ReactNode }) {
 
 export function AreaTag({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex h-5 items-center rounded-full bg-nocta-glow/10 px-2 text-[11px] font-medium text-foreground/80">
+    <span className="inline-flex h-5 items-center border border-neutral-300 bg-neutral-100 px-2 text-[11px] font-medium text-foreground/80 dark:border-neutral-700 dark:bg-neutral-900">
       {children}
     </span>
   );

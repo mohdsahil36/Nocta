@@ -35,7 +35,7 @@ import {
 import { useDemoLoop } from "./use-demo-loop";
 
 const SURFACE =
-  "rounded-2xl border border-foreground/10 bg-nocta-paper shadow-sm";
+  "rounded-sm border border-foreground/10 bg-nocta-paper shadow-sm";
 
 /** Subsection live titles — TextGenerateEffect (hero uses EncryptedText). */
 function LiveTitle({
@@ -66,10 +66,10 @@ function LiveTitle({
 function useSwap() {
   const reduceMotion = useReducedMotion();
   return {
-    initial: reduceMotion ? false : { opacity: 0, y: 6 },
+    initial: reduceMotion ? false : { opacity: 0, y: 8 },
     animate: { opacity: 1, y: 0 },
-    exit: reduceMotion ? undefined : { opacity: 0, y: -4 },
-    transition: { duration: 0.22, ease: easeOut },
+    exit: reduceMotion ? undefined : { opacity: 0, y: -6 },
+    transition: { duration: 0.35, ease: easeOut },
   } as const;
 }
 
@@ -111,11 +111,10 @@ export function GoalsSection() {
       title={c.title}
       body={c.body}
       points={c.points}
-      tone="sky"
+      tone="paper"
       layout="flip"
-      titleSlot={<LiveTitle text={scene.title} />}
     >
-      <div className={SURFACE}>
+      <div className={[SURFACE, "flex min-h-52 flex-col"].join(" ")}>
         <div className="flex items-center justify-between gap-3 border-b border-foreground/10 px-5 py-3">
           <PanelLabel>{c.liveLabel}</PanelLabel>
           <div className="flex items-center gap-1.5">
@@ -127,22 +126,22 @@ export function GoalsSection() {
                 aria-pressed={i === sceneIdx}
                 onClick={() => setSceneIdx(i)}
                 className={[
-                  "size-2 cursor-pointer rounded-full transition-colors",
+                  "size-2 cursor-pointer rounded-sm transition-colors",
                   i === sceneIdx
-                    ? "bg-nocta-glow"
+                    ? "bg-foreground"
                     : "bg-foreground/15 hover:bg-foreground/30",
                 ].join(" ")}
               />
             ))}
           </div>
         </div>
-        {/* Reserved height + sync crossfade — scene copy length must not reflow the card. */}
-        <div className="relative min-h-40 sm:min-h-36">
-          <AnimatePresence mode="sync" initial={false}>
+        {/* Even vertical rhythm — flex stack, not absolute + uneven margins. */}
+        <div className="relative flex flex-1 flex-col">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={scene.id}
               {...swap}
-              className="absolute inset-x-0 top-0 p-5 sm:p-6"
+              className="flex flex-1 flex-col gap-3 p-5"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <AreaTag>{scene.area}</AreaTag>
@@ -150,17 +149,20 @@ export function GoalsSection() {
                   {scene.badge}
                 </span>
               </div>
-              <p className="mt-4 min-h-12 text-sm leading-6 text-muted-foreground">
+              <p className="font-sans text-sm font-semibold tracking-tight text-foreground">
+                {scene.title}
+              </p>
+              <p className="flex-1 text-sm leading-6 text-muted-foreground">
                 {scene.detail}
               </p>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">
+              <div className="flex items-center gap-3 pt-1">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-foreground/5">
                   <div
                     className={[
-                      "h-full rounded-full",
+                      "h-full rounded-sm transition-[width] duration-300",
                       scene.idleDays >= 6
-                        ? "bg-nocta-glow/70"
-                        : "bg-foreground/20",
+                        ? "bg-foreground/55"
+                        : "bg-foreground/25",
                     ].join(" ")}
                     style={{
                       width: `${Math.min(100, Math.max(8, scene.idleDays * 10))}%`,
@@ -196,7 +198,7 @@ function stepSize(minutes: Minutes, energy: Energy) {
   return (["small", "medium", "large"] as const)[Math.max(0, adjusted)];
 }
 
-export function CheckInSection() {
+export function CheckInSection({ rail = false }: { rail?: boolean }) {
   const c = loginContent.checkIn;
   const d = loginContent.demo;
   const STEPS: { minutes: Minutes; energy: Energy }[] = [
@@ -229,8 +231,11 @@ export function CheckInSection() {
   };
 
   return (
-    <DeepDive {...c} tone="mint" layout="normal">
-      <MacWindow title={`${loginContent.brand} · Check-in`} tone="mint">
+    <DeepDive {...c} tone="paper" layout="normal" rail={rail}>
+      <MacWindow
+        title={`${loginContent.brand} · Check-in`}
+        tone={rail ? "paper" : "mint"}
+      >
         <div className="mx-auto w-full max-w-md p-6 sm:p-8">
           <div
             aria-hidden
@@ -371,17 +376,48 @@ const FACTOR_TINT = [
   "bg-landing-lavender",
 ];
 
-export function ScoringSection() {
+type RailMeta = {
+  rail?: boolean;
+  railIndex?: string;
+  railEyebrow?: string;
+  railTitle?: string;
+  railBody?: string;
+};
+
+export function ScoringSection({
+  rail = false,
+  railIndex,
+  railEyebrow,
+  railTitle,
+  railBody,
+}: RailMeta = {}) {
   const c = loginContent.scoring;
   return (
-    <DeepDive {...c} tone="peach" layout="flip">
-      <ScoringDemoShell />
+    <DeepDive
+      {...c}
+      index={railIndex ?? c.index}
+      eyebrow={railEyebrow ?? c.eyebrow}
+      title={railTitle ?? c.title}
+      body={railBody ?? c.body}
+      tone="paper"
+      layout="flip"
+      rail={rail}
+    >
+      <ScoringDemoShell rail={rail} />
     </DeepDive>
   );
 }
 
-function ScoringDemoShell() {
+function ScoringDemoShell({ rail = false }: { rail?: boolean }) {
   const c = loginContent.scoring;
+  const factorTint = rail
+    ? [
+        "bg-neutral-200 dark:bg-neutral-700",
+        "bg-neutral-300 dark:bg-neutral-600",
+        "bg-neutral-400 dark:bg-neutral-500",
+        "bg-neutral-500 dark:bg-neutral-400",
+      ]
+    : FACTOR_TINT;
   const reduceMotion = useReducedMotion();
   const surfaceRef = useRef<HTMLDivElement>(null);
   const inView = useInView(surfaceRef, { amount: 0.35, once: false });
@@ -440,7 +476,9 @@ function ScoringDemoShell() {
         SURFACE,
         "relative overflow-hidden transition-shadow duration-300",
         perfect
-          ? "ring-1 ring-nocta-glow/40 shadow-[0_0_0_1px_color-mix(in_oklab,var(--nocta-glow)_25%,transparent)]"
+          ? rail
+            ? "ring-1 ring-neutral-900/15 dark:ring-neutral-100/20"
+            : "ring-1 ring-nocta-glow/40 shadow-[0_0_0_1px_color-mix(in_oklab,var(--nocta-glow)_25%,transparent)]"
           : "",
       ].join(" ")}
     >
@@ -450,7 +488,7 @@ function ScoringDemoShell() {
         description={c.celebrateBody}
         type="success"
       />
-      {perfect ? (
+      {perfect && !rail ? (
         <motion.div
           aria-hidden
           initial={reduceMotion ? false : { opacity: 0 }}
@@ -475,14 +513,15 @@ function ScoringDemoShell() {
             aria-live="polite"
             className={[
               "w-full text-right text-5xl leading-none font-semibold tracking-[-0.03em] tabular-nums",
-              perfect ? "text-nocta-glow" : "text-foreground",
+              perfect && !rail ? "text-nocta-glow" : "text-foreground",
             ].join(" ")}
           >
             {total}
           </motion.p>
           <p
             className={[
-              "mt-1 h-4 w-full text-right text-xs font-semibold tracking-[0.08em] text-nocta-glow uppercase transition-opacity duration-200",
+              "mt-1 h-4 w-full text-right text-xs font-semibold tracking-[0.08em] uppercase transition-opacity duration-200",
+              rail ? "text-neutral-500" : "text-nocta-glow",
               perfect ? "opacity-100" : "opacity-0",
             ].join(" ")}
             aria-hidden={!perfect}
@@ -497,7 +536,9 @@ function ScoringDemoShell() {
           className={[
             "absolute inset-x-0 top-0 rounded-xl border px-3.5 py-2.5 text-sm leading-snug transition-opacity duration-200",
             perfect
-              ? "border-nocta-glow/25 bg-nocta-glow/10 text-foreground opacity-100"
+              ? rail
+                ? "border-neutral-200 bg-neutral-100 text-foreground opacity-100 dark:border-neutral-700 dark:bg-neutral-800"
+                : "border-nocta-glow/25 bg-nocta-glow/10 text-foreground opacity-100"
               : "pointer-events-none border-transparent opacity-0",
           ].join(" ")}
           aria-hidden={!perfect}
@@ -513,7 +554,7 @@ function ScoringDemoShell() {
         {c.rows.map((r, i) => (
           <motion.div
             key={r.factor}
-            className={["h-full", FACTOR_TINT[i]].join(" ")}
+            className={["h-full", factorTint[i]].join(" ")}
             initial={false}
             animate={{ width: on.has(r.factor) ? `${r.points}%` : "0%" }}
             transition={{ duration: 0.35, ease: easeOut }}
@@ -550,7 +591,7 @@ function ScoringDemoShell() {
                   className={[
                     "flex size-5 items-center justify-center rounded-md border transition-colors",
                     applied
-                      ? `${FACTOR_TINT[i]} border-transparent text-nocta-paper`
+                      ? `${factorTint[i]} border-transparent text-nocta-paper`
                       : "border-foreground/20 bg-nocta-paper",
                   ].join(" ")}
                 >
@@ -923,7 +964,7 @@ function parseLog(line: string): Parsed {
   return { goal, time, energy, progress };
 }
 
-export function LogParserSection() {
+export function LogParserSection({ rail = false }: { rail?: boolean }) {
   const c = loginContent.logParser;
   const prefersMotion = usePrefersMotion();
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -1045,9 +1086,9 @@ export function LogParserSection() {
   const confirmPressed = phaseShown === "press-confirm" && animate;
 
   return (
-    <DeepDive {...c} tone="lavender" layout="normal">
+    <DeepDive {...c} tone="paper" layout="normal" rail={rail}>
       <div ref={surfaceRef} className="relative overflow-hidden">
-        <MacWindow title={c.windowTitle} tone="lavender">
+        <MacWindow title={c.windowTitle} tone={rail ? "paper" : "lavender"}>
           <div className="relative flex min-h-88 flex-col gap-4 p-4 sm:min-h-80 sm:p-5">
             <PanelToast
               open={shouldToast && toastOpen}
@@ -1235,7 +1276,7 @@ export function LogParserSection() {
 }
 
 /* 07 — rest ↔ action nights; momentum gauge (no broken / greyed-out state) */
-export function RecoverySection() {
+export function RecoverySection({ rail = false }: { rail?: boolean }) {
   const c = loginContent.recovery;
   const scenes = c.scenes;
   const [idx, setIdx] = useState(0);
@@ -1260,16 +1301,11 @@ export function RecoverySection() {
       title={c.title}
       body={c.body}
       points={c.points}
-      tone="glow"
+      tone="paper"
       layout="flip"
-      titleSlot={<LiveTitle text={scene.title} />}
+      rail={rail}
     >
-      <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-3xl border border-foreground/10 bg-nocta-paper px-6 py-10 text-center shadow-sm">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-0 left-1/2 size-56 -translate-x-1/2 -translate-y-1/3 rounded-full bg-nocta-glow/15 blur-3xl"
-        />
-        {/* Fixed chrome + reserved copy height — rest/action body length must not jump. */}
+      <div className="relative mx-auto w-full max-w-sm overflow-hidden border border-neutral-200 bg-nocta-paper px-6 py-8 text-center dark:border-neutral-800">
         <div className="relative min-h-56 sm:min-h-52">
           <AnimatePresence mode="sync" initial={false}>
             <motion.div
@@ -1278,25 +1314,21 @@ export function RecoverySection() {
               className="absolute inset-x-0 top-0"
             >
               <PanelLabel>{scene.label}</PanelLabel>
-              <span
-                className={[
-                  "mx-auto mt-5 flex size-16 items-center justify-center rounded-full border",
-                  scene.kind === "rest"
-                    ? "border-primary/30 bg-landing-mint"
-                    : "border-primary/30 bg-landing-sky",
-                ].join(" ")}
-              >
+              <div className="mt-3 font-sans text-sm font-semibold tracking-tight text-foreground">
+                <LiveTitle text={scene.title} size="line" />
+              </div>
+              <span className="mx-auto mt-4 flex size-14 items-center justify-center border border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900">
                 {scene.kind === "rest" ? (
-                  <MoonStar aria-hidden className="size-7 text-primary" />
+                  <MoonStar aria-hidden className="size-6 text-foreground" />
                 ) : (
-                  <Check aria-hidden className="size-7 text-primary" />
+                  <Check aria-hidden className="size-6 text-foreground" />
                 )}
               </span>
-              <p className="mx-auto mt-5 min-h-16 max-w-xs text-sm leading-6 text-muted-foreground">
+              <p className="mx-auto mt-4 min-h-16 max-w-xs text-sm leading-6 text-muted-foreground">
                 {scene.body}
               </p>
               <div
-                className="mx-auto mt-7 flex h-2 w-full max-w-48 items-center gap-1"
+                className="mx-auto mt-6 flex h-2 w-full max-w-48 items-center gap-1"
                 aria-label={scene.momentumLabel}
               >
                 {Array.from({ length: segments }, (_, i) => {
@@ -1306,8 +1338,8 @@ export function RecoverySection() {
                       key={i}
                       aria-hidden
                       className={[
-                        "h-full flex-1 rounded-sm transition-colors duration-300",
-                        filled ? "bg-primary/70" : "bg-primary/15",
+                        "h-full flex-1 transition-colors duration-300",
+                        filled ? "bg-foreground/70" : "bg-foreground/15",
                       ].join(" ")}
                     />
                   );

@@ -8,6 +8,10 @@ export const TypewriterEffect = ({
   words,
   className,
   cursorClassName,
+  /** Seconds between each character reveal. Default 0.1. */
+  charDelay = 0.1,
+  /** Seconds for each character fade-in. Default 0.3. */
+  charDuration = 0.3,
 }: {
   words: {
     text: string;
@@ -15,6 +19,8 @@ export const TypewriterEffect = ({
   }[];
   className?: string;
   cursorClassName?: string;
+  charDelay?: number;
+  charDuration?: number;
 }) => {
   const wordsArray = words.map((word) => {
     return {
@@ -37,12 +43,12 @@ export const TypewriterEffect = ({
         width: "fit-content",
       },
       {
-        duration: 0.3,
-        delay: stagger(0.1),
+        duration: charDuration,
+        delay: stagger(charDelay),
         ease: "easeInOut",
       },
     );
-  }, [isInView, animate]);
+  }, [isInView, animate, charDelay, charDuration]);
 
   const renderWords = () => {
     return (
@@ -91,7 +97,7 @@ export const TypewriterEffect = ({
           repeatType: "reverse",
         }}
         className={cn(
-          "inline-block h-4 w-[4px] rounded-sm bg-blue-500 md:h-6 lg:h-10",
+          "inline-block h-4 w-1 rounded-sm bg-blue-500 md:h-6 lg:h-10",
           cursorClassName,
         )}
       ></motion.span>
@@ -99,10 +105,18 @@ export const TypewriterEffect = ({
   );
 };
 
+/**
+ * Smooth left→right reveal of the full line (not per-character typing).
+ * Full text is always in the layout — nothing gets truncated mid-loop.
+ */
 export const TypewriterEffectSmooth = ({
   words,
   className,
   cursorClassName,
+  /** Total reveal duration in seconds. */
+  duration = 2.4,
+  /** Delay before reveal starts. */
+  delay = 0.15,
 }: {
   words: {
     text: string;
@@ -110,78 +124,59 @@ export const TypewriterEffectSmooth = ({
   }[];
   className?: string;
   cursorClassName?: string;
+  duration?: number;
+  delay?: number;
 }) => {
-  const wordsArray = words.map((word) => {
-    return {
-      ...word,
-      text: word.text.split(""),
-    };
-  });
-  const renderWords = () => {
-    return (
-      <div>
-        {wordsArray.map((word, idx) => {
-          return (
-            <div key={`word-${idx}`} className="inline-block">
-              {word.text.map((char, index) => (
-                <span
-                  key={`char-${index}`}
-                  className={cn(`text-black dark:text-white `, word.className)}
-                >
-                  {char}
-                </span>
-              ))}
-              &nbsp;
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+  const renderWords = () =>
+    words.map((word, idx) => (
+      <span key={`word-${idx}`}>
+        <span className={cn("text-black dark:text-white", word.className)}>
+          {word.text}
+        </span>
+        {idx < words.length - 1 ? " " : null}
+      </span>
+    ));
+
+  const cursor = (
+    <motion.span
+      aria-hidden
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        duration: 0.8,
+        repeat: Infinity,
+        repeatType: "reverse",
+      }}
+      className={cn(
+        "ml-1 inline-block h-[0.85em] w-[2.5px] translate-y-[0.06em] align-baseline rounded-sm bg-blue-500",
+        cursorClassName,
+      )}
+    />
+  );
 
   return (
-    <div className={cn("my-6 flex space-x-1", className)}>
-      <motion.div
-        className="overflow-hidden pb-2"
-        initial={{
-          width: "0%",
-        }}
-        whileInView={{
-          width: "fit-content",
-        }}
+    <div
+      className={cn("relative inline-block max-w-full text-center", className)}
+    >
+      {/* Layout sizer — full sentence + cursor width */}
+      <span className="invisible select-none" aria-hidden>
+        {renderWords()}
+        <span className="ml-1 inline-block h-[0.85em] w-[2.5px] align-baseline" />
+      </span>
+
+      <motion.span
+        className="absolute inset-0 text-center"
+        initial={{ clipPath: "inset(0 100% 0 0)" }}
+        animate={{ clipPath: "inset(0 0% 0 0)" }}
         transition={{
-          duration: 2,
-          ease: "linear",
-          delay: 1,
+          duration,
+          delay,
+          ease: [0.22, 1, 0.36, 1],
         }}
       >
-        <div
-          className="text-xs font-bold sm:text-base md:text-xl lg:text:3xl xl:text-5xl"
-          style={{
-            whiteSpace: "nowrap",
-          }}
-        >
-          {renderWords()}{" "}
-        </div>{" "}
-      </motion.div>
-      <motion.span
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-        }}
-        transition={{
-          duration: 0.8,
-
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-        className={cn(
-          "block h-4 w-[4px] rounded-sm bg-blue-500 sm:h-6 xl:h-12",
-          cursorClassName,
-        )}
-      ></motion.span>
+        {renderWords()}
+        {cursor}
+      </motion.span>
     </div>
   );
 };

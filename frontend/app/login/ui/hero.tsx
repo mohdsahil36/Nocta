@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { TypewriterEffect } from "@/components/ui/typewriter-effect";
+import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import { loginContent } from "../content";
 import { fadeUp, stagger } from "./motion";
 import { FRAME_PAD, Frame } from "./page-frame";
@@ -14,18 +14,33 @@ type HeroProps = {
   onHowItWorks: () => void;
 };
 
+/** Brand: lighter weight, larger size than the headline. */
 const brandTypeSize =
-  "text-[clamp(2.75rem,8vw,4.5rem)] leading-none font-semibold tracking-[-0.045em] text-left";
+  "text-[clamp(3.5rem,11vw,5.5rem)] leading-none font-medium tracking-[-0.055em]";
 
-/** Type-in (~5 chars × 100ms) + hold before remount loop. */
-const TYPEWRITER_LOOP_MS = 3200;
+const headlineTypeSize =
+  "text-[clamp(2.25rem,5.4vw,3rem)] leading-[1.15] font-semibold tracking-[-0.035em]";
+
+/** Smooth wipe (~2.6s) then hold before a calm replay. */
+const TYPEWRITER_DURATION_S = 2.6;
+const TYPEWRITER_DELAY_S = 0.2;
+const TYPEWRITER_HOLD_MS = 8000;
+const TYPEWRITER_LOOP_MS = Math.ceil(
+  (TYPEWRITER_DURATION_S + TYPEWRITER_DELAY_S) * 1000 + TYPEWRITER_HOLD_MS,
+);
 
 /**
- * Nocta desk hero — brand with looping TypewriterEffect (remount cycle).
+ * Actuity-leaning B&W hero — brand first, smooth headline reveal.
  */
 export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
   const c = loginContent.hero;
   const [typeCycle, setTypeCycle] = useState(0);
+
+  const headlineWords = c.headline.split(/\s+/).map((text) => ({
+    text,
+    className:
+      "font-sans font-semibold tracking-[-0.035em] text-neutral-950 dark:text-neutral-50",
+  }));
 
   useEffect(() => {
     if (reduceMotion) return;
@@ -36,58 +51,67 @@ export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
   }, [reduceMotion]);
 
   return (
-    <section id="top" className="relative isolate scroll-mt-16">
+    <section
+      id="top"
+      className="relative isolate flex min-h-[min(78svh,44rem)] scroll-mt-16 flex-col bg-white dark:bg-neutral-950"
+    >
       <div
         aria-hidden
-        className="nocta-dusk-field pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 opacity-[0.22] dark:opacity-[0.12]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgb(0 0 0 / 0.18) 0.55px, transparent 0.65px)",
+          backgroundSize: "14px 14px",
+        }}
       />
 
-      <Frame className="relative z-10">
+      <Frame className="relative z-10 flex flex-1 flex-col">
         <motion.div
           className={[
-            "flex flex-col pt-12 pb-16 sm:pt-16 sm:pb-20",
+            "flex flex-1 flex-col items-center justify-center pt-16 pb-10 text-center sm:pt-20 sm:pb-14",
             FRAME_PAD,
           ].join(" ")}
           variants={stagger}
           initial={reduceMotion ? false : "hidden"}
           animate="show"
         >
-          <motion.div variants={fadeUp} className="min-w-0 max-w-2xl">
-            <p className="font-sans text-[11px] font-medium tracking-[0.16em] text-primary uppercase">
-              {c.eyebrow}
+          <motion.div variants={fadeUp} className="min-w-0 max-w-3xl">
+            <p className="font-sans text-[11px] font-medium tracking-[0.18em] text-neutral-500 uppercase">
+              ◇ {c.eyebrow}
             </p>
 
-            <div className="mt-5 min-h-[1.05em] font-sans text-foreground">
+            <p
+              className={[
+                "mt-4 font-sans text-neutral-950 dark:text-neutral-50",
+                brandTypeSize,
+              ].join(" ")}
+            >
+              {loginContent.brand}
+            </p>
+
+            <h1 className="mt-5 flex min-h-[2.4em] justify-center px-1 font-sans text-neutral-950 dark:text-neutral-50">
               {reduceMotion ? (
-                <p className={brandTypeSize}>{loginContent.brand}</p>
+                <span className={headlineTypeSize}>{c.headline}</span>
               ) : (
-                <TypewriterEffect
+                <TypewriterEffectSmooth
                   key={typeCycle}
-                  words={[
-                    {
-                      text: loginContent.brand,
-                      className:
-                        "font-sans font-semibold tracking-[-0.045em] text-foreground dark:text-foreground",
-                    },
-                  ]}
-                  className={brandTypeSize}
-                  cursorClassName="h-[0.85em] w-[3px] translate-y-[0.08em] rounded-sm bg-primary md:h-[0.85em] lg:h-[0.85em]"
+                  words={headlineWords}
+                  className={headlineTypeSize}
+                  duration={TYPEWRITER_DURATION_S}
+                  delay={TYPEWRITER_DELAY_S}
+                  cursorClassName="bg-neutral-950 dark:bg-neutral-50"
                 />
               )}
-            </div>
-
-            <h1 className="mt-4 max-w-xl font-sans text-[clamp(1.35rem,3.2vw,1.75rem)] leading-snug font-medium tracking-[-0.025em] text-foreground">
-              {c.headline}
             </h1>
 
-            <p className="mt-4 max-w-md font-sans text-base leading-relaxed text-muted-foreground sm:text-[15px]">
+            <p className="mx-auto mt-3 max-w-lg font-sans text-[15px] leading-relaxed text-neutral-500">
               {c.body}
             </p>
 
-            <div className="mt-8 flex flex-col gap-2.5 sm:mt-9 sm:flex-row sm:items-center">
+            <div className="mt-7 flex flex-col items-center justify-center gap-2 sm:flex-row">
               <Button
                 size="lg"
-                className="h-11 rounded-lg px-6 text-sm font-semibold"
+                className="h-11 rounded-sm bg-neutral-950 px-6 text-sm font-semibold text-white hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
                 onClick={() => onOpenAuth("signup")}
               >
                 {c.primaryCta}
@@ -95,7 +119,7 @@ export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
               <Button
                 size="lg"
                 variant="ghost"
-                className="h-11 rounded-lg px-4 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="h-11 rounded-sm px-4 text-sm font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-900 dark:hover:text-neutral-50"
                 onClick={onHowItWorks}
               >
                 {c.secondaryCta}
@@ -103,18 +127,25 @@ export function Hero({ reduceMotion, onOpenAuth, onHowItWorks }: HeroProps) {
             </div>
           </motion.div>
         </motion.div>
+
+        <p
+          className={[
+            "pb-6 text-center text-[10px] font-medium tracking-[0.32em] text-neutral-400 uppercase",
+            FRAME_PAD,
+          ].join(" ")}
+        >
+          {c.scrollCue}
+        </p>
       </Frame>
     </section>
   );
 }
 
-/**
- * TRY IT — quiet ink rail into the demo.
- */
+/** Optional rail — not used on the shortened landing. */
 export function HeroTryIt() {
   const c = loginContent.hero;
   return (
-    <div className="w-full border-y border-border bg-muted/30">
+    <div className="w-full border-y border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
       <Frame>
         <div
           className={[
@@ -122,12 +153,10 @@ export function HeroTryIt() {
             FRAME_PAD,
           ].join(" ")}
         >
-          <span className="inline-flex h-6 w-fit items-center rounded-md bg-primary px-2.5 text-[10px] font-semibold tracking-[0.14em] text-primary-foreground uppercase">
+          <span className="inline-flex h-6 w-fit items-center rounded-sm bg-neutral-950 px-2.5 text-[10px] font-semibold tracking-[0.14em] text-white uppercase dark:bg-neutral-50 dark:text-neutral-950">
             {c.tryItLabel}
           </span>
-          <p className="text-sm leading-snug text-muted-foreground">
-            {c.tryItHint}
-          </p>
+          <p className="text-sm leading-snug text-neutral-500">{c.tryItHint}</p>
         </div>
       </Frame>
     </div>

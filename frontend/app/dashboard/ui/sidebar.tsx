@@ -107,8 +107,8 @@ function NavLink({
       title={item.label}
       onClick={onNavigate}
       className={cn(
-        "nocta-nav-pill flex h-9 shrink-0 items-center gap-2.5 rounded-lg px-2.5 tracking-tight",
-        collapsed && "mx-auto size-9 justify-center gap-0 rounded-md p-0",
+        "nocta-nav-pill flex h-9 shrink-0 items-center gap-2.5 rounded-sm px-2.5 tracking-tight",
+        collapsed && "mx-auto size-9 justify-center gap-0 rounded-sm p-0",
       )}
       data-active={active ? "true" : undefined}
     >
@@ -278,7 +278,7 @@ export function DashboardSidebar({
           >
             <Link
               href="/dashboard"
-              className="flex size-9 shrink-0 items-center justify-center rounded-md text-nocta-ink"
+              className="flex size-9 shrink-0 items-center justify-center rounded-sm text-nocta-ink"
               aria-label={dashboardContent.brand}
               onClick={closeIfMobile}
             >
@@ -291,7 +291,7 @@ export function DashboardSidebar({
                 </span>
                 <ChromeButton
                   iconOnly
-                  className="size-7 rounded-md"
+                  className="size-7 rounded-sm"
                   aria-label={
                     pinned
                       ? dashboardContent.actions.closeSidebar
@@ -374,11 +374,16 @@ export function DashboardSidebar({
             <AccountMenu
               collapsed={collapsed}
               onExpandSidebar={onPinOpen}
+              onCollapseSidebar={onPinClose}
               onMenuOpenChange={(open) => {
                 setAccountMenuOpen(open);
                 if (open) {
                   clearLeaveTimer();
                   onHoverExpandChange(true);
+                } else {
+                  // Panel closed → allow hover peek to collapse; unpin if pinned
+                  // is handled by onCollapseSidebar on outside dismiss.
+                  onHoverExpandChange(false);
                 }
               }}
             />

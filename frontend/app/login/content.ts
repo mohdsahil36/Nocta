@@ -18,9 +18,68 @@ export const loginContent = {
     body: "Check in with the time and energy you have. Nocta scores your goals and returns one clear next step — or rest. Use it whenever you need to decide, not only at the end of the day.",
     primaryCta: "Get started",
     secondaryCta: "See how it works",
+    scrollCue: "Scroll",
     tryItLabel: "Try it",
     tryItHint:
       "Set your time and energy below. Nocta picks one action and tells you why.",
+  },
+  path: {
+    index: "01",
+    eyebrow: "The check-in path",
+    title: "How a decision feels inside Nocta.",
+    body: "Not a dashboard. A short sequence you get right: check in, see the score, take one step — or rest.",
+    steps: [
+      {
+        id: "check-in",
+        num: "01",
+        label: "Step 01 · Check in",
+        title: "Time and energy first.",
+        detail:
+          "Nothing gets suggested until you say how much time you have and how much energy is left.",
+        bullets: ["Minutes available", "Energy level", "No guesswork"],
+        foot: "› check-in · 45m · steady",
+      },
+      {
+        id: "score",
+        num: "02",
+        label: "Step 02 · Score",
+        title: "Priority from fixed rules.",
+        detail:
+          "Deadline, neglect, weight and momentum add up the same way every time. AI never invents the ranking.",
+        bullets: ["Deadline proximity", "Neglect", "Weight · momentum"],
+        foot: "› score · 86 · factors visible",
+      },
+      {
+        id: "pick",
+        num: "03",
+        label: "Step 03 · One pick",
+        title: "One action, sized to you.",
+        detail:
+          "The top-scored goal becomes a concrete next step that fits the time you gave.",
+        bullets: ["Top scored goal", "Time-fit step", "Why this"],
+        foot: "› pick · Ship the scoring PR",
+      },
+      {
+        id: "swap",
+        num: "04",
+        label: "Step 04 · Swap",
+        title: "Next-best if you need it.",
+        detail:
+          "Reject the top pick and the next scored goal surfaces — still grounded in the same numbers.",
+        bullets: ["Also scored", "One tap swap", "Same rules"],
+        foot: "› swap · Morning run · 64",
+      },
+      {
+        id: "log",
+        num: "05",
+        label: "Step 05 · Log",
+        title: "Close the loop — or rest.",
+        detail:
+          "Mark what happened, or take recovery. Either way, momentum stays honest for next time.",
+        bullets: ["Completed · partial", "Deferred · swapped", "Recovery night"],
+        foot: "› log · completed · momentum holds",
+      },
+    ],
   },
   product: {
     index: "01",
@@ -79,9 +138,9 @@ export const loginContent = {
     ],
   },
   goals: {
-    index: "04",
+    index: "03",
     eyebrow: "Your goals",
-    title: "Bring what you care about",
+    title: "Bring what you care about.",
     body: "Goals come from you — not from a fixed set of life areas. Deadlines, neglect and what you finished reshape what surfaces next.",
     points: [
       {
@@ -265,7 +324,7 @@ export const loginContent = {
     ],
   },
   swap: {
-    index: "08",
+    index: "04",
     eyebrow: "Choose",
     title: "Alternative Option Swap",
     body: "If the pick doesn't feel right, swap it for the next best option that still fits your time. You still end up with one action.",
@@ -300,7 +359,7 @@ export const loginContent = {
     ],
   },
   logParser: {
-    index: "09",
+    index: "04",
     eyebrow: "Log",
     title: "AI Quick Log Parser",
     body: "Type one line about what you did. Nocta works out the goal, time, energy and progress, then asks you to confirm.",
@@ -321,7 +380,7 @@ export const loginContent = {
     unknown: "Not sure. Pick one",
   },
   recovery: {
-    index: "10",
+    index: "05",
     eyebrow: "Rest",
     title: "Recovery Mode",
     body: "Rest is part of the model, not a gap. When time and energy are low, recovery is scored like any other choice — momentum holds, and the next session reshapes without punishment.",
