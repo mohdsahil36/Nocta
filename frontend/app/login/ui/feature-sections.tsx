@@ -1314,9 +1314,9 @@ export function RecoverySection({ rail = false }: { rail?: boolean }) {
               className="absolute inset-x-0 top-0"
             >
               <PanelLabel>{scene.label}</PanelLabel>
-              <p className="mt-3 font-sans text-sm font-semibold tracking-tight text-foreground">
+              <div className="mt-3 font-sans text-sm font-semibold tracking-tight text-foreground">
                 <LiveTitle text={scene.title} size="line" />
-              </p>
+              </div>
               <span className="mx-auto mt-4 flex size-14 items-center justify-center border border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900">
                 {scene.kind === "rest" ? (
                   <MoonStar aria-hidden className="size-6 text-foreground" />

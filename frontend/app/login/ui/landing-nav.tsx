@@ -1,9 +1,9 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { NoctaMark } from "@/components/ui/nocta-mark";
+import { NoctaThemeToggler } from "@/components/ui/nocta-theme-toggler";
 import { loginContent } from "../content";
 import { navReveal } from "./motion";
 import { FRAME_PAD, Frame } from "./page-frame";
@@ -14,7 +14,6 @@ type LandingNavProps = {
   onHowItWorks: () => void;
   onFaq: () => void;
   onOpenAuth: (mode?: "login" | "signup") => void;
-  onToggleTheme: () => void;
 };
 
 /**
@@ -25,7 +24,6 @@ export function LandingNav({
   onHowItWorks,
   onFaq,
   onOpenAuth,
-  onToggleTheme,
 }: LandingNavProps) {
   return (
     <motion.header
@@ -70,17 +68,10 @@ export function LandingNav({
             >
               {loginContent.nav.faq}
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-9 cursor-pointer rounded-md text-neutral-500 hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-900 dark:hover:text-neutral-50"
-              onClick={onToggleTheme}
+            <NoctaThemeToggler
               aria-label={loginContent.nav.theme}
-              title={loginContent.nav.theme}
-            >
-              <Sun className="size-4 dark:hidden" />
-              <Moon className="hidden size-4 dark:block" />
-            </Button>
+              className="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-900 dark:hover:text-neutral-50 [&_svg]:size-4"
+            />
             <Button
               variant="ghost"
               size="sm"

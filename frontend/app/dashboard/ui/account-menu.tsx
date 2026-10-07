@@ -2,68 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Check,
-  ChevronDown,
-  LogOut,
-  Monitor,
-  Sun,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { DeskLoader } from "@/components/ui/desk-loader";
-import { NoctaMark } from "@/components/ui/nocta-mark";
+import { NoctaThemeToggler } from "@/components/ui/nocta-theme-toggler";
 import { Separator } from "@/components/ui/separator";
 import { BEFORE_AUTH_PATH, logout } from "@/app/login/functions/auth";
-import useThemeStore, { type ThemePreference } from "@/app/store/themeStore";
 import { cn } from "cn";
 
 import { dashboardContent } from "../content";
 import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
-
-type ThemeMode = "light" | "dark" | "system";
-
-type ThemeIcon = LucideIcon | typeof NoctaMark;
-
-function preferenceToMode(preference: ThemePreference): ThemeMode {
-  if (preference === "light") return "light";
-  if (preference === "dark") return "dark";
-  return "system";
-}
-
-function modeToPreference(mode: ThemeMode): ThemePreference {
-  if (mode === "system") return null;
-  return mode;
-}
-
-const THEME_OPTIONS: {
-  mode: ThemeMode;
-  label: string;
-  hint: string;
-  icon: ThemeIcon;
-}[] = [
-  {
-    mode: "light",
-    label: dashboardContent.account.themeLight,
-    hint: dashboardContent.account.themeLightHint,
-    icon: Sun,
-  },
-  {
-    mode: "dark",
-    label: dashboardContent.account.themeDark,
-    hint: dashboardContent.account.themeDarkHint,
-    icon: NoctaMark,
-  },
-  {
-    mode: "system",
-    label: dashboardContent.account.themeSystem,
-    hint: dashboardContent.account.themeSystemHint,
-    icon: Monitor,
-  },
-];
 
 type AccountMenuProps = {
   /** Icon-only trigger when the sidebar rail is collapsed. */
@@ -84,9 +35,6 @@ export function AccountMenu({
 }: AccountMenuProps) {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const preference = useThemeStore((s) => s.preference);
-  const hydrated = useThemeStore((s) => s.hydrated);
-  const setPreference = useThemeStore((s) => s.setPreference);
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
@@ -114,8 +62,6 @@ export function AccountMenu({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only when rail collapses
   }, [collapsed]);
-
-  const activeMode = hydrated ? preferenceToMode(preference) : "system";
 
   function setPanelOpen(next: boolean) {
     setOpen(next);
@@ -227,61 +173,29 @@ export function AccountMenu({
                 }
                 className="rounded-sm border border-border bg-card"
               >
-                <p className="px-2.5 pt-2 pb-1 text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-                  {dashboardContent.account.theme}
-                </p>
-                <div
-                  className="flex flex-col gap-0.5 px-1 pb-1"
-                  role="listbox"
-                  aria-label={dashboardContent.account.theme}
+                <motion.div
+                  className="flex items-center justify-between gap-2 px-2.5 py-2"
+                  initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.2, delay: 0.08, ease: easeOut }
+                  }
                 >
-                  {THEME_OPTIONS.map(
-                    ({ mode, label, hint, icon: Icon }, index) => {
-                      const selected = activeMode === mode;
-                      return (
-                        <motion.button
-                          key={mode}
-                          type="button"
-                          role="option"
-                          aria-selected={selected}
-                          title={hint}
-                          initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={
-                            reduceMotion
-                              ? { duration: 0 }
-                              : {
-                                  duration: 0.2,
-                                  delay: 0.08 + index * 0.04,
-                                  ease: easeOut,
-                                }
-                          }
-                          className={cn(
-                            "flex w-full items-center gap-2.5 rounded-sm px-2 py-2 text-left",
-                            "text-[12px] text-nocta-ink outline-none transition-colors",
-                            "hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring",
-                            selected && "bg-muted/50",
-                          )}
-                          onClick={() => {
-                            setPreference(modeToPreference(mode));
-                          }}
-                        >
-                          <Icon
-                            className="size-3.5 shrink-0 text-muted-foreground"
-                            aria-hidden
-                          />
-                          <span className="min-w-0 flex-1">{label}</span>
-                          {selected ? (
-                            <Check
-                              className="size-3 shrink-0 text-primary"
-                              aria-hidden
-                            />
-                          ) : null}
-                        </motion.button>
-                      );
-                    },
-                  )}
-                </div>
+                  <span className="text-[12px] text-nocta-ink">
+                    {dashboardContent.account.theme}
+                  </span>
+                  <NoctaThemeToggler
+                    aria-label={dashboardContent.account.theme}
+                    className={cn(
+                      "inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-sm",
+                      "text-muted-foreground hover:bg-muted/60 hover:text-nocta-ink",
+                      "transition-colors duration-150",
+                      "[&_svg]:size-3.5",
+                    )}
+                  />
+                </motion.div>
 
                 <Separator />
 
@@ -292,7 +206,7 @@ export function AccountMenu({
                   transition={
                     reduceMotion
                       ? { duration: 0 }
-                      : { duration: 0.2, delay: 0.22, ease: easeOut }
+                      : { duration: 0.2, delay: 0.14, ease: easeOut }
                   }
                 >
                   <button

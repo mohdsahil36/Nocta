@@ -2,10 +2,10 @@
 
 import type { MouseEvent } from "react";
 import { loginContent } from "../content";
-import { FRAME_PAD, Frame } from "./page-frame";
+import { FRAME_PAD, FRAME_MAX } from "./page-frame";
 
 const LINK =
-  "block text-[14px] tracking-tight text-neutral-400 transition-colors duration-150 hover:text-neutral-100";
+  "block text-[14px] tracking-tight text-neutral-500 transition-colors duration-150 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-100";
 
 type LandingFooterProps = {
   /** Lenis-aware smooth scroll (hash without #). */
@@ -19,7 +19,8 @@ type FooterItem = {
 };
 
 /**
- * Actuity-style black footer — evenly spaced columns + full-bleed brand wordmark.
+ * Landing footer — light paper + black type in light mode; black bar + light type in dark.
+ * Columns span the rail edge-to-edge; wordmark stays full-bleed.
  */
 export function LandingFooter({ onNavigate }: LandingFooterProps) {
   const f = loginContent.footer;
@@ -59,56 +60,81 @@ export function LandingFooter({ onNavigate }: LandingFooterProps) {
   return (
     <footer
       id="site-footer"
-      className="relative z-30 isolate overflow-hidden bg-neutral-950 text-neutral-100"
+      className="relative z-30 isolate overflow-hidden border-t border-neutral-200 bg-neutral-50 text-neutral-950 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
     >
-      <Frame>
+      <div
+        className={[
+          "relative z-10 mx-auto w-full",
+          FRAME_MAX,
+          FRAME_PAD,
+          "pt-12 pb-8 sm:pt-16 sm:pb-10",
+        ].join(" ")}
+      >
+        <div className="grid w-full grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 sm:gap-x-10">
+          {cols.map((col, i) => {
+            const align =
+              i === 0
+                ? "items-start text-left"
+                : i === cols.length - 1
+                  ? "items-end text-right max-sm:items-start max-sm:text-left"
+                  : "items-center text-center max-sm:items-start max-sm:text-left";
+
+            return (
+              <div
+                key={col.n}
+                className={["flex min-w-0 flex-col", align].join(" ")}
+              >
+                <p className="font-mono text-[11px] tracking-[0.14em] text-neutral-400 dark:text-neutral-600">
+                  {col.n}
+                </p>
+                <ul
+                  className={[
+                    "mt-4 flex flex-col gap-2.5",
+                    i === 0
+                      ? "items-start"
+                      : i === cols.length - 1
+                        ? "items-end max-sm:items-start"
+                        : "items-center max-sm:items-start",
+                  ].join(" ")}
+                >
+                  {col.items.map((item) => (
+                    <li key={`${col.n}-${item.label}`}>
+                      {item.plain ? (
+                        <span className={LINK}>{item.label}</span>
+                      ) : (
+                        <a
+                          href={item.href}
+                          className={LINK}
+                          onClick={(e) => go(e, item.href)}
+                        >
+                          {item.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="relative overflow-hidden pt-4">
         <div
           className={[
-            "relative z-10 grid grid-cols-2 gap-x-6 gap-y-10 pt-12 pb-8 sm:grid-cols-4 sm:gap-8 sm:pt-16 sm:pb-10",
+            "relative z-10 mx-auto w-full pb-2 text-center",
+            FRAME_MAX,
             FRAME_PAD,
           ].join(" ")}
         >
-          {cols.map((col) => (
-            <div key={col.n} className="min-w-0 text-center sm:text-left">
-              <p className="font-mono text-[11px] tracking-[0.14em] text-neutral-600">
-                {col.n}
-              </p>
-              <ul className="mt-4 flex flex-col items-center gap-2.5 sm:items-start">
-                {col.items.map((item) => (
-                  <li key={`${col.n}-${item.label}`}>
-                    {item.plain ? (
-                      <span className={LINK}>{item.label}</span>
-                    ) : (
-                      <a
-                        href={item.href}
-                        className={LINK}
-                        onClick={(e) => go(e, item.href)}
-                      >
-                        {item.label}
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <p className="text-[11px] tracking-tight text-neutral-400 dark:text-neutral-500">
+            {f.copyright}
+          </p>
         </div>
-      </Frame>
-
-      <div className="relative overflow-hidden pt-4">
-        <Frame>
-          <div
-            className={["relative z-10 pb-2 text-center", FRAME_PAD].join(" ")}
-          >
-            <p className="text-[11px] tracking-tight text-neutral-500">
-              {f.copyright}
-            </p>
-          </div>
-        </Frame>
 
         <p
           aria-hidden
-          className="pointer-events-none relative z-[1] select-none pb-5 text-center font-sans text-[clamp(5.5rem,18vw,16rem)] leading-[0.82] font-black tracking-[-0.05em] whitespace-nowrap text-[#f4f4f2] lowercase sm:pb-7"
+          className="pointer-events-none relative z-1 select-none pb-5 text-center font-sans text-[clamp(5.5rem,18vw,16rem)] leading-[0.82] font-black tracking-tighter whitespace-nowrap text-neutral-950 lowercase dark:text-[#f4f4f2] sm:pb-7"
           style={{ marginBottom: "-0.04em" }}
         >
           {loginContent.brand.toLowerCase()}

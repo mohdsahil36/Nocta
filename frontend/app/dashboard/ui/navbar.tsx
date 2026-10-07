@@ -22,7 +22,7 @@ function isSearchHotkey(event: KeyboardEvent) {
 }
 
 /**
- * Blueprint-style top bar — search. Account lives in the sidebar footer.
+ * Blueprint-style top bar — search. Account / theme live in the sidebar footer.
  * ⌘K / Ctrl+K focuses search. Query handling deferred to v2.
  */
 export function DashboardNavbar({

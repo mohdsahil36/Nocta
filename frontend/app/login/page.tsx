@@ -30,7 +30,6 @@ import { LandingNav } from "./ui/landing-nav";
 import { PathSection } from "./ui/path-section";
 import { FRAME_PAD, Frame } from "./ui/page-frame";
 import { DeskLoader } from "@/components/ui/desk-loader";
-import useThemeStore from "@/app/store/themeStore";
 import {
   AUTH_EXIT_MS,
   authEaseOut,
@@ -53,7 +52,6 @@ export default function LoginPage() {
   const [authBusy, setAuthBusy] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [routeLeaving, setRouteLeaving] = useState(false);
-  const toggleTheme = useThemeStore((s) => s.toggle);
   const { scrolled, scrollToId } = usePageScroll(reduceMotion, authOpen);
 
   const openAuth = (mode: AuthMode = "login") => {
@@ -147,7 +145,6 @@ export default function LoginPage() {
         onHowItWorks={() => scrollToId("how-it-works")}
         onFaq={() => scrollToId("faq")}
         onOpenAuth={(mode) => openAuth(mode ?? "login")}
-        onToggleTheme={toggleTheme}
       />
 
       {/*
