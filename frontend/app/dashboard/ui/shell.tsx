@@ -1,9 +1,14 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
-import { authEaseOut, consumeAuthEnter } from "@/lib/auth-transition";
+import {
+  authEaseOut,
+  consumeAuthEnter,
+  consumeAuthWelcome,
+} from "@/lib/auth-transition";
+import { toast } from "@/components/ui/toast";
 
 import { DashboardNavbar } from "./navbar";
 import { DashboardSidebar } from "./sidebar";
@@ -24,6 +29,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const expanded = pinned || hoverExpand;
 
   const playEnter = fromAuth && !reduceMotion;
+
+  useEffect(() => {
+    const title = consumeAuthWelcome();
+    if (!title) return;
+    toast.add({ title, type: "success", timeout: 2200 });
+  }, []);
 
   return (
     <motion.div

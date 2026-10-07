@@ -10,6 +10,8 @@ export const dashboardContent = {
     planLabel: "Plan",
     workspaceLabel: "Workspace",
     profileLabel: "Signed in",
+    signedOutLabel: "Not signed in",
+    profileLoading: "…",
     tagline: "One action",
     taglineSupport: "One clear next step.",
   },
@@ -26,7 +28,7 @@ export const dashboardContent = {
     night: "Still up?",
     /** Toast / legacy two-part welcome. Home card uses navbarGreeting(). */
     welcome: (name: string) => `Welcome back, ${name}`,
-    fallbackName: "there",
+    fallbackName: "Random User",
     emptySupport: "Add a goal when you’re ready. Rest is part of the model.",
     supportWithMomentum:
       "Momentum holds when you rest. One clear step when you don’t.",

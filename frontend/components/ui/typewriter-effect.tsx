@@ -97,7 +97,7 @@ export const TypewriterEffect = ({
           repeatType: "reverse",
         }}
         className={cn(
-          "inline-block h-4 w-[4px] rounded-sm bg-blue-500 md:h-6 lg:h-10",
+          "inline-block h-4 w-1 rounded-sm bg-blue-500 md:h-6 lg:h-10",
           cursorClassName,
         )}
       ></motion.span>
@@ -155,7 +155,9 @@ export const TypewriterEffectSmooth = ({
   );
 
   return (
-    <div className={cn("relative inline-block max-w-full text-center", className)}>
+    <div
+      className={cn("relative inline-block max-w-full text-center", className)}
+    >
       {/* Layout sizer — full sentence + cursor width */}
       <span className="invisible select-none" aria-hidden>
         {renderWords()}

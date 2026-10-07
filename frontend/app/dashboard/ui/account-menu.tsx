@@ -9,10 +9,10 @@ import { DeskLoader } from "@/components/ui/desk-loader";
 import { NoctaThemeToggler } from "@/components/ui/nocta-theme-toggler";
 import { Separator } from "@/components/ui/separator";
 import { BEFORE_AUTH_PATH, logout } from "@/app/login/functions/auth";
+import useAuthStore from "@/app/store/authStore";
 import { cn } from "cn";
 
 import { dashboardContent } from "../content";
-import { getSessionProfile, type SessionProfile } from "../functions/dashboard";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -35,37 +35,45 @@ export function AccountMenu({
 }: AccountMenuProps) {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
+  const authReady = useAuthStore((s) => s.ready);
+  const userId = useAuthStore((s) => s.userId);
+  const profileName = useAuthStore((s) => s.name);
+  const profileEmail = useAuthStore((s) => s.email);
+  const profileInitials = useAuthStore((s) => s.initials);
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<SessionProfile>(() => ({
-    name: dashboardContent.greeting.fallbackName,
-    email: null,
-    initials: "N",
-  }));
 
-  useEffect(() => {
-    let cancelled = false;
-    void getSessionProfile().then((next) => {
-      if (!cancelled) setProfile(next);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const displayName = !authReady
+    ? dashboardContent.sidebar.profileLoading
+    : userId
+      ? profileName
+      : dashboardContent.sidebar.signedOutLabel;
+  const displaySub = !authReady
+    ? dashboardContent.sidebar.profileLoading
+    : profileEmail
+      ? profileEmail
+      : userId
+        ? dashboardContent.sidebar.profileLabel
+        : "";
+  const displayInitials = authReady && userId ? profileInitials : "N";
 
-  // panel needs the expanded rail — close if the rail collapses
+  // Panel only shows on the expanded rail (derive — don’t sync open via effect).
+  const panelOpen = open && !collapsed;
+
+  // When the rail collapses, clear local open during render (React-approved).
+  if (collapsed && open) {
+    setOpen(false);
+  }
+
+  // Tell the sidebar hover-peek lock the menu is closed when the rail collapses.
   useEffect(() => {
-    if (collapsed && open) {
-      setOpen(false);
-      onMenuOpenChange?.(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when rail collapses
-  }, [collapsed]);
+    if (collapsed) onMenuOpenChange?.(false);
+  }, [collapsed, onMenuOpenChange]);
 
   function setPanelOpen(next: boolean) {
     setOpen(next);
-    onMenuOpenChange?.(next);
+    onMenuOpenChange?.(next && !collapsed);
   }
 
   function handleTriggerClick() {
@@ -102,30 +110,30 @@ export function AccountMenu({
             "flex w-full items-center gap-2.5 rounded-sm outline-none",
             "transition-[background-color,box-shadow] duration-150",
             "hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring",
-            open && "bg-muted/50",
+            panelOpen && "bg-muted/50",
             collapsed ? "size-9 justify-center gap-0 p-0" : "px-2 py-1.5",
           )}
           aria-label={dashboardContent.account.menuLabel}
-          aria-expanded={open}
+          aria-expanded={panelOpen}
           aria-controls="nocta-account-panel"
           onClick={handleTriggerClick}
         >
           <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[10px] font-semibold text-background">
-            {profile.initials}
+            {displayInitials}
           </span>
           {!collapsed ? (
             <>
               <span className="min-w-0 flex-1 text-left">
                 <span className="block truncate text-[13px] leading-tight font-medium text-nocta-ink">
-                  {profile.name}
+                  {displayName}
                 </span>
                 <span className="mt-0.5 block truncate text-[10px] leading-tight text-muted-foreground">
-                  {profile.email ?? dashboardContent.sidebar.profileLabel}
+                  {displaySub}
                 </span>
               </span>
               <motion.span
                 className="inline-flex size-3.5 shrink-0 text-muted-foreground"
-                animate={{ rotate: open ? 180 : 0 }}
+                animate={{ rotate: panelOpen ? 180 : 0 }}
                 transition={
                   reduceMotion
                     ? { duration: 0 }
@@ -137,12 +145,12 @@ export function AccountMenu({
               </motion.span>
             </>
           ) : (
-            <span className="sr-only">{profile.name}</span>
+            <span className="sr-only">{displayName}</span>
           )}
         </button>
 
         <AnimatePresence initial={false}>
-          {!collapsed && open ? (
+          {panelOpen ? (
             <motion.div
               key="account-panel"
               id="nocta-account-panel"

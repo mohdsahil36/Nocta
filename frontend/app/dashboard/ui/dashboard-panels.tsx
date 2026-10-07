@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
@@ -11,9 +11,10 @@ import {
 } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import useAuthStore from "@/app/store/authStore";
 import { cn } from "cn";
 import { dashboardContent } from "../content";
-import { getDisplayName, navbarGreeting } from "../functions/dashboard";
+import { navbarGreeting } from "../functions/dashboard";
 
 function formatHomeDate(d = new Date()) {
   return d.toLocaleDateString("en-US", {
@@ -32,21 +33,15 @@ type Stat = {
 /** Dashboard home — Blueprint density, honest empty states. */
 export function DashboardPanels() {
   const c = dashboardContent;
-  const [greeting, setGreeting] = useState(() =>
-    navbarGreeting(12, c.greeting.fallbackName),
+  const authReady = useAuthStore((s) => s.ready);
+  const userId = useAuthStore((s) => s.userId);
+  const profileName = useAuthStore((s) => s.name);
+  const greeting = navbarGreeting(
+    new Date().getHours(),
+    authReady && userId ? profileName : c.greeting.fallbackName,
   );
   const [todayOpen, setTodayOpen] = useState(true);
   const [dateLabel] = useState(() => formatHomeDate());
-
-  useEffect(() => {
-    let cancelled = false;
-    void getDisplayName().then((name) => {
-      if (!cancelled) setGreeting(navbarGreeting(new Date().getHours(), name));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const stats: Stat[] = [
     { icon: TrendingUp, value: "—", label: c.stats.momentum },

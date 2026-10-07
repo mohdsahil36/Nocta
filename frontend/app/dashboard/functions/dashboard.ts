@@ -1,4 +1,7 @@
-import { supabase } from "@/lib/supabase";
+import useAuthStore, {
+  ensureAuthListener,
+  waitForAuthReady,
+} from "@/app/store/authStore";
 import { dashboardContent } from "../content";
 
 /** Casual time-of-day line from the user's local hour. */
@@ -30,64 +33,31 @@ export function welcomeMessage(name: string): string {
   return dashboardContent.greeting.welcome(name);
 }
 
-/** Resolve a short display name from the current Supabase session. */
-export async function getDisplayName(): Promise<string> {
-  const profile = await getSessionProfile();
-  return profile.name;
-}
-
 export type SessionProfile = {
   name: string;
   email: string | null;
   initials: string;
 };
 
-function firstNameFromMeta(
-  meta: Record<string, unknown> | undefined,
-): string | null {
-  if (!meta) return null;
-  for (const key of ["name", "full_name", "display_name"] as const) {
-    const value = meta[key];
-    if (typeof value === "string" && value.trim()) {
-      return value.trim().split(/\s+/)[0] ?? null;
-    }
-  }
-  return null;
+/** Resolve a short display name — waits for auth hydration. */
+export async function getDisplayName(): Promise<string> {
+  const profile = await getSessionProfile();
+  return profile.name;
 }
 
-/** Name + email for the sidebar profile chip. */
+/** Name + email for the sidebar profile chip — waits for auth hydration. */
 export async function getSessionProfile(): Promise<SessionProfile> {
-  const fallback = dashboardContent.greeting.fallbackName;
-
-  // Local session first — faster and avoids a race right after login navigate.
-  const { data: sessionData } = await supabase.auth.getSession();
-  let user = sessionData.session?.user ?? null;
-
-  if (!user) {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
-      return { name: fallback, email: null, initials: initialsFrom(fallback) };
-    }
-    user = data.user;
-  }
-
-  const meta = user.user_metadata as Record<string, unknown> | undefined;
-  const fromMeta = firstNameFromMeta(meta);
-  const email = user.email?.trim() ?? null;
-  const fromEmail = email?.split("@")[0]?.trim() || null;
-  const name = fromMeta || fromEmail || fallback;
-
+  ensureAuthListener();
+  const state = await waitForAuthReady();
   return {
-    name,
-    email,
-    initials: initialsFrom(fromMeta || name),
+    name: state.name,
+    email: state.email,
+    initials: state.initials,
   };
 }
 
-function initialsFrom(value: string): string {
-  const parts = value.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
-  }
-  return (parts[0] ?? "N").slice(0, 2).toUpperCase();
+/** Live profile from the auth store (call after ensureAuthListener). */
+export function readSessionProfile(): SessionProfile {
+  const { name, email, initials } = useAuthStore.getState();
+  return { name, email, initials };
 }

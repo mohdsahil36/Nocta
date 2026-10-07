@@ -34,8 +34,8 @@ import {
   AUTH_EXIT_MS,
   authEaseOut,
   markAuthEnter,
+  markAuthWelcome,
 } from "@/lib/auth-transition";
-import { toast } from "@/components/ui/toast";
 import { usePageScroll } from "./ui/use-page-scroll";
 
 export default function LoginPage() {
@@ -110,11 +110,8 @@ export default function LoginPage() {
     try {
       if (authMode === "login") {
         const displayName = await loginWithEmail({ email, password });
-        toast.add({
-          title: `Welcome back, ${displayName}`,
-          type: "success",
-          timeout: 2200,
-        });
+        // Toast after desk mounts — not under the handoff loader.
+        markAuthWelcome(`Welcome back, ${displayName}`);
       } else {
         const displayName = await signupWithEmail({
           name,
@@ -122,11 +119,7 @@ export default function LoginPage() {
           password,
           confirmPassword,
         });
-        toast.add({
-          title: `Welcome, ${displayName}`,
-          type: "success",
-          timeout: 2200,
-        });
+        markAuthWelcome(`Welcome, ${displayName}`);
       }
       await enterDashboard();
     } catch (err) {
