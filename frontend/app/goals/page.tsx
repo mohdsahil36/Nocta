@@ -62,7 +62,7 @@ export default function GoalsPage() {
 
   const {
     data: goals = [], // the shell for the data storing
-    isLoading: goalsLoading, // true while first load is happening
+    isLoading: goalsLoading, // true while first load is happening, goalLoading is another name for isLoading
     error, // set when the load fails
     refetch, // run the load again (retry button)
   } = useQuery({

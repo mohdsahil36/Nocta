@@ -374,11 +374,16 @@ export function DashboardSidebar({
             <AccountMenu
               collapsed={collapsed}
               onExpandSidebar={onPinOpen}
+              onCollapseSidebar={onPinClose}
               onMenuOpenChange={(open) => {
                 setAccountMenuOpen(open);
                 if (open) {
                   clearLeaveTimer();
                   onHoverExpandChange(true);
+                } else {
+                  // Panel closed → allow hover peek to collapse; unpin if pinned
+                  // is handled by onCollapseSidebar on outside dismiss.
+                  onHoverExpandChange(false);
                 }
               }}
             />

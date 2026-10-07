@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, LogOut } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -23,6 +23,8 @@ type AccountMenuProps = {
   onMenuOpenChange?: (open: boolean) => void;
   /** Expand / pin the rail when opening from the collapsed icon. */
   onExpandSidebar?: () => void;
+  /** Close / collapse the rail (e.g. click outside while the panel is open). */
+  onCollapseSidebar?: () => void;
 };
 
 /**
@@ -32,9 +34,19 @@ export function AccountMenu({
   collapsed = false,
   onMenuOpenChange,
   onExpandSidebar,
+  onCollapseSidebar,
 }: AccountMenuProps) {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const onMenuOpenChangeRef = useRef(onMenuOpenChange);
+  const onCollapseSidebarRef = useRef(onCollapseSidebar);
+
+  useEffect(() => {
+    onMenuOpenChangeRef.current = onMenuOpenChange;
+    onCollapseSidebarRef.current = onCollapseSidebar;
+  });
+
   const authReady = useAuthStore((s) => s.ready);
   const userId = useAuthStore((s) => s.userId);
   const profileName = useAuthStore((s) => s.name);
@@ -68,13 +80,32 @@ export function AccountMenu({
 
   // Tell the sidebar hover-peek lock the menu is closed when the rail collapses.
   useEffect(() => {
-    if (collapsed) onMenuOpenChange?.(false);
-  }, [collapsed, onMenuOpenChange]);
+    if (collapsed) onMenuOpenChangeRef.current?.(false);
+  }, [collapsed]);
 
   function setPanelOpen(next: boolean) {
     setOpen(next);
     onMenuOpenChange?.(next && !collapsed);
   }
+
+  // Click outside the account block → close profile panel and collapse the rail.
+  // Callbacks via refs so this effect’s deps stay a fixed size ([panelOpen] only).
+  useEffect(() => {
+    if (!panelOpen) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      const root = rootRef.current;
+      if (!root || root.contains(event.target as Node)) return;
+      // Panel first, then rail — so it doesn’t reopen on the next expand.
+      setOpen(false);
+      onMenuOpenChangeRef.current?.(false);
+      onCollapseSidebarRef.current?.();
+    };
+
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () =>
+      document.removeEventListener("pointerdown", onPointerDown, true);
+  }, [panelOpen]);
 
   function handleTriggerClick() {
     if (collapsed) {
@@ -103,7 +134,10 @@ export function AccountMenu({
 
   return (
     <>
-      <div className={cn("flex w-full flex-col", collapsed && "items-center")}>
+      <div
+        ref={rootRef}
+        className={cn("flex w-full flex-col", collapsed && "items-center")}
+      >
         <button
           type="button"
           className={cn(
