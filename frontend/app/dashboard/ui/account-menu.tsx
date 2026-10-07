@@ -153,7 +153,7 @@ export function AccountMenu({
         <button
           type="button"
           className={cn(
-            "flex w-full items-center gap-2.5 rounded-lg outline-none",
+            "flex w-full items-center gap-2.5 rounded-sm outline-none",
             "transition-[background-color,box-shadow] duration-150",
             "hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring",
             open && "bg-muted/50",
@@ -225,7 +225,7 @@ export function AccountMenu({
                     ? { duration: 0 }
                     : { duration: 0.22, delay: 0.04, ease: easeOut }
                 }
-                className="rounded-lg border border-border bg-card"
+                className="rounded-sm border border-border bg-card"
               >
                 <p className="px-2.5 pt-2 pb-1 text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   {dashboardContent.account.theme}
@@ -257,7 +257,7 @@ export function AccountMenu({
                                 }
                           }
                           className={cn(
-                            "flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left",
+                            "flex w-full items-center gap-2.5 rounded-sm px-2 py-2 text-left",
                             "text-[12px] text-nocta-ink outline-none transition-colors",
                             "hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring",
                             selected && "bg-muted/50",
@@ -299,7 +299,7 @@ export function AccountMenu({
                     type="button"
                     disabled={loggingOut}
                     className={cn(
-                      "flex w-full items-center gap-2.5 rounded-md px-2 py-2",
+                      "flex w-full items-center gap-2.5 rounded-sm px-2 py-2",
                       "text-[12px] text-nocta-ink outline-none transition-colors",
                       "hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring",
                       "disabled:pointer-events-none disabled:opacity-50",

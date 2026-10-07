@@ -73,7 +73,7 @@ export function DashboardPanels() {
             href="/activity"
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
-              "h-8 shrink-0 rounded-md border-border/80 text-xs shadow-none",
+              "h-8 shrink-0 rounded-sm border-border/80 text-xs shadow-none",
             )}
           >
             {c.actions.browseActivity}
