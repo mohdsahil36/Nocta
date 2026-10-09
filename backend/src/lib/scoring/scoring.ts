@@ -56,19 +56,43 @@ export function neglectFactor(lastTouchedAt: Date, now: Date): number {
 }
 
 /**What is the ranking of this goal?*/
-export function goalRanking(goal: ScoreableGoal, now: Date): number {
+export function goalRanking(goal: ScoreableGoal, now: Date): ScoredGoal {
   const currentdeadline = deadlineFactor(goal.deadline, now);
   const currentneglect = neglectFactor(goal.lastTouchedAt, now);
   const currentweight = goal.weight / 5;
   const currentmomentum = 0;
 
-  const currentFactorsforScoringGoal: ScoringFactorBreakdown = {
+  const factors: ScoringFactorBreakdown = {
     deadline: currentdeadline,
     neglect: currentneglect,
     weight: currentweight,
     momentum: currentmomentum,
   };
 
-  const goalRanking = computeTotal(currentFactorsforScoringGoal);
-  return goalRanking;
+  return {
+    goalId: goal.id,
+    total: computeTotal(factors),
+    factors,
+  };
+}
+
+/**Score every goal, then put the highest total first.*/
+export function rankAllGoals(goals: ScoreableGoal[], now: Date): ScoredGoal[] {
+  return goals
+    // give each goal a total score
+    .map((g) => goalRanking(g, now))
+    .sort((a, b) => {
+      // higher total wins
+      if (b.total !== a.total) return b.total - a.total;
+      // same total → more important weight wins
+      if (b.factors.weight !== a.factors.weight) {
+        return b.factors.weight - a.factors.weight;
+      }
+      // still tied → more urgent deadline wins
+      if (b.factors.deadline !== a.factors.deadline) {
+        return b.factors.deadline - a.factors.deadline;
+      }
+      // still tied → keep a fixed order by id (not importance)
+      return a.goalId.localeCompare(b.goalId);
+    });
 }
