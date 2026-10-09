@@ -49,7 +49,7 @@ export function neglectFactor(lastTouchedAt: Date, now: Date): number {
   if (days === 2) return 0.3;
   if (days <= 4) return 0.5;
   if (days <= 6) return 0.65;
-  if (days <= 8) return 0.85;
+  if (days <= 8) return 0.88; // high enough that idle+important-enough beats fresh high-weight (#11)
   if (days <= 10) return 0.9;
   if (days <= 14) return 0.95;
   return 1; // more than 14 days idle
