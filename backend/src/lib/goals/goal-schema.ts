@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GoalStatus } from "../generated/prisma/enums.js";
+import { GoalStatus } from "../../generated/prisma/enums.js";
 const deadlineSchema = z.iso.datetime().optional().nullable();
 
 export const createGoalSchema = z.object({

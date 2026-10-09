@@ -1,9 +1,9 @@
-import { fetchNoctaCommits } from "../lib/github.js";
-import { envConfig } from "../config/envConfig.js";
+import { fetchNoctaCommits } from "../../lib/github/github.js";
+import { envConfig } from "../../config/envConfig.js";
 import {
   computeActivityStats,
   formatActivityDate,
-} from "../lib/activity-stats.js";
+} from "../../lib/activity/activity-stats.js";
 
 export async function fetchNoctaCommitHistory() {
   const commits = await fetchNoctaCommits();

@@ -3,14 +3,14 @@ import {
   createGoalSchema,
   listGoalsQuerySchema,
   updateGoalSchema,
-} from "../lib/goal-schema.js";
-import { HttpError } from "../lib/http-error.js";
+} from "../../lib/goals/goal-schema.js";
+import { HttpError } from "../../lib/http-error.js";
 import {
   createGoal,
   listGoals,
   updateGoal,
   archiveGoal,
-} from "../services/goal.service.js";
+} from "../../services/goals/goal.service.js";
 
 export async function listGoalsController(req: Request, res: Response) {
   const parsed = listGoalsQuerySchema.safeParse(req.query);
