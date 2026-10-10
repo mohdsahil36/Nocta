@@ -72,6 +72,55 @@ export const dashboardContent = {
       "When goals and a check-in are in place, your one next step shows up here.",
     meta: "Scored pick · Add goals to begin",
   },
+  checkIn: {
+    title: "Check in",
+    body: "Two answers. Then one clear next step.",
+    timeLabel: "How much time?",
+    energyLabel: "How’s your energy?",
+    minutes: [
+      { id: 20 as const, label: "20 min", hint: "Small step" },
+      { id: 45 as const, label: "45 min", hint: "Focused block" },
+      { id: 90 as const, label: "90+ min", hint: "Longer stretch" },
+    ],
+    energy: [
+      { id: "low" as const, label: "Low", hint: "Keep it light" },
+      { id: "steady" as const, label: "Steady", hint: "Ready to work" },
+      { id: "high" as const, label: "High", hint: "Plenty left" },
+    ],
+    submit: "Find my next step",
+    submitHint: "Nothing is suggested until you continue.",
+    submitLoading: "Finding your next step…",
+    adjust: "Adjust",
+    pickLabel: "Your next step",
+    scoreLabel: "Score",
+    whyLabel: "Why this",
+    alsoScored: "Also scored",
+    toastSuccess: "Here’s your next step",
+    toastError: "Couldn’t check in. Try again.",
+    emptyGoalsTitle: "Add a goal first",
+    emptyGoalsBody: "Check-in needs at least one active goal to rank.",
+    emptyGoalsCta: "Go to Goals",
+    /** Labels for building the “Why this” line from ScoringFactors. */
+    factorLabels: {
+      deadline: "Deadline",
+      neglect: "Neglect",
+      weight: "Weight",
+      momentum: "Momentum",
+    },
+    /** Presentation shell — remove once the panel reads live CheckInResult. */
+    preview: {
+      goalName: "Ship the scoring PR",
+      nextAction: "Write tests for the deadline rules",
+      score: 86,
+      why: "Due Friday · Untouched 4 days · Weight 4 · Fits this session",
+      others: [
+        { name: "Morning run", score: 64 },
+        { name: "Read one chapter", score: 52 },
+      ],
+    },
+    todaySummary: (timeLabel: string, energyLabel: string) =>
+      `${timeLabel} · ${energyLabel}`,
+  },
   today: {
     title: "Today",
     plannerLabel: "Check-in",
@@ -82,3 +131,6 @@ export const dashboardContent = {
     tip: "Recovery doesn’t cost you momentum.",
   },
 };
+
+export type CheckInMinutes = (typeof dashboardContent.checkIn.minutes)[number]["id"];
+export type CheckInEnergy = (typeof dashboardContent.checkIn.energy)[number]["id"];

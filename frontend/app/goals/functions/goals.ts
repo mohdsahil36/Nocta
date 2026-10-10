@@ -1,14 +1,11 @@
-import {
-  ensureAuthListener,
-  waitForAuthReady,
-} from "@/app/store/authStore";
+import { ensureAuthListener, waitForAuthReady } from "@/app/store/authStore";
 import { deadlineToIso, isoToDeadlineInput } from "@/lib/dates";
 import { supabase } from "@/lib/supabase";
 
 import type { GoalDraft, GoalStatus } from "../content";
 
 /** Build absolute API URL from NEXT_PUBLIC_API_URL. */
-function apiUrl(path: string) {
+export function apiUrl(path: string) {
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base) throw new Error("NEXT_PUBLIC_API_URL is not configured");
   return `${base.replace(/\/$/, "")}${path}`;

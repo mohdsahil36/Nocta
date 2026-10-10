@@ -15,6 +15,10 @@ import useAuthStore from "@/app/store/authStore";
 import { cn } from "cn";
 import { dashboardContent } from "../content";
 import { navbarGreeting } from "../functions/dashboard";
+import {
+  CheckInPanel,
+  type CheckInSelection,
+} from "./check-in-panel";
 
 function formatHomeDate(d = new Date()) {
   return d.toLocaleDateString("en-US", {
@@ -42,6 +46,21 @@ export function DashboardPanels() {
   );
   const [todayOpen, setTodayOpen] = useState(true);
   const [dateLabel] = useState(() => formatHomeDate());
+  const [checkIn, setCheckIn] = useState<CheckInSelection>({
+    minutes: 45,
+    energy: "steady",
+    revealed: false,
+  });
+
+  const timeLabel =
+    c.checkIn.minutes.find((m) => m.id === checkIn.minutes)?.label ??
+    `${checkIn.minutes} min`;
+  const energyLabel =
+    c.checkIn.energy.find((e) => e.id === checkIn.energy)?.label ??
+    checkIn.energy;
+  const checkInSummary = checkIn.revealed
+    ? c.checkIn.todaySummary(timeLabel, energyLabel)
+    : c.today.plannerEmpty;
 
   const stats: Stat[] = [
     { icon: TrendingUp, value: "—", label: c.stats.momentum },
@@ -98,19 +117,8 @@ export function DashboardPanels() {
         </div>
       </div>
 
-      {/* Continue — Blueprint content row: intro · main · desc · meta */}
-      <div className="nocta-panel p-2 sm:p-2.5">
-        <Link
-          href="/goals"
-          className="nocta-content-row"
-          aria-label={`${c.continue.emptyTitle}. ${c.actions.addGoals}`}
-        >
-          <p className="nocta-content-intro">{c.continue.eyebrow}</p>
-          <p className="nocta-content-main">{c.continue.emptyTitle}</p>
-          <p className="nocta-content-desc">{c.continue.emptyBody}</p>
-          <p className="nocta-content-meta">{c.continue.meta}</p>
-        </Link>
-      </div>
+      {/* Check-in → pick (presentation shell) */}
+      <CheckInPanel selection={checkIn} onSelectionChange={setCheckIn} />
 
       {/* Today */}
       <div className="nocta-panel overflow-hidden">
@@ -138,8 +146,15 @@ export function DashboardPanels() {
               <p className="text-[11px] font-medium text-muted-foreground">
                 {c.today.plannerLabel}
               </p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {c.today.plannerEmpty}
+              <p
+                className={cn(
+                  "mt-2 text-sm",
+                  checkIn.revealed
+                    ? "font-medium text-nocta-ink"
+                    : "text-muted-foreground",
+                )}
+              >
+                {checkInSummary}
               </p>
             </div>
             <div className="bg-card px-5 py-5 sm:px-6">
