@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { fetchNoctaCommitHistory } from "../services/activity.service.js";
+import { fetchNoctaCommitHistory } from "../../services/activity/activity.service.js";
 
 export async function fetchNoctaCommitHistoryController(
   _req: Request,

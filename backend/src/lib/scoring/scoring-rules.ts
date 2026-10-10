@@ -16,7 +16,7 @@ export type ScoreableGoal = {
  * The four scores for one goal (each is a number from 0 to 1).
  * scoring.ts fills these in. The total is combined separately.
  */
-export type FactorBreakdown = {
+export type ScoringFactorBreakdown = {
   deadline: number; // how urgent the due date is (never 0; tomorrow highest, overdue next)
   neglect: number; // how long it has been ignored
   weight: number; // importance scaled to 0–1 (weight ÷ 5)
@@ -35,18 +35,18 @@ export type ScoreMix = {
 export type ScoredGoal = {
   goalId: string;
   total: number; // final score used for ranking
-  factors: FactorBreakdown; // the four 0–1 scores (handy for “why this?” later)
+  factors: ScoringFactorBreakdown; // the four 0–1 scores (handy for “why this?” later)
 };
 
 /**
- * Current blend: deadline 50%, neglect 21%, weight 17%, momentum 12%.
+ * Current blend: deadline 50%, neglect 21%, weight 19%, momentum 10%.
  * Change only here if we retune — then re-check the scenarios in decision-model.md.
  */
 export const MIX: ScoreMix = {
   deadline: 0.5,
   neglect: 0.21,
-  weight: 0.17,
-  momentum: 0.12,
+  weight: 0.19,
+  momentum: 0.1,
 };
 
 /**
@@ -55,7 +55,7 @@ export const MIX: ScoreMix = {
  * when the goal is also important.
  */
 export function computeTotal(
-  factors: FactorBreakdown,
+  factors: ScoringFactorBreakdown,
   mix: ScoreMix = MIX,
 ): number {
   const neglectImportance = factors.neglect * factors.weight;

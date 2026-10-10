@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import { ensureUser } from "../services/user.service.js";
-import { UserSchema } from "../lib/user.schema.js";
-import { HttpError } from "../lib/http-error.js";
+import { ensureUser } from "../../services/user/user.service.js";
+import { UserSchema } from "../../lib/user/user.schema.js";
+import { HttpError } from "../../lib/http-error.js";
 
 export async function ensureUserController(req: Request, res: Response) {
   const parsed = UserSchema.safeParse(req.body);

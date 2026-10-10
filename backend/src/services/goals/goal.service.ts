@@ -1,10 +1,10 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../../lib/prisma.js";
 import type {
   CreateGoalInput,
   ListGoalsQuery,
   UpdateGoalInput,
-} from "../lib/goal-schema.js";
-import { GoalStatus } from "../generated/prisma/enums.js";
+} from "../../lib/goals/goal-schema.js";
+import { GoalStatus } from "../../generated/prisma/enums.js";
 
 /* Zod gives ISO strings; Prisma wants Date | null. */
 function toDeadline(value: string | null | undefined): Date | null | undefined {

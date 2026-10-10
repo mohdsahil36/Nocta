@@ -1,6 +1,6 @@
 import { App } from "@octokit/app"; // github representation of the client
-import { envConfig } from "../config/envConfig.js";
-import { HttpError } from "./http-error.js";
+import { envConfig } from "../../config/envConfig.js";
+import { HttpError } from "../http-error.js";
 
 const app = new App({
   appId: Number(envConfig.NOCTA_APP_ID),

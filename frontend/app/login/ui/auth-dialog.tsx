@@ -292,9 +292,7 @@ export function AuthDialog({
                       <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                           key={authMode}
-                          initial={
-                            reduceMotion ? false : { opacity: 0, y: 6 }
-                          }
+                          initial={reduceMotion ? false : { opacity: 0, y: 6 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={
                             reduceMotion ? undefined : { opacity: 0, y: -4 }
@@ -456,9 +454,7 @@ export function AuthDialog({
                     {isSignup ? c.signup.cta : c.login.cta}
                   </button>
                   <p className="mt-4 text-center text-sm text-(--auth-soft)">
-                    {isSignup
-                      ? c.signup.switchPrompt
-                      : c.login.switchPrompt}{" "}
+                    {isSignup ? c.signup.switchPrompt : c.login.switchPrompt}{" "}
                     <button
                       type="button"
                       className="auth-link cursor-pointer font-medium transition-opacity hover:opacity-80"
@@ -466,9 +462,7 @@ export function AuthDialog({
                         onSwitchMode(isSignup ? "login" : "signup")
                       }
                     >
-                      {isSignup
-                        ? c.signup.switchAction
-                        : c.login.switchAction}
+                      {isSignup ? c.signup.switchAction : c.login.switchAction}
                     </button>
                   </p>
                 </div>

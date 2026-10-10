@@ -26,8 +26,9 @@ html.theme-transition *::after {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   /* Sans stack — Outfit via Google Fonts (--font-sans-face) */
-  --font-sans: var(--font-sans-active, var(--font-sans-face)), ui-sans-serif,
-    system-ui, sans-serif;
+  --font-sans:
+    var(--font-sans-active, var(--font-sans-face)), ui-sans-serif, system-ui,
+    sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --font-heading: var(--font-instrument-serif), ui-serif, Georgia, serif;
   --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
@@ -182,8 +183,9 @@ html.theme-transition *::after {
     @apply border-border outline-ring/50;
   }
   html {
-    font-family: var(--font-sans-active, var(--font-sans-face)), ui-sans-serif,
-      system-ui, sans-serif;
+    font-family:
+      var(--font-sans-active, var(--font-sans-face)), ui-sans-serif, system-ui,
+      sans-serif;
     scroll-behavior: auto;
   }
   body {
@@ -302,7 +304,11 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 }
 .nocta-auth-form .auth-chrome {
   border-color: var(--auth-line);
-  background-color: color-mix(in oklab, var(--auth-muted) 70%, var(--auth-surface));
+  background-color: color-mix(
+    in oklab,
+    var(--auth-muted) 70%,
+    var(--auth-surface)
+  );
 }
 .nocta-auth-form .auth-traffic {
   display: block;
@@ -376,7 +382,11 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   color: white;
 }
 .nocta-auth-form .auth-cta:hover {
-  background-color: color-mix(in oklab, var(--auth-night) 88%, var(--auth-glow));
+  background-color: color-mix(
+    in oklab,
+    var(--auth-night) 88%,
+    var(--auth-glow)
+  );
 }
 .nocta-auth-form .auth-link {
   color: var(--auth-glow);
@@ -483,24 +493,24 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 
 /* Soft mark halo in the hero */
 .nocta-dusk-orb {
-  background:
-    radial-gradient(
-      circle at 50% 45%,
-      color-mix(in oklab, var(--primary) 18%, transparent) 0%,
-      color-mix(in oklab, var(--primary) 6%, transparent) 42%,
-      transparent 68%
-    );
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 14%, transparent);
+  background: radial-gradient(
+    circle at 50% 45%,
+    color-mix(in oklab, var(--primary) 18%, transparent) 0%,
+    color-mix(in oklab, var(--primary) 6%, transparent) 42%,
+    transparent 68%
+  );
+  box-shadow: inset 0 0 0 1px
+    color-mix(in oklab, var(--primary) 14%, transparent);
 }
 .dark .nocta-dusk-orb {
-  background:
-    radial-gradient(
-      circle at 50% 45%,
-      color-mix(in oklab, var(--primary) 28%, transparent) 0%,
-      color-mix(in oklab, var(--primary) 10%, transparent) 45%,
-      transparent 70%
-    );
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 22%, transparent);
+  background: radial-gradient(
+    circle at 50% 45%,
+    color-mix(in oklab, var(--primary) 28%, transparent) 0%,
+    color-mix(in oklab, var(--primary) 10%, transparent) 45%,
+    transparent 70%
+  );
+  box-shadow: inset 0 0 0 1px
+    color-mix(in oklab, var(--primary) 22%, transparent);
 }
 
 /* Auth atmosphere — deep night panel (distinct from landing paper) */
@@ -522,13 +532,21 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 /* Bento card surface */
 /* Legacy elevated bento (illustrations may still reference) */
 .nocta-bento-card {
-  background-color: color-mix(in oklab, var(--nocta-paper) 88%, var(--nocta-ink)) !important;
+  background-color: color-mix(
+    in oklab,
+    var(--nocta-paper) 88%,
+    var(--nocta-ink)
+  ) !important;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.35),
     0 0 0 1px color-mix(in oklab, var(--nocta-ink) 8%, transparent) !important;
 }
 .dark .nocta-bento-card {
-  background-color: color-mix(in oklab, var(--nocta-paper) 92%, white) !important;
+  background-color: color-mix(
+    in oklab,
+    var(--nocta-paper) 92%,
+    white
+  ) !important;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.04),
     0 0 0 1px rgb(255 255 255 / 0.06) !important;
@@ -536,17 +554,33 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 
 /* Lattice cells — hairline grid, muted fill, ~150ms hover */
 .nocta-bento-cell {
-  background-color: color-mix(in oklab, var(--nocta-paper) 94%, var(--nocta-ink)) !important;
+  background-color: color-mix(
+    in oklab,
+    var(--nocta-paper) 94%,
+    var(--nocta-ink)
+  ) !important;
   box-shadow: none !important;
 }
 .dark .nocta-bento-cell {
-  background-color: color-mix(in oklab, var(--nocta-paper) 96%, white) !important;
+  background-color: color-mix(
+    in oklab,
+    var(--nocta-paper) 96%,
+    white
+  ) !important;
 }
 .nocta-bento-cell:hover {
-  background-color: color-mix(in oklab, var(--nocta-paper) 88%, var(--nocta-ink)) !important;
+  background-color: color-mix(
+    in oklab,
+    var(--nocta-paper) 88%,
+    var(--nocta-ink)
+  ) !important;
 }
 .dark .nocta-bento-cell:hover {
-  background-color: color-mix(in oklab, var(--nocta-paper) 90%, white) !important;
+  background-color: color-mix(
+    in oklab,
+    var(--nocta-paper) 90%,
+    white
+  ) !important;
 }
 
 /* App chrome — utilitarian desk. Canvas ≠ panel; borders use --border. */
@@ -661,11 +695,14 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   color: var(--nocta-ink);
 }
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"],
-.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"]:hover {
+.nocta-sidebar[data-collapsed="true"]
+  .nocta-nav-pill[data-active="true"]:hover {
   background-color: var(--muted);
   color: var(--primary);
 }
-.nocta-sidebar[data-collapsed="true"] .nocta-nav-pill[data-active="true"] .nocta-nav-icon {
+.nocta-sidebar[data-collapsed="true"]
+  .nocta-nav-pill[data-active="true"]
+  .nocta-nav-icon {
   color: var(--primary);
 }
 

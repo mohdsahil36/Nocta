@@ -4,8 +4,8 @@ import {
   createGoalController,
   listGoalsController,
   updateGoalController,
-} from "../controller/goal.controller.js";
-import { asyncHandler } from "../lib/async-handler.js";
+} from "../../controller/goals/goal.controller.js";
+import { asyncHandler } from "../../lib/async-handler.js";
 
 const router = Router();
 
