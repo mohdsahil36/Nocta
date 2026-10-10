@@ -30,7 +30,7 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
     <ToastPrimitive.Viewport
       data-slot="toast-viewport"
       className={cn(
-        "pointer-events-none fixed inset-x-4 bottom-4 z-[200] mx-auto w-auto max-w-sm font-sans outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
+        "pointer-events-none fixed inset-x-4 bottom-4 z-200 mx-auto w-auto max-w-sm font-sans outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
         className,
       )}
       {...props}
@@ -214,8 +214,8 @@ function Toaster({
 }
 
 /**
- * In-panel celebrate banner for landing demos.
- * Absolutely positioned — must not affect parent height. Fades out on dismiss.
+ * In-panel feedback chip — absolutely positioned; must not affect parent height.
+ * Landing demos: bottom. Desk check-in: top-end (compact, away from content bands).
  */
 function PanelToast({
   open,
@@ -223,6 +223,7 @@ function PanelToast({
   description,
   type = "success",
   align = "stretch",
+  placement = "bottom",
   className,
 }: {
   open: boolean;
@@ -231,8 +232,12 @@ function PanelToast({
   type?: string;
   /** `stretch` = full panel width; `start` = compact, left (opposite right-side actions). */
   align?: "stretch" | "start";
+  /** `bottom` = landing demos; `top-end` = desk corner chip. */
+  placement?: "bottom" | "top-end";
   className?: string;
 }) {
+  const fromTop = placement === "top-end";
+
   return (
     <AnimatePresence>
       {open ? (
@@ -240,26 +245,33 @@ function PanelToast({
           key="panel-toast"
           role="status"
           data-slot="panel-toast"
-          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+          initial={{ opacity: 0, y: fromTop ? -8 : 10, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+          exit={{ opacity: 0, y: fromTop ? -6 : 8, scale: 0.98 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "pointer-events-none absolute bottom-3 z-30 font-sans",
-            align === "stretch"
-              ? "inset-x-3 sm:inset-x-4"
-              : "left-3 right-auto w-max max-w-[min(calc(100%-5.5rem),16rem)] sm:left-4",
+            "pointer-events-none absolute z-30 font-sans",
+            fromTop
+              ? "top-3 right-3 w-max max-w-[min(calc(100%-1.5rem),17rem)]"
+              : align === "stretch"
+                ? "inset-x-3 bottom-3 sm:inset-x-4"
+                : "bottom-3 left-3 right-auto w-max max-w-[min(calc(100%-5.5rem),16rem)] sm:left-4",
             className,
           )}
         >
-          <div className="pointer-events-auto flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5 text-nocta-ink shadow-none outline-none">
+          <div
+            className={cn(
+              "pointer-events-auto flex items-center gap-2 rounded-sm border border-border bg-card px-3 py-2 text-nocta-ink outline-none",
+              fromTop && "ring-1 ring-border/80",
+            )}
+          >
             <ToastIcon type={type} />
             <div className="min-w-0">
-              <p className="font-sans text-sm font-medium tracking-normal">
+              <p className="font-sans text-xs font-medium tracking-normal sm:text-sm">
                 {title}
               </p>
               {description ? (
-                <p className="font-sans text-xs leading-snug tracking-normal text-muted-foreground">
+                <p className="font-sans text-[11px] leading-snug tracking-normal text-muted-foreground">
                   {description}
                 </p>
               ) : null}

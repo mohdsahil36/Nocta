@@ -32,6 +32,18 @@ export async function checkInService(input: CheckInInput) {
   const topGoal = goalsById.get(top.goalId)!;
 
   // deferred: recovery — intelligent gate from history/context, not a fixed week quota
+  // Attach names so the desk can show “Also scored” without a second fetch.
+  const ranked = rankedGoals.map((row) => {
+    const goal = goalsById.get(row.goalId)!;
+    return {
+      goalId: row.goalId,
+      name: goal.name,
+      nextAction: goal.nextAction,
+      total: row.total,
+      factors: row.factors,
+    };
+  });
+
   return {
     pick: {
       goalId: top.goalId,
@@ -40,6 +52,6 @@ export async function checkInService(input: CheckInInput) {
       total: top.total,
       factors: top.factors,
     },
-    ranked: rankedGoals,
+    ranked,
   };
 }

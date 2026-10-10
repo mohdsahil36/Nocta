@@ -14,6 +14,12 @@ import { buttonVariants } from "@/components/ui/button";
 import useAuthStore from "@/app/store/authStore";
 import { cn } from "cn";
 import { dashboardContent } from "../content";
+import {
+  clearCheckInSession,
+  isSameLocalDay,
+  loadCheckInSession,
+  type CheckInResult,
+} from "../functions/check-in";
 import { navbarGreeting } from "../functions/dashboard";
 import {
   CheckInPanel,
@@ -51,6 +57,27 @@ export function DashboardPanels() {
     energy: "steady",
     revealed: false,
   });
+  const [cachedResult, setCachedResult] = useState<CheckInResult | null>(null);
+  /** False until auth is ready and we’ve read localStorage once. */
+  const [sessionReady, setSessionReady] = useState(false);
+
+  // Render-phase bootstrap (not an effect) — restores today’s pick without a form flash.
+  if (authReady && !sessionReady) {
+    setSessionReady(true);
+    if (userId) {
+      const session = loadCheckInSession(userId);
+      if (session && isSameLocalDay(session.savedAt)) {
+        setCheckIn({
+          minutes: session.minutes,
+          energy: session.energy,
+          revealed: true,
+        });
+        setCachedResult(session.result);
+      } else if (session) {
+        clearCheckInSession(userId);
+      }
+    }
+  }
 
   const timeLabel =
     c.checkIn.minutes.find((m) => m.id === checkIn.minutes)?.label ??
@@ -118,7 +145,13 @@ export function DashboardPanels() {
       </div>
 
       {/* Check-in → pick (presentation shell) */}
-      <CheckInPanel selection={checkIn} onSelectionChange={setCheckIn} />
+      <CheckInPanel
+        selection={checkIn}
+        onSelectionChange={setCheckIn}
+        cachedResult={cachedResult}
+        onClearCache={() => setCachedResult(null)}
+        sessionReady={sessionReady}
+      />
 
       {/* Today */}
       <div className="nocta-panel overflow-hidden">
