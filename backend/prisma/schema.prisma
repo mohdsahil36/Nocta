@@ -17,11 +17,9 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
-// Connects Prisma to our PostgreSQL database
-// DATABASE_URL is stored in the .env file
+// PostgreSQL — connection URL lives in prisma.config.ts (Prisma 7+)
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Merchant {
