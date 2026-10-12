@@ -22,83 +22,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model Merchant {
-  // Primary key: uniquely identifies each merchant.
-  // Example: merch_10078
-  id String @id
-
-  // Merchant's display name.
-  name String
-
-  // Merchant's country code.
-  // Example: GB
-  country String
-
-  // When the merchant was created.
-  createdAt DateTime @default(now())
-
-  // Automatically updated when the merchant is modified.
-  updatedAt DateTime @updatedAt
-
-  // One merchant can have multiple transactions.
-  transactions Transaction[]
-}
-
-model Transaction {
-  // Primary key: uniquely identifies each transaction.
-  id String @id
-
-  // Foreign key: connects this transaction to a merchant.
-  // This value must match an existing Merchant.id.
-  merchantId String
-
-  // Connects Transaction.merchantId → Merchant.id.
-  //
-  // Example:
-  // Transaction.merchantId = "merch_10078"
-  //              ↓
-  // Merchant.id   = "merch_10078"
-  //
-  // This means the transaction belongs to that merchant.
-  merchant Merchant @relation(fields: [merchantId], references: [id])
-
-  // Payment amount in the original transaction currency.
-  amount Decimal
-
-  // Currency in which the original payment was made.
-  currency String
-
-  // Amount converted to the settlement currency.
-  settlementAmount Decimal
-
-  // Currency in which the merchant is settled.
-  settlementCurrency String
-
-  // Exchange rate used for the currency conversion.
-  exchangeRate Decimal
-
-  // Fee charged for the transaction.
-  fee Decimal
-
-  // Amount remaining after deducting the fee.
-  netAmount Decimal
-
-  // Current status of the transaction.
-  status String
-
-  // Payment method used by the customer.
-  paymentMethod String
-
-  // Card brand, when the payment method is a card.
-  cardBrand String?
-
-  // Optional description of the transaction.
-  description String?
-
-  // When the transaction was created.
-  createdAt DateTime @default(now())
-}
-
 model User {
   id           String       @id
   email        String       @unique
@@ -108,15 +31,15 @@ model User {
   goals        Goal[]
 }
 
-enum GoalStatus{
+enum GoalStatus {
   active
   archived
 }
 
 model Goal {
-  id            String     @id @default(cuid())
-  userId        String
-  user          User       @relation(fields: [userId], references: [id])
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   name          String
   weight        Int
@@ -126,6 +49,9 @@ model Goal {
   lastTouchedAt DateTime   @default(now())
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+
+  // Ordered steps/topics under this goal
+  subPlans GoalSubPlan[]
 }
 
 model Repository {
@@ -133,7 +59,7 @@ model Repository {
   id String @id
 
   userId String
-  user   User   @relation(fields: [userId], references: id)
+  user   User   @relation(fields: [userId], references: [id])
 
   // Repository name
   name String
@@ -179,4 +105,28 @@ model Commit {
 
   //When this commit was added to our db
   createdAt DateTime @default(now())
+}
+
+enum GoalSubPlanStatus {
+  todo
+  doing
+  done
+  skipped
+}
+
+// Ordered step/topic under a goal (plan pointer = first not done/skipped)
+model GoalSubPlan {
+  id     String @id @default(cuid()) // this step’s id
+  goalId String // FK only — not unique alone; one goal owns many steps
+  goal   Goal   @relation(fields: [goalId], references: [id]) // Goal ↔ GoalSubPlan
+
+  title         String // step title
+  sortOrder     Int // position in the plan (0, 1, 2, …)
+  status        GoalSubPlanStatus @default(todo) // todo | doing | done | skipped
+  startedAt     DateTime? // when work on this step began
+  createdAt     DateTime          @default(now()) // when the row was created
+  lastupdatedAt DateTime          @updatedAt // last row update
+
+  // Unique as a pair: many steps per goalId, but each sortOrder only once per goal
+  @@unique([goalId, sortOrder])
 }
