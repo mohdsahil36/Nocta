@@ -51,7 +51,7 @@ model Goal {
   updatedAt     DateTime   @updatedAt
 
   // Ordered steps/topics under this goal
-  subPlans GoalSubPlan[]
+  subPlans PlanStep[]
 }
 
 model Repository {
@@ -107,7 +107,7 @@ model Commit {
   createdAt DateTime @default(now())
 }
 
-enum GoalSubPlanStatus {
+enum PlanStepStatus {
   todo
   doing
   done
@@ -115,17 +115,17 @@ enum GoalSubPlanStatus {
 }
 
 // Ordered step/topic under a goal (plan pointer = first not done/skipped)
-model GoalSubPlan {
+model PlanStep {
   id     String @id @default(cuid()) // this step’s id
   goalId String // FK only — not unique alone; one goal owns many steps
-  goal   Goal   @relation(fields: [goalId], references: [id]) // Goal ↔ GoalSubPlan
+  goal   Goal   @relation(fields: [goalId], references: [id]) // Goal ↔ GoalPlanStep
 
   title         String // step title
   sortOrder     Int // position in the plan (0, 1, 2, …)
-  status        GoalSubPlanStatus @default(todo) // todo | doing | done | skipped
+  status        PlanStepStatus @default(todo) // todo | doing | done | skipped
   startedAt     DateTime? // when work on this step began
-  createdAt     DateTime          @default(now()) // when the row was created
-  lastupdatedAt DateTime          @updatedAt // last row update
+  createdAt     DateTime       @default(now()) // when the row was created
+  lastupdatedAt DateTime       @updatedAt // last row update
 
   // Unique as a pair: many steps per goalId, but each sortOrder only once per goal
   @@unique([goalId, sortOrder])
