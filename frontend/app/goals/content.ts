@@ -75,6 +75,16 @@ export const goalsContent = {
     nextAction: "Next action",
     nextActionHint: "The smallest concrete step you already know",
   },
+  plan: {
+    open: "Steps",
+    close: "Hide steps",
+    title: "Plan",
+    body: "Ordered steps for this goal. Check-in uses the first one that isn’t done.",
+    empty: "No steps yet. Add the first one.",
+    add: "Add step",
+    placeholder: "Read one chapter",
+    archive: "Archive",
+  },
   onboarding: {
     title: "Start with the goals you already have",
     body: "Add several at once — a PR, a habit, a call you’ve been putting off. No fixed life buckets.",

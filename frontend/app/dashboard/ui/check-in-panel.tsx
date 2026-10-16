@@ -235,7 +235,6 @@ export function CheckInPanel({
         title={banner?.title ?? ""}
         type={banner?.type ?? "success"}
         placement="top-end"
-        className={showPick ? "top-14" : "top-3"}
       />
       <AnimatePresence mode="wait" initial={false}>
         {!showPick || !pick ? (

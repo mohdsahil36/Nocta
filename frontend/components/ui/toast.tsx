@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { Toast as ToastPrimitive } from "@base-ui/react/toast";
 import { cn } from "cn";
@@ -214,8 +215,8 @@ function Toaster({
 }
 
 /**
- * In-panel feedback chip — absolutely positioned; must not affect parent height.
- * Landing demos: bottom. Desk check-in: top-end (compact, away from content bands).
+ * Feedback chip — landing demos stay in-panel (bottom);
+ * desk `top-end` is fixed to the page (top-right).
  */
 function PanelToast({
   open,
@@ -232,13 +233,13 @@ function PanelToast({
   type?: string;
   /** `stretch` = full panel width; `start` = compact, left (opposite right-side actions). */
   align?: "stretch" | "start";
-  /** `bottom` = landing demos; `top-end` = desk corner chip. */
+  /** `bottom` = landing demos; `top-end` = page top-right. */
   placement?: "bottom" | "top-end";
   className?: string;
 }) {
   const fromTop = placement === "top-end";
 
-  return (
+  const chip = (
     <AnimatePresence>
       {open ? (
         <motion.div
@@ -250,12 +251,12 @@ function PanelToast({
           exit={{ opacity: 0, y: fromTop ? -6 : 8, scale: 0.98 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "pointer-events-none absolute z-30 font-sans",
+            "pointer-events-none font-sans",
             fromTop
-              ? "top-3 right-3 w-max max-w-[min(calc(100%-1.5rem),17rem)]"
+              ? "fixed top-4 right-4 z-200 w-max max-w-[min(calc(100%-2rem),17rem)]"
               : align === "stretch"
-                ? "inset-x-3 bottom-3 sm:inset-x-4"
-                : "bottom-3 left-3 right-auto w-max max-w-[min(calc(100%-5.5rem),16rem)] sm:left-4",
+                ? "absolute inset-x-3 bottom-3 z-30 sm:inset-x-4"
+                : "absolute bottom-3 left-3 right-auto z-30 w-max max-w-[min(calc(100%-5.5rem),16rem)] sm:left-4",
             className,
           )}
         >
@@ -281,6 +282,13 @@ function PanelToast({
       ) : null}
     </AnimatePresence>
   );
+
+  // Page-level chip — escape panel overflow / transformed ancestors.
+  if (fromTop && typeof document !== "undefined") {
+    return createPortal(chip, document.body);
+  }
+
+  return chip;
 }
 
 const createToastManager = ToastPrimitive.createToastManager;

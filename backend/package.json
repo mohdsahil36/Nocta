@@ -6,19 +6,22 @@
   "dependencies": {
     "@octokit/app": "^16.1.4",
     "@octokit/rest": "^22.0.1",
-    "@prisma/client": "6.19.3",
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "prisma": "6.19.3",
+    "pg": "^8.23.1",
     "typescript": "^7.0.2",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
+    "@types/pg": "^8.23.1",
     "nodemon": "^3.1.14",
+    "prisma": "7.10.0",
     "tsx": "^4.23.13"
   },
   "scripts": {

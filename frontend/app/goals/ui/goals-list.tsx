@@ -7,6 +7,7 @@ import { formatDeadline } from "@/lib/dates";
 import { cn } from "cn";
 
 import { goalsContent, type GoalDraft, type GoalStatus } from "../content";
+import { PlanSteps } from "./plan-steps";
 
 type GoalsListProps = {
   goals: GoalDraft[];
@@ -107,6 +108,7 @@ export function GoalsList({
                 <span className="mx-1.5 text-border">·</span>
                 {formatDeadline(goal.deadline)}
               </p>
+              {archived ? null : <PlanSteps />}
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
               <button
