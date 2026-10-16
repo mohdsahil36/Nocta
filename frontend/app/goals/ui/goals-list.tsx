@@ -74,11 +74,9 @@ export function GoalsList({
         return (
           <li
             key={key}
-            className={cn(
-              "flex flex-wrap items-start justify-between gap-3 px-5 py-4 sm:px-6",
-              archived && "opacity-80",
-            )}
+            className={cn("px-5 py-4 sm:px-6", archived && "opacity-80")}
           >
+            <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <p
@@ -108,7 +106,6 @@ export function GoalsList({
                 <span className="mx-1.5 text-border">·</span>
                 {formatDeadline(goal.deadline)}
               </p>
-              {archived ? null : <PlanSteps />}
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
               <button
@@ -148,6 +145,8 @@ export function GoalsList({
                 </button>
               )}
             </div>
+            </div>
+            {archived ? null : <PlanSteps />}
           </li>
         );
       })}
