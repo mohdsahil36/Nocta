@@ -6,7 +6,14 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is required");
 }
 
-const adapter = new PrismaPg({ connectionString });
+// sslmode=require makes pg verify the cert. Supabase’s chain is not in Node’s store.
+const databaseUrl = new URL(connectionString);
+databaseUrl.searchParams.delete("sslmode");
+
+const adapter = new PrismaPg({
+  connectionString: databaseUrl.toString(),
+  ssl: { rejectUnauthorized: false },
+});
 const prisma = new PrismaClient({ adapter });
 
 export default prisma;

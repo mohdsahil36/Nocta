@@ -112,6 +112,7 @@ enum PlanStepStatus {
   doing
   done
   skipped
+  archived // hidden from the plan; row stays until a later purge
 }
 
 // Ordered step/topic under a goal (plan pointer = first not done/skipped)
@@ -122,7 +123,7 @@ model PlanStep {
 
   title         String // step title
   sortOrder     Int // position in the plan (0, 1, 2, …)
-  status        PlanStepStatus @default(todo) // todo | doing | done | skipped
+  status        PlanStepStatus @default(todo) // todo | doing | done | skipped | archived
   startedAt     DateTime? // when work on this step began
   createdAt     DateTime       @default(now()) // when the row was created
   lastupdatedAt DateTime       @updatedAt // last row update

@@ -4,6 +4,7 @@ import { rankAllGoals } from "../../lib/scoring/scoring.js";
 import { HttpError } from "../../lib/http-error.js";
 import prisma from "../../lib/prisma.js";
 import { GoalStatus } from "../../generated/prisma/enums.js";
+import { getNextPlanStep } from "../sub-plan/sub-plan.service.js";
 
 export async function checkInService(input: CheckInInput) {
   const { userId } = checkInSchema.parse(input);
@@ -30,6 +31,8 @@ export async function checkInService(input: CheckInInput) {
 
   const top = rankedGoals[0]!;
   const topGoal = goalsById.get(top.goalId)!;
+  // Plan step is tonight’s action; goal.nextAction is only the fallback.
+  const nextStep = await getNextPlanStep(top.goalId);
 
   // deferred: recovery — intelligent gate from history/context, not a fixed week quota
   // Attach names so the desk can show “Also scored” without a second fetch.
@@ -48,7 +51,8 @@ export async function checkInService(input: CheckInInput) {
     pick: {
       goalId: top.goalId,
       name: topGoal.name,
-      nextAction: topGoal.nextAction,
+      planStepId: nextStep?.id ?? null,
+      nextAction: nextStep?.title ?? topGoal.nextAction,
       total: top.total,
       factors: top.factors,
     },
