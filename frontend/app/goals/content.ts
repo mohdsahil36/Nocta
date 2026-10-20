@@ -37,7 +37,8 @@ export const goalsContent = {
     filterActive: "Active",
     filterArchived: "Archived",
     emptyArchivedTitle: "No archived goals",
-    emptyArchivedBody: "Archive a goal when you’re done with it — it stays here if you need it again.",
+    emptyArchivedBody:
+      "Archive a goal when you’re done with it — it stays here if you need it again.",
     edit: "Edit",
     archive: "Archive",
     activate: "Set active",
@@ -87,6 +88,13 @@ export const goalsContent = {
     filterActive: "Active",
     filterArchived: "Archived",
     emptyArchived: "No archived steps.",
+    loading: "Loading steps…",
+    loadError: "Couldn’t load steps.",
+    retry: "Try again",
+    toastAddSuccess: "Step added",
+    toastAddError: "Couldn’t add step. Try again.",
+    toastArchiveSuccess: "Step archived",
+    toastArchiveError: "Couldn’t archive step. Try again.",
   },
   onboarding: {
     title: "Start with the goals you already have",
