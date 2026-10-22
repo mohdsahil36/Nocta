@@ -97,7 +97,7 @@ html.theme-transition *::after {
   --popover: oklch(0.98 0.004 85);
   --popover-foreground: oklch(0.2 0.02 250);
   /* Primary CTA — Blueprint blue */
-  --primary: rgb(0, 109, 221);
+  --primary: oklch(0.52 0.24 292);
   --primary-foreground: rgb(255, 255, 255);
   --secondary: oklch(0.94 0.006 85);
   --secondary-foreground: oklch(0.2 0.02 250);
@@ -108,15 +108,15 @@ html.theme-transition *::after {
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.86 0.01 85);
   --input: oklch(0.86 0.01 85);
-  --ring: rgb(0, 109, 221);
+  --ring: oklch(0.52 0.24 292);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  /* Nocta — warm off-white desk; blue accent */
-  --nocta-glow: rgb(0, 109, 221);
+  /* Nocta — neutral desk; violet accent */
+  --nocta-glow: oklch(0.52 0.24 292);
   --nocta-paper: oklch(0.98 0.004 85);
   --nocta-canvas: oklch(0.955 0.006 85);
   --nocta-ink: oklch(0.2 0.02 250);
@@ -126,7 +126,7 @@ html.theme-transition *::after {
   --nocta-icon-on-chip: oklch(0.22 0.03 250);
   --sidebar: oklch(0.955 0.006 85);
   --sidebar-foreground: oklch(0.2 0.02 250);
-  --sidebar-primary: rgb(0, 109, 221);
+  --sidebar-primary: oklch(0.52 0.24 292);
   --sidebar-primary-foreground: rgb(255, 255, 255);
   --sidebar-accent: oklch(0.92 0.008 85);
   --sidebar-accent-foreground: oklch(0.2 0.02 250);
@@ -136,46 +136,46 @@ html.theme-transition *::after {
 
 .dark {
   --font-sans-active: var(--font-sans-face);
-  /* Dark desk — black-shade canvas; panels slightly lifted */
-  --background: rgb(14, 14, 14);
-  --foreground: rgb(245, 245, 245);
-  --card: rgb(28, 28, 28);
-  --card-foreground: rgb(245, 245, 245);
-  --popover: rgb(28, 28, 28);
-  --popover-foreground: rgb(245, 245, 245);
-  --primary: rgb(0, 109, 221);
-  --primary-foreground: rgb(255, 255, 255);
-  --secondary: rgb(38, 38, 38);
-  --secondary-foreground: rgb(245, 245, 245);
-  --muted: rgb(38, 38, 38);
-  --muted-foreground: rgb(168, 168, 168);
-  --accent: rgb(38, 38, 38);
-  --accent-foreground: rgb(245, 245, 245);
+  /* Dark app screen — soft charcoal (Blueprint-inspired) */
+  --background: #111113;
+  --foreground: #e8e9eb;
+  --card: #1c1c1f;
+  --card-foreground: #e8e9eb;
+  --popover: #1c1c1f;
+  --popover-foreground: #e8e9eb;
+  --primary: #a78bfa;
+  --primary-foreground: #0d0d12;
+  --secondary: #28282c;
+  --secondary-foreground: #e8e9eb;
+  --muted: #28282c;
+  --muted-foreground: #9d9fa5;
+  --accent: #28282c;
+  --accent-foreground: #e8e9eb;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: rgb(255 255 255 / 10%);
-  --input: rgb(255 255 255 / 12%);
-  --ring: rgb(0, 109, 221);
+  --border: #2e2e33;
+  --input: #2e2e33;
+  --ring: #7c3aed;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --nocta-glow: rgb(0, 109, 221);
-  --nocta-paper: rgb(28, 28, 28);
-  --nocta-canvas: rgb(14, 14, 14);
-  --nocta-ink: rgb(245, 245, 245);
-  --nocta-night: rgb(14, 14, 14);
+  --nocta-glow: #8b5cf6;
+  --nocta-paper: #1c1c1f;
+  --nocta-canvas: #111113;
+  --nocta-ink: #e8e9eb;
+  --nocta-night: #111113;
   --nocta-accent-warm: oklch(0.78 0.08 55);
   --nocta-accent-mint: oklch(0.75 0.07 165);
-  --nocta-icon-on-chip: oklch(0.2 0.025 250);
-  --sidebar: rgb(14, 14, 14);
-  --sidebar-foreground: rgb(245, 245, 245);
-  --sidebar-primary: rgb(0, 109, 221);
-  --sidebar-primary-foreground: rgb(255, 255, 255);
-  --sidebar-accent: rgb(38, 38, 38);
-  --sidebar-accent-foreground: rgb(245, 245, 245);
-  --sidebar-border: rgb(255 255 255 / 10%);
-  --sidebar-ring: rgb(0, 109, 221);
+  --nocta-icon-on-chip: #9d9fa5;
+  --sidebar: #111113;
+  --sidebar-foreground: #e8e9eb;
+  --sidebar-primary: #a78bfa;
+  --sidebar-primary-foreground: #0d0d12;
+  --sidebar-accent: #28282c;
+  --sidebar-accent-foreground: #e8e9eb;
+  --sidebar-border: #2e2e33;
+  --sidebar-ring: #7c3aed;
 }
 
 @layer base {
@@ -583,9 +583,9 @@ html.nocta-login-scroll body::-webkit-scrollbar {
   ) !important;
 }
 
-/* App chrome — utilitarian desk. Canvas ≠ panel; borders use --border. */
+/* App chrome — flat surfaces, 1px borders, no shadows */
 .nocta-panel {
-  border-radius: 0.375rem; /* sm — match landing desk language */
+  border-radius: 0.5rem;
   border: 1px solid var(--border);
   background: var(--card);
   box-shadow: none;
@@ -679,11 +679,28 @@ html.nocta-login-scroll body::-webkit-scrollbar {
 }
 .nocta-nav-pill[data-active="true"],
 .nocta-nav-pill[data-active="true"]:hover {
-  background-color: var(--muted);
+  background-color: color-mix(in oklab, var(--primary) 12%, var(--muted));
   color: var(--primary);
+  font-weight: 600;
 }
 .nocta-nav-pill[data-active="true"] .nocta-nav-icon {
   color: var(--primary);
+}
+/* Blueprint active accent — primary left bar */
+.nocta-nav-pill[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1.05rem;
+  width: 2.5px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: var(--primary);
+}
+.nocta-sidebar[data-collapsed="true"]
+  .nocta-nav-pill[data-active="true"]::before {
+  display: none;
 }
 
 .nocta-sidebar[data-collapsed="true"] .nocta-nav-pill,

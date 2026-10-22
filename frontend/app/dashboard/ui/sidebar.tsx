@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
   BookOpen,
@@ -20,6 +21,9 @@ import {
   type IconMotionPreset,
 } from "@/components/ui/animated-icon";
 import { NoctaMark } from "@/components/ui/nocta-mark";
+import useAuthStore from "@/app/store/authStore";
+import { listAllGoals } from "@/app/goals/functions/goals";
+import { fetchPlatformCommits } from "@/lib/activity-api";
 import { dashboardContent } from "../content";
 import { AccountMenu } from "./account-menu";
 
@@ -35,6 +39,8 @@ type NavItem = {
   label: string;
   icon: LucideIcon;
   motion: IconMotionPreset;
+  /** Optional right-aligned meta (e.g. "3" active goals). Wired by data layer. */
+  count?: string;
 };
 
 const TOP_NAV: NavItem[] = [
@@ -92,14 +98,17 @@ function NavLink({
   pathname,
   onNavigate,
   collapsed,
+  count,
 }: {
   item: NavItem;
   pathname: string;
   onNavigate: () => void;
   collapsed: boolean;
+  count?: string;
 }) {
   const active = isNavActive(pathname, item.href);
   const Icon = item.icon;
+  const meta = count ?? item.count;
 
   return (
     <Link
@@ -123,9 +132,16 @@ function NavLink({
         />
       </span>
       {!collapsed ? (
-        <span className="truncate text-[13px] leading-none font-medium tracking-tight">
-          {item.label}
-        </span>
+        <>
+          <span className="min-w-0 flex-1 truncate text-[13px] leading-none font-medium tracking-tight">
+            {item.label}
+          </span>
+          {meta ? (
+            <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10.5px] leading-none tabular-nums text-muted-foreground">
+              {meta}
+            </span>
+          ) : null}
+        </>
       ) : (
         <span className="sr-only">{item.label}</span>
       )}
@@ -147,12 +163,14 @@ function SidebarSection({
   return (
     <section
       className={cn(
-        "border-b border-border py-2 last:border-b-0",
+        "py-1.5",
+        // Blueprint rhythm: group separation is whitespace, not a border.
+        label && "mt-2",
         collapsed ? "px-1" : "px-2",
       )}
     >
       {!collapsed && label ? (
-        <p className="mb-1.5 px-2.5 text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <p className="mb-1.5 px-2.5 text-[10.5px] font-semibold tracking-[0.12em] text-muted-foreground/70 uppercase">
           {label}
         </p>
       ) : null}
@@ -184,6 +202,23 @@ export function DashboardSidebar({
   const leaveTimerRef = useRef<number | null>(null);
   const collapsed = !expanded;
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const authReady = useAuthStore((s) => s.ready);
+  const userId = useAuthStore((s) => s.userId);
+
+  // Active-goal count for the Goals row (shares the Goals page cache).
+  const { data: goals = [] } = useQuery({
+    queryKey: ["goals", userId],
+    enabled: authReady && Boolean(userId),
+    queryFn: async () => listAllGoals(userId as string),
+  });
+  const activeGoalCount = goals.filter((g) => g.status === "active").length;
+
+  // Today's commit count for the Activity row (shares the Activity page cache).
+  const { data: activity } = useQuery({
+    queryKey: ["activity", "platform-commits"],
+    queryFn: fetchPlatformCommits,
+  });
+  const todayCount = activity?.stats.todayCount;
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -278,7 +313,7 @@ export function DashboardSidebar({
           >
             <Link
               href="/dashboard"
-              className="flex size-9 shrink-0 items-center justify-center rounded-sm text-nocta-ink"
+              className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary"
               aria-label={dashboardContent.brand}
               onClick={closeIfMobile}
             >
@@ -286,7 +321,7 @@ export function DashboardSidebar({
             </Link>
             {!collapsed ? (
               <>
-                <span className="min-w-0 flex-1 truncate text-[14px] font-semibold tracking-tight text-nocta-ink">
+                <span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight text-nocta-ink">
                   {dashboardContent.brand}
                 </span>
                 <ChromeButton
@@ -344,6 +379,11 @@ export function DashboardSidebar({
                   pathname={pathname}
                   onNavigate={closeIfMobile}
                   collapsed={collapsed}
+                  count={
+                    item.href === "/goals" && activeGoalCount > 0
+                      ? String(activeGoalCount)
+                      : undefined
+                  }
                 />
               ))}
             </SidebarSection>
@@ -360,6 +400,11 @@ export function DashboardSidebar({
                   pathname={pathname}
                   onNavigate={closeIfMobile}
                   collapsed={collapsed}
+                  count={
+                    item.href === "/activity" && todayCount
+                      ? String(todayCount)
+                      : undefined
+                  }
                 />
               ))}
             </SidebarSection>
