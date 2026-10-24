@@ -1,7 +1,7 @@
 /** Primary column — vertical rails mark this edge. */
-export const FRAME_MAX = "max-w-[1080px]";
+export const FRAME_MAX = "max-w-[67.5rem]";
 /** Breakout column — wide hero headline only. */
-export const FRAME_MAX_WIDE = "max-w-[1280px]";
+export const FRAME_MAX_WIDE = "max-w-[80rem]";
 
 export const FRAME_PAD = "px-6 md:px-10";
 

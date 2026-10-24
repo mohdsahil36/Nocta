@@ -72,7 +72,7 @@ export function SectionHeader({
         {titleSlot ?? title}
       </h2>
       {body ? (
-        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-foreground">
           {body}
         </p>
       ) : null}
@@ -275,7 +275,7 @@ export function DeepDive({
           >
             {index}
           </p>
-          <p className="mt-2 text-[10px] font-medium tracking-[0.14em] text-neutral-500 uppercase">
+          <p className="mt-2 text-[0.625rem] font-medium tracking-[0.14em] text-neutral-500 uppercase">
             {eyebrow}
           </p>
           <h3 className="mt-2 font-sans text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-xl">
@@ -289,7 +289,7 @@ export function DeepDive({
               {points.slice(0, 3).map((p) => (
                 <li
                   key={p.title}
-                  className="text-[12px] text-neutral-500 before:mr-2 before:text-neutral-950 before:content-['·'] dark:before:text-neutral-50"
+                  className="text-[0.75rem] text-neutral-500 before:mr-2 before:text-neutral-950 before:content-['·'] dark:before:text-neutral-50"
                 >
                   {p.title}
                 </li>
@@ -416,7 +416,7 @@ export function NumberedSection({
         className="border-t border-stone-200 dark:border-neutral-800 scroll-mt-16"
       >
         <div className="px-6 py-12 sm:px-10 sm:py-16 border-b border-stone-200 dark:border-neutral-800 bg-stone-50 dark:bg-neutral-950">
-          <p className="font-mono text-[11px] font-medium tracking-[0.14em] uppercase text-stone-500 dark:text-neutral-500">
+          <p className="font-mono text-[0.6875rem] font-medium tracking-[0.14em] uppercase text-stone-500 dark:text-neutral-500">
             <span className="mr-2 tabular-nums text-neutral-950 dark:text-neutral-50">
               {num}
             </span>
@@ -425,7 +425,7 @@ export function NumberedSection({
           <h2 className="mt-4 max-w-xl font-sans text-2xl font-semibold leading-[1.15] tracking-[-0.02em] sm:text-3xl">
             {title}
           </h2>
-          <p className="mt-3 max-w-xl text-[15px] leading-7 text-stone-500 dark:text-neutral-500">
+          <p className="mt-3 max-w-xl text-[0.9375rem] leading-7 text-stone-500 dark:text-neutral-500">
             {body}
           </p>
           {points?.length ? (
@@ -451,7 +451,7 @@ export function NumberedSection({
 
   const copyCol = (
     <div className="px-8 py-12 sm:px-12 sm:py-16 bg-stone-50 dark:bg-neutral-950">
-      <p className="font-mono text-[11px] font-medium tracking-[0.14em] uppercase text-stone-500 dark:text-neutral-500">
+      <p className="font-mono text-[0.6875rem] font-medium tracking-[0.14em] uppercase text-stone-500 dark:text-neutral-500">
         <span className="mr-2 tabular-nums text-neutral-950 dark:text-neutral-50">
           {num}
         </span>
@@ -460,7 +460,7 @@ export function NumberedSection({
       <h2 className="mt-4 font-sans text-2xl font-semibold leading-[1.15] tracking-[-0.02em] sm:text-3xl">
         {title}
       </h2>
-      <p className="mt-3 text-[15px] leading-7 text-stone-500 dark:text-neutral-500">
+      <p className="mt-3 text-[0.9375rem] leading-7 text-stone-500 dark:text-neutral-500">
         {body}
       </p>
       {points?.length ? (
@@ -509,7 +509,7 @@ export function NumberedSection({
 
 export function PanelLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+    <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
       {children}
     </p>
   );
@@ -517,7 +517,7 @@ export function PanelLabel({ children }: { children: ReactNode }) {
 
 export function AreaTag({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex h-5 items-center border border-neutral-300 bg-neutral-100 px-2 text-[11px] font-medium text-foreground/80 dark:border-neutral-700 dark:bg-neutral-900">
+    <span className="inline-flex h-5 items-center border border-neutral-300 bg-neutral-100 px-2 text-[0.6875rem] font-medium text-foreground/80 dark:border-neutral-700 dark:bg-neutral-900">
       {children}
     </span>
   );

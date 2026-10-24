@@ -149,7 +149,7 @@ export function AuthDialog({
               />
               <div className="relative z-10 flex h-full flex-col justify-between p-5 text-white">
                 <div>
-                  <p className="text-[11px] font-medium tracking-[0.16em] text-white/55 uppercase">
+                  <p className="text-[0.6875rem] font-medium tracking-[0.16em] text-white/55 uppercase">
                     {c.panelEyebrow}
                   </p>
                   <p className="mt-2 flex items-center gap-2 font-sans text-lg font-semibold tracking-[-0.03em]">
@@ -171,7 +171,7 @@ export function AuthDialog({
             {/* Desktop — left dusk copy */}
             <div className="relative z-10 hidden min-h-0 min-w-0 flex-1 flex-col justify-between overflow-hidden p-8 text-white md:flex lg:p-10">
               <div>
-                <p className="text-[11px] font-medium tracking-[0.16em] text-white/50 uppercase">
+                <p className="text-[0.6875rem] font-medium tracking-[0.16em] text-white/50 uppercase">
                   {c.panelEyebrow}
                 </p>
                 <p className="mt-3 flex items-center gap-2 font-sans text-xl font-semibold tracking-[-0.03em]">
@@ -185,7 +185,7 @@ export function AuthDialog({
                 </p>
                 <p className="text-sm leading-6 text-white/70">{c.panelBody}</p>
               </div>
-              <p className="text-[11px] text-white/40">
+              <p className="text-[0.6875rem] text-white/40">
                 {loginContent.footer.copyright}
               </p>
             </div>
@@ -335,7 +335,7 @@ export function AuthDialog({
 
                     <div className="my-5 flex items-center gap-3">
                       <div className="h-px flex-1 bg-(--auth-line)" />
-                      <span className="text-[11px] tracking-wide text-(--auth-soft) uppercase">
+                      <span className="text-[0.6875rem] tracking-wide text-(--auth-soft) uppercase">
                         {c.or}
                       </span>
                       <div className="h-px flex-1 bg-(--auth-line)" />

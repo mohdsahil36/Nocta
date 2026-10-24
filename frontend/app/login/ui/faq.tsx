@@ -12,7 +12,7 @@ export function FaqSection() {
     <div className="overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
       {/* Header row */}
       <div className="border-b border-neutral-100 dark:border-neutral-800 px-8 py-8 sm:px-10">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+        <p className="font-mono text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
           {c.eyebrow}
         </p>
         <h2 className="mt-2 font-heading text-[clamp(1.6rem,3vw,2rem)] font-normal text-neutral-950 dark:text-neutral-50">
@@ -35,11 +35,11 @@ export function FaqSection() {
                 className="w-full flex items-start justify-between gap-6 px-8 py-5 sm:px-10 text-left group hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors"
               >
                 <div className="flex items-start gap-4 min-w-0">
-                  <span className="shrink-0 font-mono text-[10px] font-semibold text-primary mt-0.5 tabular-nums">
+                  <span className="shrink-0 font-mono text-[0.625rem] font-semibold text-primary mt-0.5 tabular-nums">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className={[
-                    "text-[14px] font-medium leading-6 transition-colors",
+                    "text-[0.875rem] font-medium leading-6 transition-colors",
                     isOpen ? "text-neutral-950 dark:text-neutral-50" : "text-neutral-700 dark:text-neutral-300",
                   ].join(" ")}>
                     {item.q}
@@ -59,8 +59,8 @@ export function FaqSection() {
               </button>
 
               {isOpen && (
-                <div className="px-8 pb-6 sm:px-10 pl-[68px]">
-                  <p className="text-[14px] leading-6 text-neutral-500 dark:text-neutral-400">
+                <div className="px-8 pb-6 sm:px-10 pl-[4.25rem]">
+                  <p className="text-[0.875rem] leading-6 text-neutral-500 dark:text-neutral-400">
                     {item.a}
                   </p>
                 </div>

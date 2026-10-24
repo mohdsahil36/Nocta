@@ -38,10 +38,10 @@ export function LandingNav({
           onClick={(e) => { if (!onBackToTop) return; e.preventDefault(); onBackToTop(); }}
         >
           <NoctaMark className="size-4 shrink-0 text-neutral-950 dark:text-neutral-50 group-hover:text-primary transition-colors" />
-          <span className="font-mono text-[13px] font-semibold tracking-[-0.01em] text-neutral-950 dark:text-neutral-50">
+          <span className="font-mono text-[0.8125rem] font-semibold tracking-[-0.01em] text-neutral-950 dark:text-neutral-50">
             {loginContent.brand.toLowerCase()}
           </span>
-          <span className="hidden sm:inline-flex items-center rounded-full border border-primary/30 bg-primary/8 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
+          <span className="hidden sm:inline-flex items-center rounded-full border border-primary/30 bg-primary/8 px-1.5 py-0.5 font-mono text-[0.5625rem] font-bold uppercase tracking-[0.14em] text-primary">
             Beta
           </span>
         </a>
@@ -51,14 +51,14 @@ export function LandingNav({
           <button
             type="button"
             onClick={onHowItWorks}
-            className="px-4 font-mono text-[12px] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
+            className="px-4 font-mono text-[0.75rem] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
           >
             How it works
           </button>
           <button
             type="button"
             onClick={onFaq}
-            className="px-4 font-mono text-[12px] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
+            className="px-4 font-mono text-[0.75rem] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
           >
             FAQ
           </button>
@@ -73,14 +73,14 @@ export function LandingNav({
           <button
             type="button"
             onClick={() => onOpenAuth("login")}
-            className="hidden sm:block font-mono text-[12px] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors px-3 py-1.5 cursor-pointer"
+            className="hidden sm:block font-mono text-[0.75rem] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors px-3 py-1.5 cursor-pointer"
           >
             Log in
           </button>
           <button
             type="button"
             onClick={() => onOpenAuth("signup")}
-            className="rounded-md bg-primary px-3.5 py-1.5 font-mono text-[11px] font-semibold tracking-[0.04em] uppercase text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
+            className="rounded-md bg-primary px-3.5 py-1.5 font-mono text-[0.6875rem] font-semibold tracking-[0.04em] uppercase text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
           >
             Sign up
           </button>

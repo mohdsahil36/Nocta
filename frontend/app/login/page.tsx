@@ -185,17 +185,17 @@ export default function LoginPage() {
               <h2 className="font-heading text-[clamp(1.75rem,4vw,2.5rem)] font-normal text-neutral-950 dark:text-neutral-50">
                 {loginContent.close.title}
               </h2>
-              <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-neutral-500">
+              <p className="mx-auto mt-4 max-w-md text-[0.9375rem] leading-7 text-neutral-500">
                 {loginContent.close.body}
               </p>
               <Button
                 size="lg"
-                className="mt-8 h-10 rounded-lg bg-primary px-8 font-mono text-[11px] font-semibold tracking-[0.06em] uppercase text-white hover:bg-primary/90"
+                className="mt-8 h-10 rounded-lg bg-primary px-8 font-mono text-[0.6875rem] font-semibold tracking-[0.06em] uppercase text-white hover:bg-primary/90"
                 onClick={() => openAuth("signup")}
               >
                 {loginContent.close.cta} →
               </Button>
-              <p className="mt-4 font-mono text-[11px] text-neutral-400">
+              <p className="mt-4 font-mono text-[0.6875rem] text-neutral-400">
                 {loginContent.close.trust}
               </p>
             </div>
