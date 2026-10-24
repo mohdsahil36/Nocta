@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
-import { Button } from "@/components/ui/button";
 import { loginContent } from "./content";
 import {
   AFTER_AUTH_PATH,
@@ -20,15 +19,15 @@ import { AuthDialog } from "./ui/auth-dialog";
 import { FaqSection } from "./ui/faq";
 import {
   GoalsSection,
+  CheckInSection,
   LogParserSection,
-  NarrativeBand,
   RecoverySection,
+  StatsCard,
 } from "./ui/feature-sections";
 import { Hero } from "./ui/hero";
 import { LandingFooter } from "./ui/landing-footer";
 import { LandingNav } from "./ui/landing-nav";
 import { PathSection } from "./ui/path-section";
-import { FRAME_PAD, Frame } from "./ui/page-frame";
 import { DeskLoader } from "@/components/ui/desk-loader";
 import {
   AUTH_EXIT_MS,
@@ -37,6 +36,7 @@ import {
   markAuthWelcome,
 } from "@/lib/auth-transition";
 import { usePageScroll } from "./ui/use-page-scroll";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -110,7 +110,6 @@ export default function LoginPage() {
     try {
       if (authMode === "login") {
         const displayName = await loginWithEmail({ email, password });
-        // Toast after desk mounts — not under the handoff loader.
         markAuthWelcome(`Welcome back, ${displayName}`);
       } else {
         const displayName = await signupWithEmail({
@@ -141,69 +140,70 @@ export default function LoginPage() {
         onBackToTop={() => scrollToId("top")}
       />
 
-      {/*
-        Opacity-only exit: transform/filter on this wrapper breaks
-        position:sticky inside the Actuity pin scroll.
-      */}
       <motion.div
-        className="relative isolate w-full bg-white text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50"
+        className="relative isolate w-full bg-[#f8f8f6] text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50"
         animate={
           routeLeaving && !reduceMotion ? { opacity: 0.35 } : { opacity: 1 }
         }
         transition={{ duration: AUTH_EXIT_MS / 1000, ease: authEaseOut }}
       >
-        <main className="relative z-10 w-full">
+        <main className="relative z-10 w-full flex flex-col gap-16 py-16">
+          {/* Hero */}
           <Hero
             reduceMotion={reduceMotion}
             onOpenAuth={(mode) => openAuth(mode ?? "signup")}
             onHowItWorks={() => scrollToId("how-it-works")}
           />
 
-          {/* Pin scroll: section stays; slides advance on vertical scroll */}
-          <PathSection />
-
-          {/* Remaining demos stay as normal vertical bands */}
-          <NarrativeBand which="onboarding" />
-          <GoalsSection />
-          <LogParserSection />
-          <RecoverySection />
-
-          <div id="faq" className="scroll-mt-16">
-            <FaqSection />
-          </div>
-
-          <section
-            id="close"
-            className="scroll-mt-16 border-t border-neutral-200 dark:border-neutral-800"
-          >
-            <Frame>
-              <div
-                className={[
-                  "mx-auto max-w-2xl pt-16 pb-14 text-center sm:pt-20 sm:pb-18",
-                  FRAME_PAD,
-                ].join(" ")}
-              >
-                <h2 className="font-sans text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.1] font-semibold tracking-[-0.03em]">
-                  {loginContent.close.title}
-                </h2>
-                <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-neutral-500">
-                  {loginContent.close.body}
-                </p>
-                <Button
-                  size="lg"
-                  className="mt-8 h-11 min-w-40 bg-neutral-950 px-8 text-sm font-semibold text-white hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
-                  onClick={() => openAuth("signup")}
-                >
-                  {loginContent.close.cta}
-                </Button>
-                <p className="mt-4 text-xs text-neutral-500">
-                  {loginContent.close.trust}
-                </p>
-              </div>
-            </Frame>
+          {/* Stats — full-width section to match hero card width */}
+          <section className="w-full">
+            <StatsCard />
           </section>
 
-          <LandingFooter onNavigate={scrollToId} />
+          {/* #01 Goal scoring */}
+          <GoalsSection />
+
+          {/* #02 Check-in */}
+          <CheckInSection />
+
+          {/* #03 Log */}
+          <LogParserSection />
+
+          {/* #04 Recovery */}
+          <RecoverySection />
+
+          {/* FAQ */}
+          <div id="faq" className="scroll-mt-16">
+            <div className="mx-auto max-w-4xl px-4 sm:px-6">
+              <FaqSection />
+            </div>
+          </div>
+
+          {/* Close CTA */}
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 w-full">
+            <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-8 py-12 sm:px-10 text-center">
+              <h2 className="font-heading text-[clamp(1.75rem,4vw,2.5rem)] font-normal text-neutral-950 dark:text-neutral-50">
+                {loginContent.close.title}
+              </h2>
+              <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-neutral-500">
+                {loginContent.close.body}
+              </p>
+              <Button
+                size="lg"
+                className="mt-8 h-10 rounded-lg bg-primary px-8 font-mono text-[11px] font-semibold tracking-[0.06em] uppercase text-white hover:bg-primary/90"
+                onClick={() => openAuth("signup")}
+              >
+                {loginContent.close.cta} →
+              </Button>
+              <p className="mt-4 font-mono text-[11px] text-neutral-400">
+                {loginContent.close.trust}
+              </p>
+            </div>
+          </div>
+
+          <div className="mx-auto max-w-4xl w-full px-4 sm:px-6">
+            <LandingFooter onNavigate={scrollToId} />
+          </div>
         </main>
 
         <AuthDialog
@@ -237,6 +237,7 @@ export default function LoginPage() {
           onAuthErrorChange={setAuthError}
         />
       </motion.div>
+
       <DeskLoader
         variant="overlay"
         open={authBusy || routeLeaving}

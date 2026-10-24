@@ -6,7 +6,6 @@ import { NoctaMark } from "@/components/ui/nocta-mark";
 import { NoctaThemeToggler } from "@/components/ui/nocta-theme-toggler";
 import { loginContent } from "../content";
 import { navReveal } from "./motion";
-import { FRAME_PAD, Frame } from "./page-frame";
 
 type LandingNavProps = {
   scrolled?: boolean;
@@ -17,9 +16,6 @@ type LandingNavProps = {
   onBackToTop?: () => void;
 };
 
-/**
- * Landing nav — mark + wordmark; theme · Log in · Get started.
- */
 export function LandingNav({
   reduceMotion,
   onHowItWorks,
@@ -29,74 +25,67 @@ export function LandingNav({
 }: LandingNavProps) {
   return (
     <motion.header
-      className={[
-        "sticky top-0 z-50 w-full border-b border-neutral-200/80",
-        "bg-white/90 backdrop-blur-xl supports-backdrop-filter:bg-white/80",
-        "dark:border-neutral-800 dark:bg-neutral-950/90 dark:supports-backdrop-filter:bg-neutral-950/80",
-      ].join(" ")}
+      className="sticky top-0 z-50 w-full bg-white/95 dark:bg-neutral-950/95 backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800"
       variants={navReveal}
       initial={reduceMotion ? false : "hidden"}
       animate="show"
     >
-      <Frame>
-        <div
-          className={[
-            "flex h-14 w-full items-center justify-between gap-2 sm:gap-3",
-            FRAME_PAD,
-          ].join(" ")}
+      <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-4 sm:px-6">
+        {/* Logo */}
+        <a
+          href="#top"
+          className="flex items-center gap-2.5 group"
+          onClick={(e) => { if (!onBackToTop) return; e.preventDefault(); onBackToTop(); }}
         >
-          <a
-            href="#top"
-            className="flex min-w-0 items-center gap-2 font-sans text-base font-semibold tracking-[-0.02em] text-neutral-950 dark:text-neutral-50"
-            onClick={(e) => {
-              if (!onBackToTop) return;
-              e.preventDefault();
-              onBackToTop();
-            }}
-          >
-            <NoctaMark className="size-4 shrink-0 text-neutral-950 dark:text-neutral-50" />
-            <span className="truncate">{loginContent.brand.toLowerCase()}</span>
-          </a>
+          <NoctaMark className="size-4 shrink-0 text-neutral-950 dark:text-neutral-50 group-hover:text-primary transition-colors" />
+          <span className="font-mono text-[13px] font-semibold tracking-[-0.01em] text-neutral-950 dark:text-neutral-50">
+            {loginContent.brand.toLowerCase()}
+          </span>
+          <span className="hidden sm:inline-flex items-center rounded-full border border-primary/30 bg-primary/8 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
+            Beta
+          </span>
+        </a>
 
-          <nav className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden cursor-pointer rounded-md px-3 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-950 md:inline-flex dark:hover:bg-neutral-900 dark:hover:text-neutral-50"
-              onClick={onHowItWorks}
-            >
-              {loginContent.nav.howItWorks}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden cursor-pointer rounded-md px-3 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-950 md:inline-flex dark:hover:bg-neutral-900 dark:hover:text-neutral-50"
-              onClick={onFaq}
-            >
-              {loginContent.nav.faq}
-            </Button>
-            <NoctaThemeToggler
-              aria-label={loginContent.nav.theme}
-              className="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 hover:text-neutral-950 dark:hover:bg-neutral-900 dark:hover:text-neutral-50 [&_svg]:size-4"
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden h-9 cursor-pointer rounded-md px-3 text-sm font-medium text-neutral-700 sm:inline-flex dark:text-neutral-200"
-              onClick={() => onOpenAuth("login")}
-            >
-              {loginContent.nav.login}
-            </Button>
-            <Button
-              size="sm"
-              className="ml-0.5 h-9 cursor-pointer rounded-lg bg-neutral-950 px-3.5 text-sm font-semibold text-white hover:bg-neutral-800 sm:ml-1 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
-              onClick={() => onOpenAuth("signup")}
-            >
-              {loginContent.nav.cta}
-            </Button>
-          </nav>
+        {/* Center nav */}
+        <nav className="hidden md:flex items-center gap-0">
+          <button
+            type="button"
+            onClick={onHowItWorks}
+            className="px-4 font-mono text-[12px] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
+          >
+            How it works
+          </button>
+          <button
+            type="button"
+            onClick={onFaq}
+            className="px-4 font-mono text-[12px] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
+          >
+            FAQ
+          </button>
+        </nav>
+
+        {/* Right auth */}
+        <div className="flex items-center gap-2">
+          <NoctaThemeToggler
+            aria-label={loginContent.nav.theme}
+            className="hidden sm:inline-flex size-8 cursor-pointer items-center justify-center text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors [&_svg]:size-3.5"
+          />
+          <button
+            type="button"
+            onClick={() => onOpenAuth("login")}
+            className="hidden sm:block font-mono text-[12px] font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors px-3 py-1.5 cursor-pointer"
+          >
+            Log in
+          </button>
+          <button
+            type="button"
+            onClick={() => onOpenAuth("signup")}
+            className="rounded-md bg-primary px-3.5 py-1.5 font-mono text-[11px] font-semibold tracking-[0.04em] uppercase text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
+          >
+            Sign up
+          </button>
         </div>
-      </Frame>
+      </div>
     </motion.header>
   );
 }

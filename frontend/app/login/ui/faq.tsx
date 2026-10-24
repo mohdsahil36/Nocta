@@ -1,39 +1,74 @@
-import { Plus } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Plus, Minus } from "lucide-react";
 import { loginContent } from "../content";
-import { COL_SPLIT, SectionHeader, SectionShell } from "./section";
 
 export function FaqSection() {
   const c = loginContent.faq;
+  const [open, setOpen] = useState<number | null>(0);
+
   return (
-    <SectionShell id="faq">
-      <div className="overflow-hidden rounded-sm border border-neutral-200 dark:border-neutral-800">
-        <div className={["grid", COL_SPLIT].join(" ")}>
-          <div className="bg-neutral-50 p-6 sm:p-7 md:p-8 dark:bg-neutral-900/40">
-            <div className="md:sticky md:top-24">
-              <SectionHeader eyebrow={c.eyebrow} title={c.title} />
-            </div>
-          </div>
-          <div className="border-t border-foreground/10 bg-nocta-paper md:border-t-0 md:border-l">
-            {c.items.map((item) => (
-              <details
-                key={item.q}
-                className="group border-b border-foreground/10 last:border-b-0"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 px-5 py-5 text-left text-base font-medium text-foreground outline-none transition-colors hover:bg-foreground/3 focus-visible:bg-foreground/5 sm:px-7 [&::-webkit-details-marker]:hidden">
-                  {item.q}
-                  <Plus
-                    aria-hidden
-                    className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45"
-                  />
-                </summary>
-                <p className="px-5 pb-5 text-sm leading-6 text-muted-foreground sm:px-7">
-                  {item.a}
-                </p>
-              </details>
-            ))}
-          </div>
-        </div>
+    <div className="overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+      {/* Header row */}
+      <div className="border-b border-neutral-100 dark:border-neutral-800 px-8 py-8 sm:px-10">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+          {c.eyebrow}
+        </p>
+        <h2 className="mt-2 font-heading text-[clamp(1.6rem,3vw,2rem)] font-normal text-neutral-950 dark:text-neutral-50">
+          {c.title}
+        </h2>
       </div>
-    </SectionShell>
+
+      {/* Q&A list — click to expand one at a time */}
+      <div>
+        {c.items.map((item, i) => {
+          const isOpen = open === i;
+          return (
+            <div
+              key={item.q}
+              className="border-b border-neutral-100 dark:border-neutral-800 last:border-b-0"
+            >
+              <button
+                type="button"
+                onClick={() => setOpen(isOpen ? null : i)}
+                className="w-full flex items-start justify-between gap-6 px-8 py-5 sm:px-10 text-left group hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors"
+              >
+                <div className="flex items-start gap-4 min-w-0">
+                  <span className="shrink-0 font-mono text-[10px] font-semibold text-primary mt-0.5 tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className={[
+                    "text-[14px] font-medium leading-6 transition-colors",
+                    isOpen ? "text-neutral-950 dark:text-neutral-50" : "text-neutral-700 dark:text-neutral-300",
+                  ].join(" ")}>
+                    {item.q}
+                  </span>
+                </div>
+                <span className={[
+                  "shrink-0 size-5 flex items-center justify-center rounded-full border transition-all mt-0.5",
+                  isOpen
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-neutral-200 dark:border-neutral-700 text-neutral-400 group-hover:border-neutral-300",
+                ].join(" ")}>
+                  {isOpen
+                    ? <Minus className="size-3" />
+                    : <Plus className="size-3" />
+                  }
+                </span>
+              </button>
+
+              {isOpen && (
+                <div className="px-8 pb-6 sm:px-10 pl-[68px]">
+                  <p className="text-[14px] leading-6 text-neutral-500 dark:text-neutral-400">
+                    {item.a}
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
