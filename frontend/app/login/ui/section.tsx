@@ -382,6 +382,131 @@ export function DeepDive({
   );
 }
 
+/**
+ * autosend-style numbered section: full-bleed border-t, 2-col grid.
+ * Left = number + copy. Right = demo in stone panel.
+ * flip = demo left, copy right.
+ */
+export function NumberedSection({
+  id,
+  num,
+  eyebrow,
+  title,
+  body,
+  points,
+  flip = false,
+  fullDemo = false,
+  children,
+}: {
+  id?: string;
+  num: string;
+  eyebrow: string;
+  title: string;
+  body: string;
+  points?: readonly { title: string; body: string }[];
+  flip?: boolean;
+  /** Demo spans full width below copy (stacked layout) */
+  fullDemo?: boolean;
+  children: ReactNode;
+}) {
+  if (fullDemo) {
+    return (
+      <section
+        id={id}
+        className="border-t border-stone-200 dark:border-neutral-800 scroll-mt-16"
+      >
+        <div className="px-6 py-12 sm:px-10 sm:py-16 border-b border-stone-200 dark:border-neutral-800 bg-stone-50 dark:bg-neutral-950">
+          <p className="font-mono text-[11px] font-medium tracking-[0.14em] uppercase text-stone-500 dark:text-neutral-500">
+            <span className="mr-2 tabular-nums text-neutral-950 dark:text-neutral-50">
+              {num}
+            </span>
+            {eyebrow}
+          </p>
+          <h2 className="mt-4 max-w-xl font-sans text-2xl font-semibold leading-[1.15] tracking-[-0.02em] sm:text-3xl">
+            {title}
+          </h2>
+          <p className="mt-3 max-w-xl text-[15px] leading-7 text-stone-500 dark:text-neutral-500">
+            {body}
+          </p>
+          {points?.length ? (
+            <ul className="mt-5 space-y-3">
+              {points.map((p) => (
+                <li key={p.title} className="flex gap-3">
+                  <span aria-hidden className="mt-2 size-1.5 shrink-0 bg-foreground" />
+                  <div>
+                    <p className="text-sm font-semibold">{p.title}</p>
+                    <p className="mt-0.5 text-sm leading-6 text-muted-foreground">{p.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+        <div className="bg-stone-100/60 dark:bg-neutral-900/40 px-6 py-10 sm:px-10">
+          {children}
+        </div>
+      </section>
+    );
+  }
+
+  const copyCol = (
+    <div className="px-8 py-12 sm:px-12 sm:py-16 bg-stone-50 dark:bg-neutral-950">
+      <p className="font-mono text-[11px] font-medium tracking-[0.14em] uppercase text-stone-500 dark:text-neutral-500">
+        <span className="mr-2 tabular-nums text-neutral-950 dark:text-neutral-50">
+          {num}
+        </span>
+        {eyebrow}
+      </p>
+      <h2 className="mt-4 font-sans text-2xl font-semibold leading-[1.15] tracking-[-0.02em] sm:text-3xl">
+        {title}
+      </h2>
+      <p className="mt-3 text-[15px] leading-7 text-stone-500 dark:text-neutral-500">
+        {body}
+      </p>
+      {points?.length ? (
+        <ul className="mt-5 space-y-3">
+          {points.map((p) => (
+            <li key={p.title} className="flex gap-3">
+              <span aria-hidden className="mt-2 size-1.5 shrink-0 bg-foreground" />
+              <div>
+                <p className="text-sm font-semibold">{p.title}</p>
+                <p className="mt-0.5 text-sm leading-6 text-muted-foreground">{p.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+
+  const demoCol = (
+    <div className="flex items-center justify-center px-8 py-12 sm:px-12 bg-stone-100/60 dark:bg-neutral-900/40">
+      {children}
+    </div>
+  );
+
+  return (
+    <section
+      id={id}
+      className="border-t border-stone-200 dark:border-neutral-800 scroll-mt-16"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-stone-200 dark:divide-neutral-800">
+        {flip ? (
+          <>
+            {demoCol}
+            {copyCol}
+          </>
+        ) : (
+          <>
+            {copyCol}
+            {demoCol}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export function PanelLabel({ children }: { children: ReactNode }) {
   return (
     <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">

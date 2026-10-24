@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Geist_Mono, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { ThemeSync } from "@/app/store/themeStore";
 import "./globals.css";
 import { Providers } from "./providers";
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -33,19 +38,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${geistMono.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
         {/* Native script — next/script in <head> trips a client console error in App Router */}
         <script
           id="nocta-theme-boot"

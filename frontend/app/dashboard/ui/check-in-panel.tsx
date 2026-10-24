@@ -83,7 +83,7 @@ function ChoiceGroup<T extends string | number>({
               aria-checked={active}
               onClick={() => onChange(o.id)}
               className={cn(
-                "flex min-h-16 flex-col items-start justify-center gap-1 rounded-sm border-2 px-3 py-2.5 text-left outline-none transition-colors duration-150",
+                "flex flex-col items-start justify-center gap-0.5 rounded-sm border-2 px-3 py-2 text-left outline-none transition-colors duration-150",
                 "focus-visible:ring-2 focus-visible:ring-ring/50",
                 active
                   ? "border-primary bg-primary/5"
@@ -128,6 +128,10 @@ type CheckInPanelProps = {
   onClearCache: () => void;
   /** False until parent has checked localStorage — withhold the form. */
   sessionReady: boolean;
+  /** Greeting line shown in the form header (e.g. "Good evening, Sahil"). */
+  greeting?: string;
+  /** Called after a successful check-in so the parent can hold the result. */
+  onResult?: (result: CheckInResult) => void;
 };
 
 type PanelBanner = {
@@ -142,6 +146,8 @@ export function CheckInPanel({
   cachedResult,
   onClearCache,
   sessionReady,
+  greeting,
+  onResult,
 }: CheckInPanelProps) {
   const c = dashboardContent.checkIn;
   const userId = useAuthStore((s) => s.userId);
@@ -192,6 +198,7 @@ export function CheckInPanel({
         result,
         savedAt: new Date().toISOString(),
       });
+      onResult?.(result);
       onClearCache();
       showBanner(c.toastSuccess, "success", 2200);
       setAlsoOpen(false);
@@ -246,16 +253,21 @@ export function CheckInPanel({
             transition={{ duration, ease: EASE }}
             className="flex flex-col"
           >
-            <div className="border-b border-border px-5 py-4 sm:px-6">
-              <p className="text-sm font-semibold tracking-tight text-nocta-ink">
+            <div className="border-b border-border px-5 py-3 sm:px-6">
+              {greeting ? (
+                <p className="text-[11px] font-medium text-muted-foreground">
+                  {greeting}
+                </p>
+              ) : null}
+              <p className={cn("font-semibold tracking-tight text-nocta-ink", greeting ? "mt-1 text-sm" : "text-sm")}>
                 {c.title}
               </p>
-              <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              <p className="mt-1 max-w-md text-[13px] text-muted-foreground">
                 {c.body}
               </p>
             </div>
 
-            <div className="flex flex-col gap-5 px-5 py-5 sm:px-6 sm:py-6">
+            <div className="grid gap-4 px-5 py-4 sm:grid-cols-2 sm:px-6">
               <ChoiceGroup
                 label={c.timeLabel}
                 value={minutes}
@@ -270,7 +282,7 @@ export function CheckInPanel({
               />
             </div>
 
-            <div className="border-t border-border px-5 py-4 sm:px-6">
+            <div className="border-t border-border px-5 py-3 sm:px-6">
               <Button
                 type="button"
                 className="h-10 w-full rounded-md text-sm shadow-none sm:h-9 sm:w-auto sm:min-w-44 sm:px-5"

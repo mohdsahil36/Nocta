@@ -8,6 +8,8 @@
 CLAUDE.md
 AGENTS.md
 .idea/
+frontend/.agents/
+frontend/skills-lock.json
 
 # Local design docs — never commit (agents update in-session)
 docs/design/

@@ -80,7 +80,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             setHoverExpand(false);
           }}
         />
-        <main className="flex-1 overflow-auto px-3 py-3 sm:px-4 sm:py-4">
+        <main className="flex-1 overflow-auto px-5 py-6 sm:px-8 sm:py-8">
           {children}
         </main>
       </div>
