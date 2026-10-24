@@ -153,8 +153,8 @@ export default function ActivityPage() {
 
           {/* Stats */}
           <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 divide-y divide-neutral-100 dark:divide-neutral-800">
-            <StatRow icon={Flame}     label="Current streak" value={isLoading || !stats ? "—" : `${stats.currentStreak}`} unit="days"    iconClass="text-orange-500 bg-orange-50 dark:bg-orange-950/30" />
-            <StatRow icon={Trophy}    label="Longest streak"  value={isLoading || !stats ? "—" : `${stats.longestStreak}`} unit="days"    iconClass="text-amber-500  bg-amber-50  dark:bg-amber-950/30"  />
+            <StatRow icon={Flame}     label="Current streak" value={isLoading || !stats ? "—" : `${stats.currentStreak}`} unit="days"    iconClass="text-orange-600 dark:text-orange-400/80 bg-orange-50 dark:bg-orange-950/40" />
+            <StatRow icon={Trophy}    label="Longest streak"  value={isLoading || !stats ? "—" : `${stats.longestStreak}`} unit="days"    iconClass="text-amber-600  dark:text-amber-400/80  bg-amber-50  dark:bg-amber-950/40"  />
             <StatRow icon={GitCommit} label="Today"           value={isLoading || !stats ? "—" : String(stats.todayCount)} unit="commits" iconClass="text-primary    bg-primary/8"                        hint={todayLabel || undefined} />
           </div>
 
