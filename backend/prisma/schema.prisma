@@ -127,6 +127,7 @@ model PlanStep {
   startedAt     DateTime? // when work on this step began
   createdAt     DateTime       @default(now()) // when the row was created
   lastupdatedAt DateTime       @updatedAt // last row update
+  archivedAt    DateTime? // when the step was archived
 
   // Unique as a pair: many steps per goalId, but each sortOrder only once per goal
   @@unique([goalId, sortOrder])

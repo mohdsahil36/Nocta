@@ -44,6 +44,7 @@ export async function archivePlanStep(step: PlanStep): Promise<PlanStep> {
     },
     data: {
       status: PlanStepStatus.archived,
+      archivedAt: new Date(),
     },
   });
   return archived;
@@ -61,6 +62,37 @@ export async function listPlanSteps(goalId: string): Promise<PlanStep[]> {
     },
   });
   return steps;
+}
+
+// Archived steps for the goal
+export async function listArchivedPlanSteps(
+  goalId: string,
+): Promise<PlanStep[]> {
+  const archivedSteps = await prisma.planStep.findMany({
+    where: {
+      goalId,
+      status: PlanStepStatus.archived,
+    },
+    orderBy: {
+      sortOrder: "asc",
+    },
+  });
+  return archivedSteps;
+}
+
+// Restore archived step
+export async function restoreArchivedPlanStep(goalId: string, stepId: string) {
+  const activesteps = await listPlanSteps(goalId);
+  const nextSortOrder =
+    activesteps.reduce((max, s) => Math.max(max, s.sortOrder), -1) + 1;
+  return prisma.planStep.update({
+    where: { id: stepId },
+    data: {
+      status: PlanStepStatus.todo,
+      archivedAt: null,
+      sortOrder: nextSortOrder,
+    },
+  });
 }
 
 // One step, scoped to a goal — stops returning a step that belongs to another goal.
