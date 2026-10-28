@@ -38,19 +38,19 @@ export function LandingFooter({ onNavigate }: LandingFooterProps) {
             <div className="flex-shrink-0">
               <div className="flex items-center gap-2">
                 <NoctaMark className="size-4 text-neutral-950 dark:text-neutral-50" />
-                <span className="font-mono text-[13px] font-semibold text-neutral-950 dark:text-neutral-50">
+                <span className="font-mono text-[0.8125rem] font-semibold text-neutral-950 dark:text-neutral-50">
                   {loginContent.brand.toLowerCase()}
                 </span>
-                <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
+                <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-mono text-[0.5625rem] font-bold uppercase tracking-[0.14em] text-primary">
                   Beta
                 </span>
               </div>
-              <p className="mt-3 max-w-[200px] font-mono text-[12px] leading-5 text-neutral-400">
+              <p className="mt-3 max-w-[200px] font-mono text-[0.75rem] leading-5 text-neutral-400">
                 One meaningful next action per check-in.
               </p>
               <div className="mt-5 flex items-center gap-1.5">
                 <span className="size-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-widest">
+                <span className="font-mono text-[0.625rem] text-neutral-500 uppercase tracking-widest">
                   All systems operational
                 </span>
               </div>
@@ -63,7 +63,7 @@ export function LandingFooter({ onNavigate }: LandingFooterProps) {
                   key={link.label}
                   type="button"
                   onClick={(e) => go(e, link.id)}
-                  className="font-mono text-[12px] text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer text-left"
+                  className="font-mono text-[0.75rem] text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer text-left"
                 >
                   {link.label}
                 </button>
@@ -76,13 +76,13 @@ export function LandingFooter({ onNavigate }: LandingFooterProps) {
 
           {/* Bottom bar + wordmark as one unit */}
           <div className="flex items-center justify-between px-8 sm:px-10 pt-3 pb-1">
-            <p className="font-mono text-[11px] text-neutral-500">
+            <p className="font-mono text-[0.6875rem] text-neutral-500">
               © 2026 Nocta
             </p>
             <button
               type="button"
               onClick={(e) => go(e, "top")}
-              className="font-mono text-[11px] text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
+              className="font-mono text-[0.6875rem] text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors cursor-pointer"
             >
               Back to top ↑
             </button>

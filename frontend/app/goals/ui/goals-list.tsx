@@ -44,12 +44,12 @@ function DeadlineChip({ deadline, large = false }: { deadline: string; large?: b
     <span className={cn(
       "inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono font-medium",
       large ? "text-[11px]" : "text-[10px]",
-      overdue ? "bg-red-50 dark:bg-red-950/30 text-red-500"
-      : urgent ? "bg-orange-50 dark:bg-orange-950/30 text-orange-500"
-      : soon   ? "bg-amber-50 dark:bg-amber-950/30 text-amber-500"
+      overdue ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400/80"
+      : urgent ? "bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400/80"
+      : soon   ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400/80"
       :          "bg-neutral-100 dark:bg-neutral-800 text-neutral-500",
     )}>
-      {overdue && <span className="size-1 rounded-full bg-red-400 shrink-0" />}
+      {overdue && <span className="size-1 rounded-full bg-red-400 dark:bg-red-500/60 shrink-0" />}
       {label}
     </span>
   );

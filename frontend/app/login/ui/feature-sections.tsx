@@ -229,7 +229,7 @@ function SectionCard({
       <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950 shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)]">
         {/* Header */}
         <div className="px-8 pt-8 pb-0 sm:px-10 sm:pt-10">
-          <p className="font-mono text-[11px] font-semibold tracking-[0.18em] uppercase">
+          <p className="font-mono text-[0.6875rem] font-semibold tracking-[0.18em] uppercase">
             <span className="text-primary">{num}</span>
             <span className="mx-1.5 text-neutral-300 dark:text-neutral-600">—</span>
             <span className="text-neutral-500 dark:text-neutral-400">{category}</span>
@@ -262,7 +262,7 @@ function SectionCard({
                   {active && running && (
                     <motion.div
                       key={`progress-${activeIndex}`}
-                      className="absolute bottom-0 left-0 h-[2px] bg-primary origin-left"
+                      className="absolute bottom-0 left-0 h-[0.125rem] bg-primary origin-left"
                       initial={{ width: "0%" }}
                       animate={{ width: "100%" }}
                       transition={{ duration: intervalMs / 1000, ease: "linear" }}
@@ -276,12 +276,12 @@ function SectionCard({
                   />
                   <div className="min-w-0">
                     <p className={[
-                      "font-mono text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors",
+                      "font-mono text-[0.6875rem] font-semibold tracking-[0.12em] uppercase transition-colors",
                       active ? "text-neutral-950 dark:text-neutral-50" : "text-neutral-500",
                     ].join(" ")}>
                       {f.label}
                     </p>
-                    <p className="mt-1 text-[13px] leading-5 text-neutral-500 dark:text-neutral-400">
+                    <p className="mt-1 text-[0.8125rem] leading-5 text-neutral-500 dark:text-neutral-400">
                       {f.body}
                     </p>
                   </div>
@@ -293,7 +293,7 @@ function SectionCard({
           {/* Right: demo panel — scene bg or dot grid */}
           <div
             className={[
-              "relative flex items-center justify-center p-6 sm:p-8 min-h-64 overflow-hidden",
+              "relative flex items-center justify-center px-10 py-12 sm:px-12 sm:py-14 min-h-80 overflow-hidden",
               scenePiece ? "bg-neutral-950" : "",
             ].join(" ")}
             style={scenePiece ? undefined : {
@@ -305,8 +305,8 @@ function SectionCard({
             {/* Scene background — scale to cover full panel */}
             {scenePiece && (
               <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center scale-[1.6] origin-center">
-                  <Ascii piece={scenePiece as any} style={{ width: 520, margin: 0, opacity: 0.9 }} />
+                <div className="absolute inset-0 flex items-center justify-center scale-[1.5] origin-center">
+                  <Ascii piece={scenePiece as any} style={{ width: 900, margin: 0, opacity: 0.85 }} />
                 </div>
               </div>
             )}
@@ -319,7 +319,7 @@ function SectionCard({
                   animate={{ opacity: 0.18 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="pointer-events-none select-none absolute inset-0 flex items-center justify-center font-mono text-[10px] leading-[1.5] text-neutral-950 overflow-hidden whitespace-pre"
+                  className="pointer-events-none select-none absolute inset-0 flex items-center justify-center font-mono text-[0.625rem] leading-[1.5] text-neutral-950 overflow-hidden whitespace-pre"
                 >
                   {ASCII_ART[resolvedAsciiKey]}
                 </motion.pre>
@@ -336,7 +336,7 @@ function SectionCard({
           <div className="border-t border-neutral-100 dark:border-neutral-800 px-8 py-4 sm:px-10">
             <a
               href={learnMoreHref}
-              className="font-mono text-[11px] font-semibold tracking-[0.14em] uppercase text-primary hover:underline"
+              className="font-mono text-[0.6875rem] font-semibold tracking-[0.14em] uppercase text-primary hover:underline"
             >
               {learnMoreLabel} →
             </a>
@@ -362,25 +362,25 @@ export function StatsCard() {
         <div className="grid sm:grid-cols-4 grid-cols-2 divide-x divide-y sm:divide-y-0 divide-neutral-100 dark:divide-neutral-800">
           {STATS.map(({ value, label, accent }) => (
             <div key={label} className="flex flex-col items-start px-7 pt-6 pb-5 gap-0 group min-w-0">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-primary mb-3">
+              <span className="font-mono text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary mb-3">
                 {accent}
               </span>
               <span className="font-heading text-[2.4rem] leading-none font-normal text-neutral-950 dark:text-neutral-50 tracking-tight tabular-nums">
                 {value}
               </span>
-              <span className="mt-2 font-mono text-[11px] text-neutral-400 uppercase tracking-wider leading-4">
+              <span className="mt-2 font-mono text-[0.6875rem] text-neutral-400 uppercase tracking-wider leading-4">
                 {label}
               </span>
             </div>
           ))}
         </div>
         <div className="border-t border-neutral-100 dark:border-neutral-800 px-8 py-3 flex items-center justify-between">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+          <p className="font-mono text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
             Built for builders who study and ship
           </p>
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">Live</span>
+            <span className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest">Live</span>
           </span>
         </div>
       </div>
@@ -397,8 +397,8 @@ const SCORING_FEATURES: FeatureItem[] = [
   { icon: Zap, label: "AI never ranks", body: "The scorer is pure TypeScript. No LLM decides priority — ever." },
 ];
 
-const ILLUS_CARD = "w-full max-w-sm overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950";
-const ILLUS_LABEL = "font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400";
+const ILLUS_CARD = "w-full max-w-xs overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950";
+const ILLUS_LABEL = "font-mono text-[0.625rem] uppercase tracking-[0.16em] text-neutral-400";
 const ILLUS_ROW = "flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 px-5 py-3";
 
 function DeadlineIllus() {
@@ -418,12 +418,12 @@ function DeadlineIllus() {
         {goals.map((g) => (
           <li key={g.name} className={ILLUS_ROW}>
             <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[12px] text-neutral-700 dark:text-neutral-300 truncate">{g.name}</p>
+              <p className="text-[0.75rem] text-neutral-700 dark:text-neutral-300 truncate">{g.name}</p>
               <div className="mt-1.5 h-1 w-full rounded-full bg-neutral-100 dark:bg-neutral-800">
                 <div className="h-full rounded-full bg-primary/70" style={{ width: `${g.pct}%` }} />
               </div>
             </div>
-            <span className="shrink-0 font-mono text-[11px] text-neutral-400">{g.days}d</span>
+            <span className="shrink-0 font-mono text-[0.6875rem] text-neutral-400">{g.days}d</span>
           </li>
         ))}
       </ul>
@@ -449,11 +449,11 @@ function NeglectIllus() {
           <li key={g.name} className={ILLUS_ROW}>
             <div className="flex items-center gap-2.5 flex-1 min-w-0">
               <span className={["size-2 rounded-full shrink-0", g.hot ? "bg-primary" : "bg-neutral-200 dark:bg-neutral-700"].join(" ")} />
-              <span className="text-[12px] text-neutral-700 dark:text-neutral-300 truncate">{g.name}</span>
+              <span className="text-[0.75rem] text-neutral-700 dark:text-neutral-300 truncate">{g.name}</span>
             </div>
             <div className="shrink-0 text-right">
-              <span className="font-mono text-[11px] text-neutral-400">{g.last}</span>
-              <span className={["ml-2 font-mono text-[11px]", g.hot ? "text-primary font-semibold" : "text-neutral-400"].join(" ")}>{g.bonus}</span>
+              <span className="font-mono text-[0.6875rem] text-neutral-400">{g.last}</span>
+              <span className={["ml-2 font-mono text-[0.6875rem]", g.hot ? "text-primary font-semibold" : "text-neutral-400"].join(" ")}>{g.bonus}</span>
             </div>
           </li>
         ))}
@@ -478,13 +478,13 @@ function MomentumIllus() {
       <div className="px-5 py-4 space-y-2.5">
         {weeks.map((w) => (
           <div key={w.label} className="flex items-center gap-2">
-            <span className="font-mono text-[10px] text-neutral-400 w-5 shrink-0">{w.label}</span>
+            <span className="font-mono text-[0.625rem] text-neutral-400 w-5 shrink-0">{w.label}</span>
             <div className="flex gap-1 flex-1">
               {w.bars.map((on, i) => (
                 <div key={i} className={["flex-1 h-4 rounded-sm transition-colors", on ? "bg-primary/70" : "bg-neutral-100 dark:bg-neutral-800"].join(" ")} />
               ))}
             </div>
-            <span className="font-mono text-[10px] text-primary w-7 text-right">{w.bars.filter(Boolean).length}/7</span>
+            <span className="font-mono text-[0.625rem] text-primary w-7 text-right">{w.bars.filter(Boolean).length}/7</span>
           </div>
         ))}
       </div>
@@ -499,7 +499,7 @@ function NoAiIllus() {
         <p className={ILLUS_LABEL}>AI never ranks</p>
         <p className="mt-1 text-sm font-semibold text-neutral-900 dark:text-neutral-50">Pure TypeScript. Zero LLM calls.</p>
       </div>
-      <div className="px-5 py-4 font-mono text-[11px] leading-6 text-neutral-500 dark:text-neutral-400">
+      <div className="px-5 py-4 font-mono text-[0.6875rem] leading-6 text-neutral-500 dark:text-neutral-400">
         <p><span className="text-primary">function</span> rank(goals) {"{"}</p>
         <p className="pl-4"><span className="text-neutral-300 dark:text-neutral-600">// score each goal</span></p>
         <p className="pl-4"><span className="text-primary">return</span> goals</p>
@@ -508,9 +508,9 @@ function NoAiIllus() {
         <p>{"}"}</p>
       </div>
       <div className="border-t border-neutral-100 dark:border-neutral-800 px-5 py-3 flex gap-4">
-        <span className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-400"><span className="text-red-400">✕</span> no LLM</span>
-        <span className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-400"><span className="text-red-400">✕</span> no random</span>
-        <span className="flex items-center gap-1.5 font-mono text-[10px] text-primary"><span>✓</span> deterministic</span>
+        <span className="flex items-center gap-1.5 font-mono text-[0.625rem] text-neutral-400"><span className="text-red-400">✕</span> no LLM</span>
+        <span className="flex items-center gap-1.5 font-mono text-[0.625rem] text-neutral-400"><span className="text-red-400">✕</span> no random</span>
+        <span className="flex items-center gap-1.5 font-mono text-[0.625rem] text-primary"><span>✓</span> deterministic</span>
       </div>
     </div>
   );
@@ -521,7 +521,7 @@ const SCORING_ILLUS = [DeadlineIllus, NeglectIllus, MomentumIllus, NoAiIllus];
 function ScoringDemo({ activeIndex }: { activeIndex: number }) {
   const Illus = SCORING_ILLUS[activeIndex] ?? SCORING_ILLUS[0];
   return (
-    <div className="relative w-full flex justify-center min-h-[280px] items-center">
+    <div className="relative w-full flex justify-center min-h-[17.5rem] items-center">
       <AnimatePresence mode="sync">
         <motion.div
           key={activeIndex}
@@ -599,21 +599,21 @@ function CheckInDemo() {
   const size = stepSize(minutes, energy);
 
   return (
-    <div className="w-full max-w-sm overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950">
+    <div className="w-full max-w-xs overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950">
       <div className="border-b border-neutral-100 dark:border-neutral-800 px-5 py-3">
-        <p className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">Check-in</p>
+        <p className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest">Check-in</p>
       </div>
       <div className="p-5 space-y-4">
         {/* Time */}
         <div>
-          <p className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest mb-2">{d.timeLabel}</p>
+          <p className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest mb-2">{d.timeLabel}</p>
           <div className="grid grid-cols-3 gap-2">
             {d.minutes.map((m) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => { select(index); setManual({ minutes: m, energy }); }}
-                className={["rounded-lg border py-2 font-mono text-[12px] font-medium transition-colors cursor-pointer", m === minutes ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:border-neutral-300"].join(" ")}
+                className={["rounded-lg border py-2 font-mono text-[0.75rem] font-medium transition-colors cursor-pointer", m === minutes ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:border-neutral-300"].join(" ")}
               >
                 {m}m
               </button>
@@ -622,7 +622,7 @@ function CheckInDemo() {
         </div>
         {/* Energy */}
         <div>
-          <p className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest mb-2">{d.energyLabel}</p>
+          <p className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest mb-2">{d.energyLabel}</p>
           <div className="grid grid-cols-3 gap-2">
             {d.energy.map((e) => {
               const Icon = ENERGY_ICON[e.id];
@@ -632,7 +632,7 @@ function CheckInDemo() {
                   key={e.id}
                   type="button"
                   onClick={() => { select(index); setManual({ minutes, energy: e.id }); }}
-                  className={["flex flex-col items-center gap-1 rounded-lg border py-3 font-mono text-[11px] transition-colors cursor-pointer", on ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:border-neutral-300"].join(" ")}
+                  className={["flex flex-col items-center gap-1 rounded-lg border py-3 font-mono text-[0.6875rem] transition-colors cursor-pointer", on ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:border-neutral-300"].join(" ")}
                 >
                   <Icon className="size-4" />
                   {e.label}
@@ -643,7 +643,7 @@ function CheckInDemo() {
         </div>
         {/* Result */}
         <div className="rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 px-4 py-3">
-          <p className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">Next step</p>
+          <p className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest">Next step</p>
           <div className="mt-1">
             <LiveTitle text={c.sizes[size]} size="line" />
           </div>
@@ -664,7 +664,7 @@ function CITimeIllus() {
       <div className="p-5">
         <div className="grid grid-cols-3 gap-2">
           {([20, 45, 90] as const).map((m) => (
-            <div key={m} className={["rounded-lg border py-3 text-center font-mono text-[13px] font-medium", m === 45 ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-400"].join(" ")}>
+            <div key={m} className={["rounded-lg border py-3 text-center font-mono text-[0.8125rem] font-medium", m === 45 ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-400"].join(" ")}>
               {m}m
             </div>
           ))}
@@ -688,7 +688,7 @@ function CIEnergyIllus() {
       <div className="p-5 space-y-3">
         <div className="grid grid-cols-3 gap-2">
           {(["Low", "Steady", "High"] as const).map((e) => (
-            <div key={e} className={["rounded-lg border py-3 text-center font-mono text-[12px] font-medium", e === "High" ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-400"].join(" ")}>
+            <div key={e} className={["rounded-lg border py-3 text-center font-mono text-[0.75rem] font-medium", e === "High" ? "border-primary bg-primary/10 text-primary" : "border-neutral-200 dark:border-neutral-700 text-neutral-400"].join(" ")}>
               {e}
             </div>
           ))}
@@ -711,14 +711,14 @@ function CIPickIllus() {
       </div>
       <div className="p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-neutral-400 uppercase tracking-wider">Tonight's action</span>
-          <span className="font-mono text-[11px] font-semibold text-primary">Score 86</span>
+          <span className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-wider">Tonight's action</span>
+          <span className="font-mono text-[0.6875rem] font-semibold text-primary">Score 86</span>
         </div>
-        <p className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-50">Ship the scoring PR</p>
+        <p className="text-[0.9375rem] font-semibold text-neutral-900 dark:text-neutral-50">Ship the scoring PR</p>
         <div className="h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800">
           <div className="h-full w-[86%] rounded-full bg-primary/70" />
         </div>
-        <div className="flex gap-2 text-[11px] font-mono text-neutral-400">
+        <div className="flex gap-2 text-[0.6875rem] font-mono text-neutral-400">
           <span>45 min</span><span>·</span><span>Steady</span><span>·</span><span className="text-primary">deterministic</span>
         </div>
       </div>
@@ -735,16 +735,16 @@ function CISwapIllus() {
       </div>
       <ul>
         <li className={ILLUS_ROW + " opacity-50"}>
-          <span className="text-[12px] line-through text-neutral-400">Ship the scoring PR</span>
-          <span className="font-mono text-[10px] text-neutral-300">rejected</span>
+          <span className="text-[0.75rem] line-through text-neutral-400">Ship the scoring PR</span>
+          <span className="font-mono text-[0.625rem] text-neutral-300">rejected</span>
         </li>
         <li className={ILLUS_ROW + " bg-primary/5"}>
-          <span className="text-[12px] font-medium text-neutral-800 dark:text-neutral-200">Update portfolio case study</span>
-          <span className="font-mono text-[11px] text-primary font-semibold">64</span>
+          <span className="text-[0.75rem] font-medium text-neutral-800 dark:text-neutral-200">Update portfolio case study</span>
+          <span className="font-mono text-[0.6875rem] text-primary font-semibold">64</span>
         </li>
         <li className={ILLUS_ROW}>
-          <span className="text-[12px] text-neutral-400">Finish the systems book</span>
-          <span className="font-mono text-[11px] text-neutral-400">58</span>
+          <span className="text-[0.75rem] text-neutral-400">Finish the systems book</span>
+          <span className="font-mono text-[0.6875rem] text-neutral-400">58</span>
         </li>
       </ul>
     </div>
@@ -756,7 +756,7 @@ const CHECKIN_ILLUS = [CITimeIllus, CIEnergyIllus, CIPickIllus, CISwapIllus];
 function CheckInTabDemo({ activeIndex }: { activeIndex: number }) {
   const Illus = CHECKIN_ILLUS[activeIndex] ?? CHECKIN_ILLUS[0];
   return (
-    <div className="relative w-full flex justify-center min-h-[280px] items-center">
+    <div className="relative w-full flex justify-center min-h-[17.5rem] items-center">
       <AnimatePresence mode="sync">
         <motion.div key={activeIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, position: "absolute" } as any} transition={{ duration: 0.25 }} className="w-full flex justify-center">
           <Illus />
@@ -872,19 +872,19 @@ function LogDemo() {
   const displaySaved = prefersMotion ? saved : true;
 
   return (
-    <div className="w-full max-w-sm space-y-3">
+    <div className="w-full max-w-xs space-y-3">
       <div className="overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950">
         <div className="flex items-center gap-2 p-3 border-b border-neutral-100 dark:border-neutral-800">
           <input
             value={displayLine}
             onChange={(e) => { setLine(e.target.value); setParsed(null); setSaved(false); }}
             placeholder={c.placeholder}
-            className="flex-1 bg-transparent font-mono text-[13px] text-neutral-700 dark:text-neutral-300 outline-none placeholder:text-neutral-400"
+            className="flex-1 bg-transparent font-mono text-[0.8125rem] text-neutral-700 dark:text-neutral-300 outline-none placeholder:text-neutral-400"
           />
           <button
             type="button"
             onClick={() => { if (displayLine.trim()) setParsed(parseLog(displayLine)); }}
-            className="rounded-lg bg-primary px-3 py-1.5 font-mono text-[11px] font-semibold text-white hover:bg-primary/90 transition-colors"
+            className="rounded-lg bg-primary px-3 py-1.5 font-mono text-[0.6875rem] font-semibold text-white hover:bg-primary/90 transition-colors"
           >
             Parse
           </button>
@@ -893,8 +893,8 @@ function LogDemo() {
           <div className="grid grid-cols-2 gap-2 p-3">
             {fields.map(([key, label]) => (
               <div key={key} className={["rounded-lg border px-3 py-2", displayParsed[key] ? "border-primary/20 bg-primary/5" : "border-dashed border-neutral-200 dark:border-neutral-700"].join(" ")}>
-                <p className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">{label}</p>
-                <p className={["text-[13px] font-medium truncate mt-0.5", displayParsed[key] ? "text-neutral-950 dark:text-neutral-50" : "text-neutral-300"].join(" ")}>
+                <p className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest">{label}</p>
+                <p className={["text-[0.8125rem] font-medium truncate mt-0.5", displayParsed[key] ? "text-neutral-950 dark:text-neutral-50" : "text-neutral-300"].join(" ")}>
                   {displayParsed[key] ?? "—"}
                 </p>
               </div>
@@ -902,20 +902,20 @@ function LogDemo() {
           </div>
         ) : (
           <div className="flex items-center justify-center h-24 border-b border-neutral-100 dark:border-neutral-800">
-            <p className="font-mono text-[12px] text-neutral-400">Type what you did and hit Parse</p>
+            <p className="font-mono text-[0.75rem] text-neutral-400">Type what you did and hit Parse</p>
           </div>
         )}
         {displayParsed && (
           <div className="flex justify-end px-3 pb-3">
             {displaySaved ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[11px] font-medium text-primary">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[0.6875rem] font-medium text-primary">
                 <Check className="size-3" /> Saved
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => setSaved(true)}
-                className="rounded-lg bg-primary px-3 py-1.5 font-mono text-[11px] font-semibold text-white hover:bg-primary/90 transition-colors"
+                className="rounded-lg bg-primary px-3 py-1.5 font-mono text-[0.6875rem] font-semibold text-white hover:bg-primary/90 transition-colors"
               >
                 Looks right →
               </button>
@@ -958,11 +958,11 @@ function LogTypeIllus() {
         <p className="mt-1 text-sm font-semibold text-neutral-900 dark:text-neutral-50">Plain English. No forms.</p>
       </div>
       <div className="p-5">
-        <div className="rounded-lg border border-primary/40 bg-primary/5 px-4 py-3 font-mono text-[12px] text-neutral-700 dark:text-neutral-300">
+        <div className="rounded-lg border border-primary/40 bg-primary/5 px-4 py-3 font-mono text-[0.75rem] text-neutral-700 dark:text-neutral-300">
           ran 30min, felt steady, finished tests
           <span className="ml-0.5 inline-block w-0.5 h-3.5 bg-primary align-middle animate-pulse" />
         </div>
-        <p className="mt-3 font-mono text-[10px] text-neutral-400 uppercase tracking-wider">↓ parsing in progress</p>
+        <p className="mt-3 font-mono text-[0.625rem] text-neutral-400 uppercase tracking-wider">↓ parsing in progress</p>
       </div>
     </div>
   );
@@ -984,8 +984,8 @@ function LogParseIllus() {
       <ul>
         {fields.map((f) => (
           <li key={f.label} className={ILLUS_ROW}>
-            <span className="font-mono text-[10px] text-neutral-400 uppercase w-20 shrink-0">{f.label}</span>
-            <span className="text-[12px] font-medium text-neutral-800 dark:text-neutral-200 flex-1">{f.value}</span>
+            <span className="font-mono text-[0.625rem] text-neutral-400 uppercase w-20 shrink-0">{f.label}</span>
+            <span className="text-[0.75rem] font-medium text-neutral-800 dark:text-neutral-200 flex-1">{f.value}</span>
             <Check className="size-3.5 text-primary" />
           </li>
         ))}
@@ -1003,13 +1003,13 @@ function LogConfirmIllus() {
       </div>
       <div className="p-5 space-y-3">
         <div className="rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 px-4 py-3 space-y-1.5">
-          <div className="flex justify-between text-[12px]"><span className="text-neutral-400 font-mono">Goal</span><span className="text-neutral-700 dark:text-neutral-300">Morning run</span></div>
-          <div className="flex justify-between text-[12px]"><span className="text-neutral-400 font-mono">Time</span><span className="text-neutral-700 dark:text-neutral-300">30 min</span></div>
-          <div className="flex justify-between text-[12px]"><span className="text-neutral-400 font-mono">Energy</span><span className="text-neutral-700 dark:text-neutral-300">Steady</span></div>
+          <div className="flex justify-between text-[0.75rem]"><span className="text-neutral-400 font-mono">Goal</span><span className="text-neutral-700 dark:text-neutral-300">Morning run</span></div>
+          <div className="flex justify-between text-[0.75rem]"><span className="text-neutral-400 font-mono">Time</span><span className="text-neutral-700 dark:text-neutral-300">30 min</span></div>
+          <div className="flex justify-between text-[0.75rem]"><span className="text-neutral-400 font-mono">Energy</span><span className="text-neutral-700 dark:text-neutral-300">Steady</span></div>
         </div>
         <div className="flex gap-2">
-          <div className="flex-1 rounded-lg border border-neutral-200 dark:border-neutral-700 py-2 text-center font-mono text-[11px] text-neutral-400">Edit</div>
-          <div className="flex-1 rounded-lg bg-primary py-2 text-center font-mono text-[11px] font-semibold text-white">Save →</div>
+          <div className="flex-1 rounded-lg border border-neutral-200 dark:border-neutral-700 py-2 text-center font-mono text-[0.6875rem] text-neutral-400">Edit</div>
+          <div className="flex-1 rounded-lg bg-primary py-2 text-center font-mono text-[0.6875rem] font-semibold text-white">Save →</div>
         </div>
       </div>
     </div>
@@ -1027,8 +1027,8 @@ function LogRestIllus() {
         <div className="flex items-center gap-3 rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 px-4 py-3">
           <MoonStar className="size-5 text-neutral-500 shrink-0" />
           <div>
-            <p className="text-[12px] font-semibold text-neutral-800 dark:text-neutral-200">Rest night marked</p>
-            <p className="text-[11px] text-neutral-400">Momentum stays intact</p>
+            <p className="text-[0.75rem] font-semibold text-neutral-800 dark:text-neutral-200">Rest night marked</p>
+            <p className="text-[0.6875rem] text-neutral-400">Momentum stays intact</p>
           </div>
         </div>
         <div>
@@ -1038,7 +1038,7 @@ function LogRestIllus() {
               <div key={i} className={["flex-1 h-3 rounded-sm", on ? "bg-primary/60" : "bg-neutral-200 dark:bg-neutral-700"].join(" ")} />
             ))}
           </div>
-          <p className="mt-1.5 font-mono text-[10px] text-primary">streak intact ✓</p>
+          <p className="mt-1.5 font-mono text-[0.625rem] text-primary">streak intact ✓</p>
         </div>
       </div>
     </div>
@@ -1050,7 +1050,7 @@ const LOG_ILLUS = [LogTypeIllus, LogParseIllus, LogConfirmIllus, LogRestIllus];
 function LogTabDemo({ activeIndex }: { activeIndex: number }) {
   const Illus = LOG_ILLUS[activeIndex] ?? LOG_ILLUS[0];
   return (
-    <div className="relative w-full flex justify-center min-h-[280px] items-center">
+    <div className="relative w-full flex justify-center min-h-[17.5rem] items-center">
       <AnimatePresence mode="sync">
         <motion.div key={activeIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, position: "absolute" } as any} transition={{ duration: 0.25 }} className="w-full flex justify-center">
           <Illus />
@@ -1090,7 +1090,7 @@ export function RecoverySection({ rail = false }: { rail?: boolean }) {
       <div className="relative min-h-48">
         <AnimatePresence mode="sync" initial={false}>
           <motion.div key={scene.id} {...swap} className="absolute inset-x-0 top-0">
-            <p className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">{scene.label}</p>
+            <p className="font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest">{scene.label}</p>
             <span className="mx-auto mt-4 flex size-12 items-center justify-center border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 rounded-lg">
               {scene.kind === "rest" ? (
                 <MoonStar className="size-5 text-neutral-700 dark:text-neutral-300" />
@@ -1101,7 +1101,7 @@ export function RecoverySection({ rail = false }: { rail?: boolean }) {
             <p className="mt-3 text-sm font-semibold text-neutral-950 dark:text-neutral-50">
               {scene.title}
             </p>
-            <p className="mx-auto mt-2 max-w-[200px] text-[12px] leading-5 text-neutral-500">
+            <p className="mx-auto mt-2 max-w-[200px] text-[0.75rem] leading-5 text-neutral-500">
               {scene.body}
             </p>
             <div className="mx-auto mt-4 flex h-1.5 w-40 items-center gap-0.5">
@@ -1112,7 +1112,7 @@ export function RecoverySection({ rail = false }: { rail?: boolean }) {
                 />
               ))}
             </div>
-            <p className="mt-1.5 font-mono text-[10px] text-neutral-400 uppercase tracking-widest">{scene.momentumLabel}</p>
+            <p className="mt-1.5 font-mono text-[0.625rem] text-neutral-400 uppercase tracking-widest">{scene.momentumLabel}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -1151,11 +1151,11 @@ function RecRestIllus() {
       <div className="p-5 space-y-3">
         <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 py-3 text-center">
           <MoonStar className="mx-auto size-6 text-neutral-500 mb-1" />
-          <p className="font-mono text-[11px] text-neutral-500">Rest tonight</p>
+          <p className="font-mono text-[0.6875rem] text-neutral-500">Rest tonight</p>
         </div>
         <div className="rounded-lg bg-primary/5 border border-primary/20 py-3 text-center">
           <Check className="mx-auto size-5 text-primary mb-1" />
-          <p className="font-mono text-[11px] text-primary">Rest night logged ✓</p>
+          <p className="font-mono text-[0.6875rem] text-primary">Rest night logged ✓</p>
         </div>
       </div>
     </div>
@@ -1185,11 +1185,11 @@ function RecMomentumIllus() {
               <div className={["h-8 w-full rounded-md flex items-center justify-center", d.kind === "action" ? "bg-primary/70" : "bg-neutral-100 dark:bg-neutral-800"].join(" ")}>
                 {d.kind === "rest" && <MoonStar className="size-3 text-neutral-400" />}
               </div>
-              <span className="font-mono text-[9px] text-neutral-400">{d.label[0]}</span>
+              <span className="font-mono text-[0.5625rem] text-neutral-400">{d.label[0]}</span>
             </div>
           ))}
         </div>
-        <p className="mt-3 font-mono text-[10px] text-primary">momentum: 5/7 — holding ✓</p>
+        <p className="mt-3 font-mono text-[0.625rem] text-primary">momentum: 5/7 — holding ✓</p>
       </div>
     </div>
   );
@@ -1205,11 +1205,11 @@ function RecBackIllus() {
       <div className="p-5 space-y-3">
         <div className="rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 px-4 py-3">
           <p className={ILLUS_LABEL + " mb-1"}>Last session</p>
-          <p className="text-[12px] text-neutral-500 line-through">Ship scoring PR — step 2/4</p>
+          <p className="text-[0.75rem] text-neutral-500 line-through">Ship scoring PR — step 2/4</p>
         </div>
         <div className="rounded-lg bg-primary/5 border border-primary/20 px-4 py-3">
           <p className={ILLUS_LABEL + " mb-1 text-primary"}>Tonight</p>
-          <p className="text-[13px] font-semibold text-neutral-800 dark:text-neutral-200">Ship scoring PR — step 2/4</p>
+          <p className="text-[0.8125rem] font-semibold text-neutral-800 dark:text-neutral-200">Ship scoring PR — step 2/4</p>
         </div>
       </div>
     </div>
@@ -1230,12 +1230,12 @@ function RecGateIllus() {
           ))}
         </div>
         <div className="rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
-          <p className="text-[12px] text-amber-700 dark:text-amber-400">3 rest nights in a row.</p>
-          <p className="text-[12px] text-amber-600 dark:text-amber-500 mt-0.5">Ready to try something small?</p>
+          <p className="text-[0.75rem] text-amber-700 dark:text-amber-400">3 rest nights in a row.</p>
+          <p className="text-[0.75rem] text-amber-600 dark:text-amber-500 mt-0.5">Ready to try something small?</p>
         </div>
         <div className="flex gap-2">
-          <div className="flex-1 rounded-lg border border-neutral-200 dark:border-neutral-700 py-2 text-center font-mono text-[11px] text-neutral-400">Not yet</div>
-          <div className="flex-1 rounded-lg bg-primary py-2 text-center font-mono text-[11px] font-semibold text-white">Let's go →</div>
+          <div className="flex-1 rounded-lg border border-neutral-200 dark:border-neutral-700 py-2 text-center font-mono text-[0.6875rem] text-neutral-400">Not yet</div>
+          <div className="flex-1 rounded-lg bg-primary py-2 text-center font-mono text-[0.6875rem] font-semibold text-white">Let's go →</div>
         </div>
       </div>
     </div>
@@ -1247,7 +1247,7 @@ const RECOVERY_ILLUS = [RecRestIllus, RecMomentumIllus, RecBackIllus, RecGateIll
 function RecoveryTabDemo({ activeIndex }: { activeIndex: number }) {
   const Illus = RECOVERY_ILLUS[activeIndex] ?? RECOVERY_ILLUS[0];
   return (
-    <div className="relative w-full flex justify-center min-h-[280px] items-center">
+    <div className="relative w-full flex justify-center min-h-[17.5rem] items-center">
       <AnimatePresence mode="sync">
         <motion.div key={activeIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, position: "absolute" } as any} transition={{ duration: 0.25 }} className="w-full flex justify-center">
           <Illus />
@@ -1263,9 +1263,9 @@ export function NarrativeBand({ which }: { which: "product" | "onboarding" | "pr
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6">
       <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-8 py-8 sm:px-10">
-        <p className="font-mono text-[11px] font-semibold tracking-[0.18em] uppercase text-neutral-400">{band.eyebrow}</p>
+        <p className="font-mono text-[0.6875rem] font-semibold tracking-[0.18em] uppercase text-neutral-400">{band.eyebrow}</p>
         <h2 className="mt-3 font-heading text-2xl sm:text-3xl font-normal text-neutral-950 dark:text-neutral-50">{band.title}</h2>
-        <p className="mt-3 max-w-xl text-[15px] leading-7 text-neutral-500">{band.body}</p>
+        <p className="mt-3 max-w-xl text-[0.9375rem] leading-7 text-neutral-500">{band.body}</p>
       </div>
     </div>
   );
@@ -1319,11 +1319,11 @@ export function StillWondering({ onOpenAuth }: { onOpenAuth: () => void }) {
             <h2 className="font-heading text-[clamp(1.6rem,3vw,2rem)] font-normal text-neutral-950 dark:text-neutral-50">
               Still wondering?
             </h2>
-            <p className="mt-3 text-[15px] leading-7 text-neutral-500">
+            <p className="mt-3 text-[0.9375rem] leading-7 text-neutral-500">
               See what an AI has to say about Nocta, then make an informed decision.
             </p>
             <Button
-              className="mt-6 rounded-lg bg-primary px-5 font-mono text-[11px] font-semibold tracking-[0.06em] uppercase text-white hover:bg-primary/90"
+              className="mt-6 rounded-lg bg-primary px-5 font-mono text-[0.6875rem] font-semibold tracking-[0.06em] uppercase text-white hover:bg-primary/90"
               onClick={onOpenAuth}
             >
               Get started free
@@ -1343,7 +1343,7 @@ export function StillWondering({ onOpenAuth }: { onOpenAuth: () => void }) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-2 px-6 py-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-600 dark:text-neutral-400 hover:bg-white/80 dark:hover:bg-neutral-900 hover:text-primary transition-colors bg-white/50"
+                className="flex items-center justify-between gap-2 px-6 py-5 font-mono text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-neutral-600 dark:text-neutral-400 hover:bg-white/80 dark:hover:bg-neutral-900 hover:text-primary transition-colors bg-white/50"
               >
                 {label}
                 <ArrowRight className="size-3 shrink-0" />
@@ -1352,7 +1352,7 @@ export function StillWondering({ onOpenAuth }: { onOpenAuth: () => void }) {
             <a
               href="#"
               onClick={(e) => { e.preventDefault(); onOpenAuth(); }}
-              className="col-span-2 flex items-center justify-between gap-2 px-6 py-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-600 dark:text-neutral-400 hover:bg-white/80 dark:hover:bg-neutral-900 hover:text-primary transition-colors bg-white/50"
+              className="col-span-2 flex items-center justify-between gap-2 px-6 py-5 font-mono text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-neutral-600 dark:text-neutral-400 hover:bg-white/80 dark:hover:bg-neutral-900 hover:text-primary transition-colors bg-white/50"
             >
               Talk to a human
               <ArrowRight className="size-3 shrink-0" />

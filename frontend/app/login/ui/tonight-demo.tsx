@@ -187,7 +187,7 @@ export function TonightDemo({
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-[0.6875rem] text-muted-foreground">
                           {demo.scoreLabel}
                         </p>
                         <p className="text-2xl leading-none font-semibold text-foreground tabular-nums sm:text-3xl">

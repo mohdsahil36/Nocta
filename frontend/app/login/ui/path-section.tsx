@@ -179,14 +179,14 @@ export function PathSection() {
             FRAME_PAD,
           ].join(" ")}
         >
-          <p className="text-[11px] font-medium tracking-[0.16em] text-neutral-500 uppercase">
+          <p className="text-[0.6875rem] font-medium tracking-[0.16em] text-neutral-500 uppercase">
             <span className="mr-2 inline-block size-1.5 translate-y-[-1px] bg-neutral-950 dark:bg-neutral-50" />
             {c.index} {c.eyebrow}
           </p>
           <h2 className="mt-3 font-sans text-[clamp(1.5rem,3.5vw,2.25rem)] leading-[1.12] font-semibold tracking-[-0.03em] text-neutral-950 dark:text-neutral-50">
             {c.title}
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-neutral-500">
+          <p className="mx-auto mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-neutral-500">
             {c.body}
           </p>
         </div>
@@ -199,7 +199,7 @@ export function PathSection() {
             className="sticky top-0 flex h-screen flex-col justify-center gap-4 overflow-hidden pt-12"
           >
             {/* Stepper — square stops, not pills */}
-            <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-2 px-6">
+            <div className="mx-auto flex w-full max-w-[70rem] flex-col gap-2 px-6">
               <div className="flex flex-wrap items-center justify-center gap-2">
                 {panels.map((panel, i) => {
                   const on = active === i;
@@ -207,7 +207,7 @@ export function PathSection() {
                     <span
                       key={panel.key}
                       className={[
-                        "inline-flex items-center gap-1.5 rounded-sm border px-3 py-1 text-[11px] font-medium tracking-wide uppercase transition-colors duration-300 ease-out",
+                        "inline-flex items-center gap-1.5 rounded-sm border px-3 py-1 text-[0.6875rem] font-medium tracking-wide uppercase transition-colors duration-300 ease-out",
                         on
                           ? "border-neutral-950 bg-neutral-950 text-white dark:border-neutral-50 dark:bg-neutral-50 dark:text-neutral-950"
                           : "border-neutral-200 text-neutral-400 dark:border-neutral-800",
@@ -270,7 +270,7 @@ export function PathSection() {
             </div>
 
             <div
-              className="flex items-center justify-center gap-3 text-[11px] tracking-[0.14em] text-neutral-400 uppercase"
+              className="flex items-center justify-center gap-3 text-[0.6875rem] tracking-[0.14em] text-neutral-400 uppercase"
               aria-hidden
             >
               <span>scroll</span>
