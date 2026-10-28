@@ -1,11 +1,6 @@
 import { apiUrl } from "./goals";
 
-export type PlanStepStatus =
-  | "todo"
-  | "doing"
-  | "done"
-  | "skipped"
-  | "archived";
+export type PlanStepStatus = "todo" | "doing" | "done" | "skipped" | "archived";
 
 export type PlanStep = {
   id: string;
@@ -15,6 +10,7 @@ export type PlanStep = {
   status: PlanStepStatus;
   startedAt: string | null;
   createdAt: string;
+  archivedAt: string | null;
 };
 
 type PlanStepDraft = {
@@ -64,5 +60,32 @@ export async function archivePlanStep(stepId: string): Promise<PlanStep> {
     { method: "PATCH" },
   );
   if (!response.ok) throw new Error("Failed to archive plan step");
+  return readPlanStep(response);
+}
+
+/** Archived steps for a goal via GET /api/goals/:goalId/plan/archived. */
+export async function listArchivedPlanSteps(
+  goalId: string,
+): Promise<PlanStep[]> {
+  const response = await fetch(
+    apiUrl(`/api/goals/${encodeURIComponent(goalId)}/plan/archived`),
+  );
+  if (!response.ok) throw new Error("Failed to list archived plan steps");
+  const json = (await response.json()) as { data: PlanStep[] };
+  return json.data;
+}
+
+/** Restore an archived step via PATCH /api/plan/:id/restore. */
+export async function restorePlanStep(
+  goalId: string,
+  stepId: string,
+): Promise<PlanStep> {
+  const response = await fetch(
+    apiUrl(
+      `/api/goals/${encodeURIComponent(goalId)}/plan/${encodeURIComponent(stepId)}/restore`,
+    ),
+    { method: "PATCH" },
+  );
+  if (!response.ok) throw new Error("Failed to restore plan step");
   return readPlanStep(response);
 }

@@ -88,6 +88,7 @@ export const goalsContent = {
     filterActive: "Active",
     filterArchived: "Archived",
     emptyArchived: "No archived steps.",
+    archivedNotice: "Archived steps are permanently deleted after 45 days.",
     loading: "Loading steps…",
     loadError: "Couldn’t load steps.",
     retry: "Try again",
@@ -95,6 +96,8 @@ export const goalsContent = {
     toastAddError: "Couldn’t add step. Try again.",
     toastArchiveSuccess: "Step archived",
     toastArchiveError: "Couldn’t archive step. Try again.",
+    toastRestoreSuccess: "Step restored",
+    toastRestoreError: "Couldn’t restore step. Try again.",
   },
   onboarding: {
     title: "Start with the goals you already have",

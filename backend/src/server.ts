@@ -6,6 +6,7 @@ import cors from "cors";
 import { HttpError } from "./lib/http-error.js";
 import { asyncHandler } from "./lib/async-handler.js";
 import { errorHandler } from "./middleware/error-handler.js";
+import { startPurgeJob } from "./jobs/purge-archived-steps.js";
 
 const app = express();
 app.use(express.json());
@@ -17,15 +18,13 @@ const DEFAULT_CORS_ORIGINS = [
   "https://nocta-two-theta.vercel.app",
 ];
 
-const allowedOrigins = new Set(
-  [
-    ...DEFAULT_CORS_ORIGINS,
-    ...(process.env.CORS_ORIGINS ?? process.env.CLIENT_URL ?? "")
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean),
-  ],
-);
+const allowedOrigins = new Set([
+  ...DEFAULT_CORS_ORIGINS,
+  ...(process.env.CORS_ORIGINS ?? process.env.CLIENT_URL ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+]);
 
 // Local Next often flips between localhost / 127.0.0.1 — allow both in dev.
 for (const origin of [...allowedOrigins]) {
@@ -108,4 +107,5 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Backend server is running at port ${PORT}`);
+  startPurgeJob();
 });

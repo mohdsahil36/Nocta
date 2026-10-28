@@ -12,6 +12,8 @@ import {
   getPlanStep,
   listPlanSteps,
   updatePlanStep,
+  listArchivedPlanSteps,
+  restoreArchivedPlanStep,
 } from "../../services/sub-plan/sub-plan.service.js";
 
 /** ISO string from JSON → Date Prisma can store; missing means not started. */
@@ -156,5 +158,42 @@ export async function getNextPlanStepController(
   res.status(200).json({
     message: next ? "Next plan step" : "No plan step left",
     data: next,
+  });
+}
+
+export async function listArchivedPlanStepsController(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const goalId = String(req.params.goalId ?? "");
+  if (!goalId) {
+    throw HttpError.badRequest(
+      "GOAL_ID_REQUIRED",
+      "Goal id is required for the operation",
+    );
+  }
+  const listed = await listArchivedPlanSteps(goalId);
+  res.status(200).json({
+    message: "Archived plan steps listed",
+    data: listed,
+  });
+}
+
+export async function restoreArchivedPlanStepController(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const goalId = String(req.params.goalId ?? "");
+  const stepId = String(req.params.id ?? "");
+  if (!goalId || !stepId) {
+    throw HttpError.badRequest(
+      "GOAL_ID_AND_STEP_ID_REQUIRED",
+      "Goal id and step id are required for the operation",
+    );
+  }
+  const restored = await restoreArchivedPlanStep(goalId, stepId);
+  res.status(200).json({
+    message: "Plan step restored",
+    data: restored,
   });
 }
