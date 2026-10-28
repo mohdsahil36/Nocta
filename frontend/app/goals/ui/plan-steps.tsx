@@ -92,6 +92,8 @@ export function PlanSteps({ goalId }: { goalId: string }) {
       );
       // reload the active list from the server to stay in sync
       void queryClient.invalidateQueries({ queryKey: planKey(goalId) });
+      // reload the archived list so the newly archived step appears in the right column
+      void queryClient.invalidateQueries({ queryKey: ["plan-steps-archived", goalId] });
       // show the user a success message
       toast.add({
         title: c.toastArchiveSuccess,
@@ -106,7 +108,7 @@ export function PlanSteps({ goalId }: { goalId: string }) {
   });
 
   const restoreMutation = useMutation({
-    mutationFn: (stepId: string) => restorePlanStep(stepId), // restore plan step returns status with and id inside unarchived
+    mutationFn: (stepId: string) => restorePlanStep(goalId, stepId), // restore plan step returns status with and id inside unarchived
     onSuccess: (unarchived) => {
       // remove the restored step from the archived cache so it disappears from the archived column instantly
       // old is the current archived data which is present in the query client from useQuery for the plan steps archived key check line 49 onwards
@@ -134,7 +136,10 @@ export function PlanSteps({ goalId }: { goalId: string }) {
     addMutation.mutate(next);
   };
 
-  const busy = addMutation.isPending || archiveMutation.isPending || restoreMutation.isPending;
+  const busy =
+    addMutation.isPending ||
+    archiveMutation.isPending ||
+    restoreMutation.isPending;
 
   return (
     <div className="mt-4 w-full">
@@ -261,7 +266,9 @@ export function PlanSteps({ goalId }: { goalId: string }) {
                   <section className="flex min-h-44 flex-col sm:border-l sm:border-border/70 sm:pl-6">
                     <p className="text-xs font-medium text-muted-foreground">
                       {c.filterArchived}
-                      <span className="ml-2 font-normal">{archivedSteps.length}</span>
+                      <span className="ml-2 font-normal">
+                        {archivedSteps.length}
+                      </span>
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground/60">
                       {c.archivedNotice}
@@ -272,7 +279,9 @@ export function PlanSteps({ goalId }: { goalId: string }) {
                       </div>
                     ) : archivedError ? (
                       <div className="mt-5 flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
-                        <p className="text-sm text-muted-foreground">{c.loadError}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {c.loadError}
+                        </p>
                         <button
                           type="button"
                           onClick={() => void refetchArchived()}
@@ -303,7 +312,10 @@ export function PlanSteps({ goalId }: { goalId: string }) {
                               onClick={() => restoreMutation.mutate(step.id)}
                               disabled={busy}
                               className={cn(
-                                buttonVariants({ variant: "ghost", size: "sm" }),
+                                buttonVariants({
+                                  variant: "ghost",
+                                  size: "sm",
+                                }),
                                 "h-8 shrink-0 gap-1.5 whitespace-nowrap rounded-md px-2 text-xs text-muted-foreground shadow-none hover:text-nocta-ink",
                               )}
                             >

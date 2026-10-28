@@ -64,7 +64,9 @@ export async function archivePlanStep(stepId: string): Promise<PlanStep> {
 }
 
 /** Archived steps for a goal via GET /api/goals/:goalId/plan/archived. */
-export async function listArchivedPlanSteps(goalId: string): Promise<PlanStep[]> {
+export async function listArchivedPlanSteps(
+  goalId: string,
+): Promise<PlanStep[]> {
   const response = await fetch(
     apiUrl(`/api/goals/${encodeURIComponent(goalId)}/plan/archived`),
   );
@@ -74,9 +76,14 @@ export async function listArchivedPlanSteps(goalId: string): Promise<PlanStep[]>
 }
 
 /** Restore an archived step via PATCH /api/plan/:id/restore. */
-export async function restorePlanStep(stepId: string): Promise<PlanStep> {
+export async function restorePlanStep(
+  goalId: string,
+  stepId: string,
+): Promise<PlanStep> {
   const response = await fetch(
-    apiUrl(`/api/plan/${encodeURIComponent(stepId)}/restore`),
+    apiUrl(
+      `/api/goals/${encodeURIComponent(goalId)}/plan/${encodeURIComponent(stepId)}/restore`,
+    ),
     { method: "PATCH" },
   );
   if (!response.ok) throw new Error("Failed to restore plan step");

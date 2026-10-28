@@ -25,7 +25,7 @@ router.get("/goals/:goalId/plan/:id", asyncHandler(getPlanStepController));
 router.patch("/plan/:id", asyncHandler(updatePlanStepController));
 router.patch("/plan/:id/archive", asyncHandler(archivePlanStepController));
 router.patch(
-  "/plan/:id/restore",
+  "/goals/:goalId/plan/:id/restore",
   asyncHandler(restoreArchivedPlanStepController),
 );
 
