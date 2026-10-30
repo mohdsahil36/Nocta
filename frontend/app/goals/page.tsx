@@ -29,6 +29,7 @@ import {
   emptyGoalDraft,
   goalsContent,
   type GoalDraft,
+  type GoalStatus,
 } from "./content";
 import {
   archiveGoal as archiveGoalRequest,
@@ -42,7 +43,7 @@ import { GoalsList } from "./ui/goals-list";
 
 export default function GoalsPage() {
   const c = goalsContent.screen;
-  const [listFilter] = useState<GoalStatus>("active");
+  const [listFilter, setListFilter] = useState<GoalStatus>("active");
   const [editor, setEditor] = useState<"closed" | "create" | "edit">("closed");
   const [draft, setDraft] = useState<GoalDraft>(emptyGoalDraft);
   const [saving, setSaving] = useState(false);
