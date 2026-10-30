@@ -29,7 +29,6 @@ import {
   emptyGoalDraft,
   goalsContent,
   type GoalDraft,
-  type GoalStatus,
 } from "./content";
 import {
   archiveGoal as archiveGoalRequest,
@@ -43,8 +42,7 @@ import { GoalsList } from "./ui/goals-list";
 
 export default function GoalsPage() {
   const c = goalsContent.screen;
-  const [listFilter, setListFilter] = useState<GoalStatus>("active");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [listFilter] = useState<GoalStatus>("active");
   const [editor, setEditor] = useState<"closed" | "create" | "edit">("closed");
   const [draft, setDraft] = useState<GoalDraft>(emptyGoalDraft);
   const [saving, setSaving] = useState(false);
@@ -64,6 +62,10 @@ export default function GoalsPage() {
 
   const activeCount   = goals.filter((g) => (g.status ?? "active") === "active").length;
   const archivedCount = goals.filter((g) => g.status === "archived").length;
+  const overdueCount  = goals.filter((g) => {
+    if ((g.status ?? "active") !== "active" || !g.deadline) return false;
+    return new Date(g.deadline).getTime() < Date.now();
+  }).length;
 
   const openCreate = () => { setDraft(emptyGoalDraft()); setEditor("create"); };
   const openEdit   = (goal: GoalDraft) => { setDraft({ ...goal }); setEditor("edit"); };
@@ -127,67 +129,52 @@ export default function GoalsPage() {
   };
 
   return (
-    <section className="flex w-full flex-col gap-4">
+    <section className="flex w-full flex-col gap-0">
 
-      {/* ── Header ── */}
-      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-6 py-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* ── Single card wrapping everything ── */}
+      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+
+        {/* Top bar: title + add button */}
+        <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-border">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">Workspace</p>
-            <h1 className="mt-1 text-xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">
-              {c.title}
-            </h1>
-            <p className="mt-0.5 max-w-md text-sm text-neutral-500">{c.body}</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary mb-0.5">Workspace</p>
+            <h1 className="text-lg font-semibold text-foreground leading-tight">{c.title}</h1>
           </div>
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm shrink-0"
           >
             <Plus className="size-3.5" aria-hidden />
             {c.add}
           </button>
         </div>
-      </div>
 
-      {/* ── Body ── */}
-      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden">
-        {/* Filter tabs */}
-        <div className="flex items-center gap-0 border-b border-neutral-100 dark:border-neutral-800 px-2 pt-2">
-          {([
-            { value: "active" as const, label: c.filterActive, count: activeCount },
-            { value: "archived" as const, label: c.filterArchived, count: archivedCount },
-          ] as const).map(({ value, label, count }) => {
-            const sel = listFilter === value;
-            return (
-              <button
-                key={value}
-                type="button"
-                onClick={() => { setListFilter(value); setSelectedId(null); }}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px",
-                  sel
-                    ? "border-primary text-primary bg-primary/5"
-                    : "border-transparent text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 hover:bg-neutral-50 dark:hover:bg-neutral-900",
-                )}
-              >
-                {label}
-                <span className={cn(
-                  "rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums",
-                  sel ? "bg-primary/10 text-primary" : "bg-neutral-100 dark:bg-neutral-800 text-neutral-400",
-                )}>{count}</span>
-              </button>
-            );
-          })}
+        {/* Stats bar */}
+        <div className="flex items-center gap-4 border-b border-border px-6 py-2.5">
+          <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
+            <span className="font-semibold text-foreground">{activeCount}</span> active
+          </span>
+          {archivedCount > 0 && (
+            <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
+              <span className="font-semibold text-foreground">{archivedCount}</span> archived
+            </span>
+          )}
+          {overdueCount > 0 && (
+            <span className="ml-auto font-mono text-[11px] text-red-500 tabular-nums">
+              ⚠ {overdueCount} overdue
+            </span>
+          )}
         </div>
 
+        {/* Body */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center justify-center py-24">
             <DeskLoader size="sm" label="Loading goals…" />
           </div>
         ) : signedOut || error ? (
-          <div className="px-6 py-16 text-center">
-            <p className="text-sm text-neutral-500">{c.loadError}</p>
+          <div className="px-6 py-20 text-center">
+            <p className="text-sm text-muted-foreground">{c.loadError}</p>
             <button type="button" onClick={() => void refetch()} className="mt-3 font-mono text-[11px] text-primary hover:underline underline-offset-4 cursor-pointer">
               {c.retry} →
             </button>
@@ -195,12 +182,9 @@ export default function GoalsPage() {
         ) : (
           <GoalsList
             goals={goals}
-            listFilter={listFilter}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
             onEdit={openEdit}
-            onArchive={(goal) => void handleArchive(goal)}
-            onActivate={(goal) => void handleActivate(goal)}
+            onArchive={(g) => void handleArchive(g)}
+            onActivate={(g) => void handleActivate(g)}
             onAdd={openCreate}
           />
         )}
@@ -210,10 +194,10 @@ export default function GoalsPage() {
       <Dialog open={editor !== "closed"} onOpenChange={(open) => { if (!open) closeEditor(); }}>
         <DialogContent
           showCloseButton
-          className="flex w-full max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-xl rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-xl"
+          className="flex w-full max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-xl rounded-2xl border border-border bg-card shadow-xl"
         >
-          <DialogHeader className="shrink-0 border-b border-neutral-100 dark:border-neutral-800 px-6 py-4 pr-12">
-            <DialogTitle className="text-sm font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">
+          <DialogHeader className="shrink-0 border-b border-border px-6 py-4 pr-12">
+            <DialogTitle className="text-sm font-semibold tracking-tight text-foreground">
               {editor === "create" ? c.creating : c.editing}
             </DialogTitle>
           </DialogHeader>
@@ -221,7 +205,7 @@ export default function GoalsPage() {
           <div className="flex flex-col gap-5 px-6 py-5">
             {/* Name */}
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="edit-name" className="font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+              <Label htmlFor="edit-name" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                 {goalsContent.fields.name}
               </Label>
               <Input
@@ -229,7 +213,7 @@ export default function GoalsPage() {
                 value={draft.name}
                 onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))}
                 placeholder={goalsContent.fields.nameHint}
-                className="h-9 rounded-lg border-neutral-200 dark:border-neutral-700 shadow-none placeholder:text-neutral-300 dark:placeholder:text-neutral-600"
+                className="h-9 rounded-lg shadow-none"
                 autoComplete="off"
               />
             </div>
@@ -237,7 +221,7 @@ export default function GoalsPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Weight */}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-weight" className="font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                <Label htmlFor="edit-weight" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                   {goalsContent.fields.weight}
                 </Label>
                 <Select
@@ -247,7 +231,7 @@ export default function GoalsPage() {
                     if (n >= 1 && n <= 5) setDraft((p) => ({ ...p, weight: n }));
                   }}
                 >
-                  <SelectTrigger id="edit-weight" className="h-9 w-full rounded-lg border-neutral-200 dark:border-neutral-700 shadow-none">
+                  <SelectTrigger id="edit-weight" className="h-9 w-full rounded-lg shadow-none">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent align="start">
@@ -256,12 +240,12 @@ export default function GoalsPage() {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="font-mono text-[10px] text-neutral-400">{goalsContent.fields.weightHint}</p>
+                <p className="font-mono text-[10px] text-muted-foreground">{goalsContent.fields.weightHint}</p>
               </div>
 
               {/* Deadline */}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-deadline" className="font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                <Label htmlFor="edit-deadline" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                   {goalsContent.fields.deadline}
                 </Label>
                 <Input
@@ -269,15 +253,15 @@ export default function GoalsPage() {
                   type="date"
                   value={draft.deadline}
                   onChange={(e) => setDraft((p) => ({ ...p, deadline: e.target.value }))}
-                  className="h-9 rounded-lg border-neutral-200 dark:border-neutral-700 shadow-none"
+                  className="h-9 rounded-lg shadow-none"
                 />
-                <p className="font-mono text-[10px] text-neutral-400">{goalsContent.fields.deadlineHint}</p>
+                <p className="font-mono text-[10px] text-muted-foreground">{goalsContent.fields.deadlineHint}</p>
               </div>
             </div>
 
             {/* Next action */}
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="edit-next" className="font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+              <Label htmlFor="edit-next" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                 {goalsContent.fields.nextAction}
               </Label>
               <Input
@@ -285,12 +269,12 @@ export default function GoalsPage() {
                 value={draft.nextAction}
                 onChange={(e) => setDraft((p) => ({ ...p, nextAction: e.target.value }))}
                 placeholder={goalsContent.fields.nextActionHint}
-                className="h-9 rounded-lg border-neutral-200 dark:border-neutral-700 shadow-none placeholder:text-neutral-300 dark:placeholder:text-neutral-600"
+                className="h-9 rounded-lg shadow-none"
                 autoComplete="off"
               />
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-1 border-t border-neutral-100 dark:border-neutral-800">
+            <div className="flex flex-wrap gap-2 pt-1 border-t border-border">
               <button
                 type="button"
                 onClick={() => void saveDraft()}
@@ -302,7 +286,7 @@ export default function GoalsPage() {
               <button
                 type="button"
                 onClick={closeEditor}
-                className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors mt-1"
+                className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mt-1"
               >
                 {c.cancel}
               </button>
