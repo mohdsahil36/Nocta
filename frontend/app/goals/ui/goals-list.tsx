@@ -1,35 +1,28 @@
 "use client";
 
-import { Archive, Pencil, RotateCcw, Target } from "lucide-react";
+import { useState } from "react";
+import { Archive, ChevronRight, MoreHorizontal, Pencil, RotateCcw, Target } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "cn";
 
 import { formatDeadline, isoToDeadlineInput } from "@/lib/dates";
 
-import { goalsContent, type GoalDraft, type GoalStatus } from "../content";
+import { goalsContent, type GoalDraft } from "../content";
 import { PlanSteps } from "./plan-steps";
 
-/* ─── helpers ──────────────────────────────────────────────────────────── */
+/* ─── importance config ────────────────────────────────────────────────── */
 
-function WeightDots({ weight, large = false }: { weight: number; large?: boolean }) {
-  return (
-    <div className="flex items-center gap-1" aria-label={`Weight ${weight} of 5`}>
-      {[1, 2, 3, 4, 5].map((n) => (
-        <span
-          key={n}
-          className={cn(
-            "rounded-sm transition-colors",
-            large ? "h-1.5 w-3" : "h-1 w-2",
-            n <= weight
-              ? "bg-primary"
-              : "bg-neutral-200 dark:bg-neutral-700",
-          )}
-        />
-      ))}
-    </div>
-  );
-}
+const IMPORTANCE: Record<number, { label: string; dot: string; badge: string }> = {
+  5: { label: "Critical", dot: "bg-red-500",    badge: "text-red-500" },
+  4: { label: "High",     dot: "bg-orange-400", badge: "text-orange-400" },
+  3: { label: "Medium",   dot: "bg-amber-400",  badge: "text-amber-400" },
+  2: { label: "Low",      dot: "bg-blue-400",   badge: "text-blue-400" },
+  1: { label: "Minimal",  dot: "bg-muted-foreground/40", badge: "text-muted-foreground/60" },
+};
 
-function DeadlineChip({ deadline, large = false }: { deadline: string; large?: boolean }) {
+/* ─── deadline chip ─────────────────────────────────────────────────────── */
+
+function DeadlineChip({ deadline }: { deadline: string }) {
   if (!deadline) return null;
   const d = isoToDeadlineInput(deadline) || deadline;
   const label = formatDeadline(d);
@@ -38,26 +31,20 @@ function DeadlineChip({ deadline, large = false }: { deadline: string; large?: b
   const daysLeft = Math.floor((new Date(d).getTime() - Date.now()) / 86_400_000);
   const overdue = daysLeft < 0;
   const urgent  = daysLeft >= 0 && daysLeft < 7;
-  const soon    = daysLeft >= 7 && daysLeft < 14;
 
   return (
     <span className={cn(
-      "inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono font-medium",
-      large ? "text-[11px]" : "text-[10px]",
-      overdue ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400/80"
-      : urgent ? "bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400/80"
-      : soon   ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400/80"
-      :          "bg-neutral-100 dark:bg-neutral-800 text-neutral-500",
+      "font-mono text-[11px] tabular-nums whitespace-nowrap",
+      overdue ? "text-red-500" : urgent ? "text-orange-400" : "text-muted-foreground",
     )}>
-      {overdue && <span className="size-1 rounded-full bg-red-400 dark:bg-red-500/60 shrink-0" />}
-      {label}
+      {overdue && "⚠ "}{label}
     </span>
   );
 }
 
-/* ─── detail panel ─────────────────────────────────────────────────────── */
+/* ─── goal row ──────────────────────────────────────────────────────────── */
 
-function GoalDetail({
+function GoalRow({
   goal,
   onEdit,
   onArchive,
@@ -68,217 +55,149 @@ function GoalDetail({
   onArchive: (g: GoalDraft) => void;
   onActivate: (g: GoalDraft) => void;
 }) {
+  const reduceMotion = useReducedMotion();
+  const [expanded, setExpanded] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const c = goalsContent.screen;
   const isArchived = goal.status === "archived";
+  const imp = IMPORTANCE[goal.weight] ?? IMPORTANCE[1];
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Header */}
-      <div className="border-b border-neutral-100 dark:border-neutral-800 px-7 py-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className={cn(
-                "text-base font-semibold tracking-tight",
-                isArchived
-                  ? "text-neutral-400 dark:text-neutral-600"
-                  : "text-neutral-950 dark:text-neutral-50",
-              )}>
-                {goal.name}
-              </p>
-              {isArchived && (
-                <span className="inline-flex items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-neutral-400">
-                  Archived
-                </span>
-              )}
-            </div>
+    <li className="border-b border-border last:border-0">
+      <div
+        className={cn(
+          "group relative flex items-center gap-4 px-5 py-3.5 transition-colors",
+          !isArchived && "cursor-pointer hover:bg-muted/25",
+          expanded && "bg-muted/15",
+        )}
+        onClick={() => !isArchived && goal.id && setExpanded((v) => !v)}
+      >
+        <span className={cn("size-2 shrink-0 rounded-full", imp.dot)} title={imp.label} />
 
-            <div className="mt-2.5 flex flex-wrap items-center gap-3">
-              <WeightDots weight={goal.weight} large />
-              <DeadlineChip deadline={goal.deadline} large />
-            </div>
-          </div>
+        <div className="min-w-0 flex-1">
+          <p className={cn(
+            "text-sm font-medium leading-snug",
+            isArchived ? "text-muted-foreground line-through decoration-muted-foreground/30" : "text-foreground",
+          )}>
+            {goal.name}
+          </p>
+          {goal.nextAction && (
+            <p className="mt-0.5 truncate text-xs text-muted-foreground/70">
+              {goal.nextAction}
+            </p>
+          )}
+        </div>
 
-          {/* Actions */}
-          <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-4" onClick={(e) => e.stopPropagation()}>
+          <span className={cn("hidden md:block text-xs font-medium", imp.badge)}>{imp.label}</span>
+          <DeadlineChip deadline={goal.deadline} />
+
+          <div className="relative">
             <button
               type="button"
-              onClick={() => onEdit(goal)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex size-7 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-muted hover:text-foreground"
             >
-              <Pencil className="size-3" aria-hidden />
-              {c.edit}
+              <MoreHorizontal className="size-4" aria-hidden />
             </button>
-            {isArchived ? (
-              <button
-                type="button"
-                onClick={() => onActivate(goal)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/8 px-3 py-1.5 text-xs text-primary hover:bg-primary/12 transition-colors"
-              >
-                <RotateCcw className="size-3" aria-hidden />
-                {c.activate}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => onArchive(goal)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
-              >
-                <Archive className="size-3" aria-hidden />
-                {c.archive}
-              </button>
-            )}
+            <AnimatePresence>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                    transition={{ duration: 0.1 }}
+                    className="absolute right-0 top-8 z-20 min-w-[130px] rounded-xl border border-border bg-popover py-1 shadow-lg"
+                  >
+                    <button type="button" onClick={() => { setMenuOpen(false); onEdit(goal); }} className="flex w-full items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-muted transition-colors">
+                      <Pencil className="size-3.5 text-muted-foreground" /> {c.edit}
+                    </button>
+                    {isArchived ? (
+                      <button type="button" onClick={() => { setMenuOpen(false); onActivate(goal); }} className="flex w-full items-center gap-2 px-3 py-2 text-xs text-primary hover:bg-primary/10 transition-colors">
+                        <RotateCcw className="size-3.5" /> {c.activate}
+                      </button>
+                    ) : (
+                      <button type="button" onClick={() => { setMenuOpen(false); onArchive(goal); }} className="flex w-full items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-muted transition-colors">
+                        <Archive className="size-3.5 text-muted-foreground" /> {c.archive}
+                      </button>
+                    )}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
+
+          {!isArchived && (
+            <ChevronRight className={cn("size-3.5 text-muted-foreground/40 transition-transform duration-200", expanded && "rotate-90")} aria-hidden />
+          )}
         </div>
       </div>
 
-      {/* Next action */}
-      {goal.nextAction && (
-        <div className="border-b border-neutral-100 dark:border-neutral-800 px-7 py-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-400 mb-2">
-            Next action
-          </p>
-          <p className={cn(
-            "text-sm leading-6",
-            isArchived ? "text-neutral-400" : "text-neutral-700 dark:text-neutral-200",
-          )}>
-            {goal.nextAction}
-          </p>
-        </div>
-      )}
-
-      {/* Plan steps */}
-      {!isArchived && goal.id && (
-        <div className="flex-1 px-7 py-5 overflow-auto">
-          <PlanSteps goalId={goal.id} />
-        </div>
-      )}
-    </div>
+      <AnimatePresence initial={false}>
+        {expanded && !isArchived && goal.id && (
+          <motion.div
+            key="steps"
+            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-border/60 bg-muted/10 px-12 py-5">
+              <PlanSteps goalId={goal.id} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </li>
   );
 }
 
-/* ─── empty detail placeholder ─────────────────────────────────────────── */
-
-function EmptyDetail({ onAdd }: { onAdd: () => void }) {
-  return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 px-8 text-center">
-      <div className="flex size-10 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-800">
-        <Target className="size-5 text-neutral-300 dark:text-neutral-600" aria-hidden />
-      </div>
-      <p className="text-sm text-neutral-500">{goalsContent.screen.emptyTitle}</p>
-      <button
-        type="button"
-        onClick={onAdd}
-        className="text-sm font-medium text-primary hover:underline underline-offset-4 transition-colors"
-      >
-        {goalsContent.screen.emptyCta} →
-      </button>
-    </div>
-  );
-}
-
-/* ─── main list ─────────────────────────────────────────────────────────── */
+/* ─── main ──────────────────────────────────────────────────────────────── */
 
 type Props = {
   goals: GoalDraft[];
-  listFilter: GoalStatus;
-  selectedId: string | null;
-  onSelect: (id: string) => void;
   onEdit: (goal: GoalDraft) => void;
   onArchive: (goal: GoalDraft) => void;
   onActivate: (goal: GoalDraft) => void;
   onAdd: () => void;
 };
 
-export function GoalsList({
-  goals,
-  listFilter,
-  selectedId,
-  onSelect,
-  onEdit,
-  onArchive,
-  onActivate,
-  onAdd,
-}: Props) {
-  const filtered = goals.filter((g) =>
-    listFilter === "active"
-      ? (g.status ?? "active") === "active"
-      : g.status === "archived",
-  );
+export function GoalsList({ goals, onEdit, onArchive, onActivate, onAdd }: Props) {
+  const active   = goals.filter((g) => (g.status ?? "active") === "active");
+  const archived = goals.filter((g) => g.status === "archived");
 
-  const selected = filtered.find((g) => g.id === selectedId) ?? filtered[0] ?? null;
+  if (active.length === 0 && archived.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+        <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
+          <Target className="size-5 text-muted-foreground" />
+        </div>
+        <p className="text-sm text-muted-foreground">{goalsContent.screen.emptyTitle}</p>
+        <button type="button" onClick={onAdd} className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+          {goalsContent.screen.emptyCta}
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="grid min-h-[540px] grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)]">
-
-      {/* ── Left: slim list ── */}
-      <div className="flex flex-col border-r border-neutral-100 dark:border-neutral-800">
-        {filtered.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center">
-            <p className="text-sm text-neutral-500">
-              {listFilter === "active"
-                ? goalsContent.screen.emptyTitle
-                : goalsContent.screen.emptyArchivedTitle}
-            </p>
-            {listFilter === "active" && (
-              <button
-                type="button"
-                onClick={onAdd}
-                className="text-sm text-primary hover:underline underline-offset-4 transition-colors"
-              >
-                {goalsContent.screen.emptyCta} →
-              </button>
-            )}
-          </div>
-        ) : (
-          <ul className="flex flex-col py-1">
-            {filtered.map((goal) => {
-              const active = (selected?.id ?? null) === goal.id;
-              return (
-                <li key={goal.id ?? goal.name}>
-                  <button
-                    type="button"
-                    onClick={() => goal.id && onSelect(goal.id)}
-                    className={cn(
-                      "w-full flex flex-col gap-1.5 px-4 py-3.5 text-left transition-colors",
-                      active
-                        ? "bg-primary/8 border-r-2 border-primary"
-                        : "hover:bg-neutral-50 dark:hover:bg-neutral-900 border-r-2 border-transparent",
-                    )}
-                  >
-                    <p className={cn(
-                      "truncate text-[13px] font-medium leading-5",
-                      active
-                        ? "text-primary"
-                        : "text-neutral-800 dark:text-neutral-200",
-                    )}>
-                      {goal.name}
-                    </p>
-                    <div className="flex items-center gap-2.5">
-                      <WeightDots weight={goal.weight} />
-                      <DeadlineChip deadline={goal.deadline} />
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-
-      {/* ── Right: detail ── */}
-      <div className="min-h-[300px]">
-        {selected ? (
-          <GoalDetail
-            goal={selected}
-            onEdit={onEdit}
-            onArchive={onArchive}
-            onActivate={onActivate}
-          />
-        ) : (
-          <EmptyDetail onAdd={onAdd} />
-        )}
-      </div>
-    </div>
+    <ul>
+      {active.map((goal) => (
+        <GoalRow key={goal.id ?? goal.name} goal={goal} onEdit={onEdit} onArchive={onArchive} onActivate={onActivate} />
+      ))}
+      {archived.length > 0 && (
+        <>
+          <li className="flex items-center gap-3 px-5 py-2.5 border-y border-border bg-muted/20">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Archived · {archived.length}</span>
+          </li>
+          {archived.map((goal) => (
+            <GoalRow key={goal.id ?? goal.name} goal={goal} onEdit={onEdit} onArchive={onArchive} onActivate={onActivate} />
+          ))}
+        </>
+      )}
+    </ul>
   );
 }
