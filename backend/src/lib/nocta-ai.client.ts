@@ -1,0 +1,46 @@
+const NOCTA_AI_URL = process.env.NOCTA_AI_URL ?? "https://localhost:8000"; // base url for nocta ai server
+const TIMEOUT_MS = 8000; // if fastapi does not respond in 8 sec, it will be a timeout
+
+function withTimeout(ms: number): AbortSignal {
+  return AbortSignal.timeout(ms);
+}
+
+export interface ReasoningRequest {
+  goalName: string;
+  score: number;
+  weight: number;
+  deadlineDays: number;
+  neglectDays: number;
+}
+
+export interface ReasoningResponse {
+  narration: string;
+}
+
+export async function getReasoning(
+  data: ReasoningRequest,
+): Promise<ReasoningResponse> {
+  let res: Response;
+
+  try {
+    res = await fetch(`${NOCTA_AI_URL}/ai/reasoning`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      signal: withTimeout(TIMEOUT_MS),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Ai service is unreachable";
+    throw new Error(message);
+  }
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Ai service returned error: ${errorText}`);
+  }
+
+  return res.json() as Promise<ReasoningResponse>;
+}
