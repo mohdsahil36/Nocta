@@ -47,6 +47,7 @@ jobs:
           PORT: "8000"
           CORS_ORIGINS: http://localhost:3000
           GROQ_API_KEY: dummy-key-for-ci
+          GROQ_MODEL: qwen/qwen3.8-27b
 
   backend:
     name: Backend typecheck
