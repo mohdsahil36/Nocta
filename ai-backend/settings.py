@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     port: int = 8000
     cors_origins: str = "http://localhost:3000"
     groq_api_key: str
-
+    groq_model:str
     model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
