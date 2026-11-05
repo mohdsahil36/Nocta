@@ -1,0 +1,15 @@
+docs/
+frontend/docs/
+frontend/.agents/
+**/.agents/
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.webp
+**/*.svg
+**/*.gif
+**/*.ico
+frontend/app/login/DESIGN_BACKLOG.md
+ai-backend/.venv/
+graphify-out/
+frontend/graphify-out/
