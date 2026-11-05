@@ -158,11 +158,7 @@ export function CheckInPanel({
   const [banner, setBanner] = useState<PanelBanner | null>(null);
   const bannerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showBanner = (
-    title: string,
-    type: PanelBanner["type"],
-    ms: number,
-  ) => {
+  const showBanner = (title: string, type: PanelBanner["type"], ms: number) => {
     if (bannerTimer.current) clearTimeout(bannerTimer.current);
     setBanner({ title, type });
     bannerTimer.current = setTimeout(() => setBanner(null), ms);
@@ -259,7 +255,12 @@ export function CheckInPanel({
                   {greeting}
                 </p>
               ) : null}
-              <p className={cn("font-semibold tracking-tight text-nocta-ink", greeting ? "mt-1 text-sm" : "text-sm")}>
+              <p
+                className={cn(
+                  "font-semibold tracking-tight text-nocta-ink",
+                  greeting ? "mt-1 text-sm" : "text-sm",
+                )}
+              >
                 {c.title}
               </p>
               <p className="mt-1 max-w-md text-[13px] text-muted-foreground">

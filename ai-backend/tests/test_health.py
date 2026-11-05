@@ -1,0 +1,10 @@
+from re import L
+from fastapi.testclient import TestClient
+from main import app
+
+client = TestClient(app)
+
+def test_health_check():
+    res=client.get("/health");
+    assert res.status_code==200;
+    assert res.json()['status']=="ok";
