@@ -15,6 +15,8 @@ type TopPickedGoal = {
   nextAction: string;
   total: number;
   factors: ScoringFactors;
+  deadlineDays: number;
+  neglectedDays: number;
 };
 
 /** One goal in the full ranking (name + scores for “Also scored”). */

@@ -47,6 +47,13 @@ export async function checkInService(input: CheckInInput) {
     };
   });
 
+  const deadlineDays = topGoal.deadline
+    ? Math.ceil((topGoal.deadline.getTime() - NOW.getTime()) / 86400)
+    : 0;
+  const neglectedDays = Math.floor(
+    (NOW.getTime() - topGoal.lastTouchedAt.getTime()) / 86_400_000,
+  );
+
   return {
     pick: {
       goalId: top.goalId,
@@ -55,6 +62,8 @@ export async function checkInService(input: CheckInInput) {
       nextAction: nextStep?.title ?? topGoal.nextAction,
       total: top.total,
       factors: top.factors,
+      deadlineDays: deadlineDays,
+      neglectedDays: neglectedDays,
     },
     ranked,
   };

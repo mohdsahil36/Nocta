@@ -22,6 +22,7 @@ import {
   type CheckInMinutes,
 } from "../content";
 import { useMutation } from "@tanstack/react-query";
+import { apiUrl } from "@/app/goals/functions/goals";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -132,6 +133,8 @@ type CheckInPanelProps = {
   greeting?: string;
   /** Called after a successful check-in so the parent can hold the result. */
   onResult?: (result: CheckInResult) => void;
+  /** Called with the AI narration string once it arrives. */
+  onNarration?: (narration: string) => void;
 };
 
 type PanelBanner = {
@@ -148,6 +151,7 @@ export function CheckInPanel({
   sessionReady,
   greeting,
   onResult,
+  onNarration,
 }: CheckInPanelProps) {
   const c = dashboardContent.checkIn;
   const userId = useAuthStore((s) => s.userId);
@@ -157,7 +161,6 @@ export function CheckInPanel({
   const [alsoOpen, setAlsoOpen] = useState(false);
   const [banner, setBanner] = useState<PanelBanner | null>(null);
   const bannerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const showBanner = (title: string, type: PanelBanner["type"], ms: number) => {
     if (bannerTimer.current) clearTimeout(bannerTimer.current);
     setBanner({ title, type });
@@ -199,6 +202,22 @@ export function CheckInPanel({
       showBanner(c.toastSuccess, "success", 2200);
       setAlsoOpen(false);
       onSelectionChange({ ...selection, revealed: true });
+      fetch(apiUrl("/api/reasoning"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          goalName: result.pick.name,
+          score: result.pick.total,
+          weight: result.pick.factors.weight * 5,
+          deadlineDays: result.pick.deadlineDays,
+          neglectedDays: result.pick.neglectedDays,
+        }),
+      })
+        .then((r) => r.json())
+        .then((d: { data: { narration: string } }) =>
+          onNarration?.(d.data.narration),
+        )
+        .catch(() => showBanner("Couldn't load AI insight", "error", 3000));
     },
     onError: () => {
       showBanner(c.toastError, "error", 3200);

@@ -98,6 +98,7 @@ export function DashboardPanels() {
   const [cachedResult, setCachedResult] = useState<CheckInResult | null>(null);
   const [liveResult, setLiveResult] = useState<CheckInResult | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
+  const [narration, setNarration] = useState<string | null>(null);
 
   if (authReady && !sessionReady) {
     setSessionReady(true);
@@ -189,12 +190,21 @@ export function DashboardPanels() {
             cachedResult={cachedResult}
             onClearCache={() => { setCachedResult(null); setLiveResult(null); }}
             onResult={(r) => setLiveResult(r)}
+            onNarration={(n) => setNarration(n)}
             sessionReady={sessionReady}
           />
         </div>
 
         {/* ── Row 1, col 3: Tonight's goal + steps ── */}
         <div className="flex flex-col gap-3">
+          {/* AI narration */}
+          {narration && (
+            <div className="nocta-panel px-5 py-4 flex gap-2.5 items-start">
+              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+              <p className="text-sm leading-snug text-nocta-ink">{narration}</p>
+            </div>
+          )}
+
           {/* Tonight's goal */}
           <div className="nocta-panel px-5 py-4">
             <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-2.5">Tonight's goal</p>

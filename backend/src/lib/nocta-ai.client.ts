@@ -1,5 +1,5 @@
 const NOCTA_AI_URL = process.env.NOCTA_AI_URL ?? "http://localhost:8000"; // base url for nocta ai server
-const TIMEOUT_MS = 8000; // if fastapi does not respond in 8 sec, it will be a timeout
+const TIMEOUT_MS = 30000; // 30s — Groq inference can be slow on first request
 
 function withTimeout(ms: number): AbortSignal {
   return AbortSignal.timeout(ms);
