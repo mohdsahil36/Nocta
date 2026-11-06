@@ -5,6 +5,7 @@ import goalRoutes from "./goals/goal.route.js";
 import planStepRoutes from "./sub-plan/sub-plan.route.js";
 import useRoutes from "./user/user.route.js";
 import reasoningRoute from "./ai-reasoning/ai-reasoning.route.js";
+import outcomelogRoute from "./outcome/outcome.route.js";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use(goalRoutes);
 router.use(planStepRoutes);
 router.use(useRoutes);
 router.use(reasoningRoute);
+router.use(outcomelogRoute);
 
 export default router;
