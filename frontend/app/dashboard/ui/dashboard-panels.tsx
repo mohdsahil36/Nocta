@@ -32,6 +32,7 @@ import {
   type CheckInResult,
 } from "../functions/check-in";
 import { navbarGreeting } from "../functions/dashboard";
+import { Button } from "@/components/ui/button";
 import { CheckInPanel, type CheckInSelection } from "./check-in-panel";
 
 function formatHomeDate(d = new Date()) {
@@ -68,7 +69,7 @@ function ComingSoonCard({
   className?: string;
 }) {
   return (
-    <div className={cn("nocta-panel flex flex-col gap-2.5 px-5 py-4 opacity-55 select-none", className)}>
+    <div className={cn("nocta-panel flex flex-col gap-2.5 px-5 py-4 opacity-80 select-none", className)}>
       <div className="flex items-center justify-between">
         <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
           <Icon className="size-3.5" aria-hidden />
@@ -152,28 +153,26 @@ export function DashboardPanels() {
 
         {(
           [
-            { icon: TrendingUp, value: currentStreak > 0 ? `${currentStreak}d` : "—", label: c.stats.momentum, positive: currentStreak > 0 },
-            { icon: Target,     value: String(activeGoalCount),                        label: c.stats.goals },
-            { icon: CircleCheck,value: "—",                                            label: c.stats.nights },
-            { icon: MoonStar,   value: "—",                                            label: c.stats.recovery },
-            { icon: GitBranch,  value: String(weekTotal),                              label: "This week" },
+            { value: currentStreak > 0 ? `${currentStreak}d` : "—", label: c.stats.momentum, positive: currentStreak > 0 },
+            { value: String(activeGoalCount),                        label: c.stats.goals },
+            { value: "—",                                            label: c.stats.nights },
+            { value: "—",                                            label: c.stats.recovery },
           ] as const
-        ).map(({ icon: Icon, value, label, positive }: any) => (
-          <div key={label} className="flex items-center gap-2 px-5 py-3 shrink-0">
-            <Icon className="size-3.5 shrink-0 text-muted-foreground" />
+        ).map(({ value, label, positive }: any) => (
+          <div key={label} className="flex flex-1 flex-col items-center justify-center gap-0.5 py-3 min-w-0">
             <span className={cn("text-[13px] font-semibold tabular-nums", positive ? "text-primary" : "text-nocta-ink")}>{value}</span>
-            <span className="text-[11px] text-muted-foreground">{label}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</span>
           </div>
         ))}
 
-        <div className="ml-auto flex items-center gap-1 px-4 shrink-0">
-          <Link href="/goals" className="flex items-center gap-1.5 rounded px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-nocta-ink">
+      </div>
+
+      <div className="flex justify-end">
+        <Link href="/goals">
+          <Button size="sm" className="h-8 gap-1.5 text-[12px] px-4">
             <Plus className="size-3.5 shrink-0" />{c.actions.addGoals}
-          </Link>
-          <Link href="/activity" className="flex items-center gap-1.5 rounded px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-nocta-ink">
-            <ActivityIcon className="size-3.5 shrink-0" />{c.actions.browseActivity}
-          </Link>
-        </div>
+          </Button>
+        </Link>
       </div>
 
       {/* ── Bento grid ──────────────────────────────────────────────────── */}

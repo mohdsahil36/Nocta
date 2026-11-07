@@ -23,6 +23,7 @@ import {
 } from "../content";
 import { useMutation } from "@tanstack/react-query";
 import { apiUrl } from "@/app/goals/functions/goals";
+import { OutcomeType, logOutcome } from "../functions/check-in";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -160,6 +161,7 @@ export function CheckInPanel({
   const { minutes, energy, revealed } = selection;
   const [alsoOpen, setAlsoOpen] = useState(false);
   const [banner, setBanner] = useState<PanelBanner | null>(null);
+  const [outcomeLogged, setOutcomeLogged] = useState(false);
   const bannerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showBanner = (title: string, type: PanelBanner["type"], ms: number) => {
     if (bannerTimer.current) clearTimeout(bannerTimer.current);
@@ -177,6 +179,17 @@ export function CheckInPanel({
     onSelectionChange({ ...selection, minutes: m });
   const setEnergy = (e: CheckInEnergy) =>
     onSelectionChange({ ...selection, energy: e });
+
+  const handleOutcome = async (outcome: OutcomeType) => {
+    if (!userId || !pick) return;
+    try {
+      await logOutcome({ userId, goalId: pick.goalId, outcome });
+      setOutcomeLogged(true);
+      showBanner("Outcome saved", "success", 2000);
+    } catch {
+      showBanner("Couldn't save outcome", "error", 3000);
+    }
+  };
 
   const timeLabel =
     c.minutes.find((m) => m.id === minutes)?.label ?? `${minutes} min`;
@@ -381,6 +394,23 @@ export function CheckInPanel({
                   </p>
                 </div>
               </div>
+
+              {!outcomeLogged ? (
+                <div className="flex flex-wrap gap-2">
+                  {(["completed", "partial", "postponed", "changed"] as OutcomeType[]).map((o) => (
+                    <button
+                      key={o}
+                      type="button"
+                      onClick={() => handleOutcome(o)}
+                      className="rounded-sm border border-border bg-card px-3 py-1.5 text-[12px] font-medium capitalize text-nocta-ink/80 transition-colors hover:border-primary hover:text-primary"
+                    >
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[12px] text-muted-foreground">Outcome saved.</p>
+              )}
 
               {rankedOthers.length > 0 ? (
                 <div className="rounded-sm border border-border">
