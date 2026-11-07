@@ -20,6 +20,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+
 import useAuthStore from "@/app/store/authStore";
 import { listAllGoals } from "@/app/goals/functions/goals";
 import { listPlanSteps } from "@/app/goals/functions/plan-steps";
@@ -102,7 +103,6 @@ export function DashboardPanels() {
   const [cachedResult, setCachedResult] = useState<CheckInResult | null>(null);
   const [liveResult, setLiveResult] = useState<CheckInResult | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
-  const [narration, setNarration] = useState<string | null>(null);
 
   if (authReady && !sessionReady) {
     setSessionReady(true);
@@ -192,19 +192,12 @@ export function DashboardPanels() {
             cachedResult={cachedResult}
             onClearCache={() => { setCachedResult(null); setLiveResult(null); }}
             onResult={(r) => setLiveResult(r)}
-            onNarration={(n) => setNarration(n)}
             sessionReady={sessionReady}
           />
         </div>
 
         {/* ── Row 1, col 3: Streak calendar ── */}
         <div className="flex flex-col gap-3 h-full">
-          {narration && (
-            <div className="nocta-panel px-5 py-4 flex gap-2.5 items-start">
-              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
-              <p className="text-sm leading-snug text-nocta-ink">{narration}</p>
-            </div>
-          )}
           <div className="nocta-panel px-5 py-4 flex-1 flex flex-col">
           <style>{`
             @keyframes organicFlame {
@@ -296,11 +289,14 @@ export function DashboardPanels() {
                           <div key={di} className="flex flex-col items-center py-0.5">
                             {isActive ? <PixelFlame delay={(wi * 7 + di) % 5 * 0.09} /> : <div className="h-5" />}
                             <div className={cn(
-                              "flex size-5 items-center justify-center rounded-full text-[10px] tabular-nums font-medium mt-0.5",
-                              isToday ? "bg-primary text-primary-foreground font-bold" : "",
-                              !isToday && cell.thisMonth ? "text-nocta-ink/80" : "text-muted-foreground/25",
+                              "relative flex size-5 items-center justify-center text-[10px] tabular-nums font-medium mt-0.5",
+                              isToday ? "font-bold text-primary" : "",
+                              !isToday && isActive ? "text-primary/80" : "",
+                              !isToday && !isActive && cell.thisMonth ? "text-nocta-ink/60" : "",
+                              !isToday && !isActive && !cell.thisMonth ? "text-muted-foreground/25" : "",
                             )}>
                               {cell.day}
+                              {isToday && <span className="absolute -bottom-0.5 left-1/2 h-[2px] w-3 -translate-x-1/2 rounded-full bg-primary" />}
                             </div>
                           </div>
                         );
@@ -319,7 +315,7 @@ export function DashboardPanels() {
           </div>
         </div>
 
-        {/* ── Row 2: Tonight's steps (col 1) | AI Reasoning (col 2) | Commit chart (col 3, under streak) ── */}
+        {/* ── Row 2: Tonight's steps (col 1) | Next in queue (col 2) | Commit chart (col 3) ── */}
 
         {/* Tonight's steps */}
         <div className="nocta-panel px-5 py-4">
@@ -354,15 +350,24 @@ export function DashboardPanels() {
           )}
         </div>
 
-        <ComingSoonCard
-          icon={BotMessageSquare}
-          title="AI Reasoning"
-          description="The scorer picks the goal — the LLM narrates why, streamed from nocta-ai. Never changes the pick."
-          phase="Phase 1"
-        />
-
-        {/* Commit chart — col 3, aligned under streak calendar */}
+        {/* Next in queue */}
         <div className="nocta-panel px-5 py-4">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-2.5">Next in queue</p>
+          {nextInQueue ? (
+            <>
+              <p className="text-[13px] font-semibold leading-snug text-nocta-ink">{nextInQueue.name}</p>
+              <p className="mt-1 text-[12px] leading-snug text-muted-foreground">{nextInQueue.nextAction}</p>
+              <span className="mt-2 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] tabular-nums text-muted-foreground">
+                Score {displayScore(nextInQueue.total)}
+              </span>
+            </>
+          ) : (
+            <p className="text-[12px] text-muted-foreground">Check in to see what's next.</p>
+          )}
+        </div>
+
+        {/* Commit chart — col 3, under streak calendar */}
+        <div className="nocta-panel px-5 py-4 md:col-start-3">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">This week</p>
             <span className="text-[11px] tabular-nums text-muted-foreground">{weekTotal} commits</span>
@@ -383,14 +388,14 @@ export function DashboardPanels() {
           </Link>
         </div>
 
+        {/* ── Row 3: Log Parser (col 1) | Plan Bootstrap (col 2) | Recovery Gate (col 3) ── */}
+
         <ComingSoonCard
           icon={ScrollText}
           title="Quick Log Parser"
           description="Paste free text — AI parses into structured outcome fields (few-shot). Confirm before save."
           phase="Phase 1"
         />
-
-        {/* ── Row 3: Log Parser | Plan Bootstrap | Eval Harness ── */}
 
         <ComingSoonCard
           icon={Sparkles}
@@ -400,36 +405,21 @@ export function DashboardPanels() {
         />
 
         <ComingSoonCard
+          icon={RefreshCcw}
+          title="Recovery Gate"
+          description="Intelligent eligibility from capacity, recent outcomes, and neglect — not a weekly quota."
+          phase="Phase 3"
+          className="md:col-start-3"
+        />
+
+        {/* ── Row 4: Eval Harness ── */}
+
+        <ComingSoonCard
           icon={FlaskConical}
           title="Eval Harness"
           description="30–50 labeled cases for log parser and reasoning. Metrics run on every prompt change."
           phase="Phase 2"
         />
-
-        {/* Next in queue + Recovery Gate stacked in the last cell */}
-        <div className="flex flex-col gap-3">
-          <div className="nocta-panel px-5 py-4">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-2.5">Next in queue</p>
-            {nextInQueue ? (
-              <>
-                <p className="text-[13px] font-semibold leading-snug text-nocta-ink">{nextInQueue.name}</p>
-                <p className="mt-1 text-[12px] leading-snug text-muted-foreground">{nextInQueue.nextAction}</p>
-                <span className="mt-2 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] tabular-nums text-muted-foreground">
-                  Score {displayScore(nextInQueue.total)}
-                </span>
-              </>
-            ) : (
-              <p className="text-[12px] text-muted-foreground">Check in to see what's next.</p>
-            )}
-          </div>
-
-          <ComingSoonCard
-            icon={RefreshCcw}
-            title="Recovery Gate"
-            description="Intelligent eligibility from capacity, recent outcomes, and neglect — not a weekly quota."
-            phase="Phase 3"
-          />
-        </div>
 
       </div>
     </section>
