@@ -27,7 +27,7 @@ html.theme-transition *::after {
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans-active, var(--font-sans-face)), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), var(--font-jetbrains-mono), ui-monospace, monospace;
-  --font-heading: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-heading: "PilcrowRounded", var(--font-instrument-serif), ui-serif, Georgia, serif;
   --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-cursive: var(--font-instrument-serif), ui-serif, Georgia, serif;
@@ -123,8 +123,24 @@ html.theme-transition *::after {
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Bevellier";
+  src: url("/fonts/Bevellier-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PilcrowRounded";
+  src: url("/fonts/PilcrowRounded-Variable.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --font-sans-face: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-sans-face: var(--font-poppins), "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-sans-active: var(--font-sans-face);
   --background: oklch(0.9818 0.0054 95.0986);
   --foreground: oklch(0.15 0.0269 95.7226);

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Geist_Mono, Instrument_Serif, JetBrains_Mono, Poppins } from "next/font/google";
 import { ThemeSync } from "@/app/store/themeStore";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -12,6 +12,12 @@ const geistMono = Geist_Mono({
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const instrumentSerif = Instrument_Serif({
@@ -38,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistMono.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${geistMono.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} ${poppins.variable} h-full antialiased`}
     >
       <head>
         {/* Native script — next/script in <head> trips a client console error in App Router */}

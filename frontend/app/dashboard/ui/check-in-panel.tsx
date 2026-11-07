@@ -264,7 +264,7 @@ export function CheckInPanel({
   }
 
   return (
-    <div className="nocta-panel relative overflow-hidden">
+    <div className="nocta-panel relative overflow-hidden h-full">
       <PanelToast
         open={banner != null}
         title={banner?.title ?? ""}
@@ -397,14 +397,19 @@ export function CheckInPanel({
 
               {!outcomeLogged ? (
                 <div className="flex flex-wrap gap-2">
-                  {(["completed", "partial", "postponed", "changed"] as OutcomeType[]).map((o) => (
+                  {([
+                    { value: "completed", label: "Completed" },
+                    { value: "partial", label: "In progress" },
+                    { value: "postponed", label: "Postponed" },
+                    { value: "changed", label: "Changed" },
+                  ] as { value: OutcomeType; label: string }[]).map(({ value, label }) => (
                     <button
-                      key={o}
+                      key={value}
                       type="button"
-                      onClick={() => handleOutcome(o)}
-                      className="rounded-sm border border-border bg-card px-3 py-1.5 text-[12px] font-medium capitalize text-nocta-ink/80 transition-colors hover:border-primary hover:text-primary"
+                      onClick={() => handleOutcome(value)}
+                      className="rounded-sm border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-nocta-ink/80 transition-colors hover:border-primary hover:text-primary"
                     >
-                      {o}
+                      {label}
                     </button>
                   ))}
                 </div>

@@ -4,6 +4,6 @@ import { asyncHandler } from "../../lib/async-handler.js";
 
 const router = Router();
 
-router.use("/outcome-log", asyncHandler(outcomelogController));
+router.post("/outcomes", asyncHandler(outcomelogController));
 
 export default router;
