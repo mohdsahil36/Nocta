@@ -18,13 +18,13 @@ This repo holds the Nocta web app (and supporting API as the product grows).
 - **Check-in** — minutes/energy input → deterministic rank → winning goal + next plan step returned to desk UI
 - **Outcome logging** — confirm completed / partial / deferred / swapped after a session; updates `lastTouchedAt` and plan step status
 - **AI log parser** — free-text outcome entry → structured outcome fields (few-shot, Groq); confirm-before-save
+- **AI recommendation reasoning** — LLM narrates the top pick from scorer numbers only; streamed to desk UI; Pydantic-validated; never changes the rank
 - **`nocta-ai` service** — FastAPI + Pydantic; `/health`, log parser, and reasoning endpoints; deployed on Render; Express proxies to it
 - **CI** — pytest (`ai-backend`) + frontend/backend typecheck on every push (GitHub Actions)
 - **Dashboard** — activity stats (streak, longest streak, today's count) from real platform commit data
 
 ### In progress
 
-- **AI recommendation reasoning** — LLM narrates the top pick from scorer numbers only; streamed to desk UI; never changes the rank
 - **Token / latency / cost logging** — instrument every LLM call from first use
 - **Provider abstraction** — swap Groq → OpenAI / Anthropic / local model per feature via env config
 
