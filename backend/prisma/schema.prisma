@@ -29,6 +29,7 @@ model User {
   updatedAt    DateTime     @updatedAt
   repositories Repository[]
   goals        Goal[]
+  outcomeLogs  OutcomeLog[]
 }
 
 enum GoalStatus {
@@ -51,7 +52,8 @@ model Goal {
   updatedAt     DateTime   @updatedAt
 
   // Ordered steps/topics under this goal
-  subPlans PlanStep[]
+  subPlans    PlanStep[]
+  outcomeLogs OutcomeLog[]
 }
 
 model Repository {
@@ -128,7 +130,29 @@ model PlanStep {
   createdAt     DateTime       @default(now()) // when the row was created
   lastupdatedAt DateTime       @updatedAt // last row update
   archivedAt    DateTime? // when the step was archived
+  outcomeLogs   OutcomeLog[]
 
   // Unique as a pair: many steps per goalId, but each sortOrder only once per goal
   @@unique([goalId, sortOrder])
+}
+
+//log parser schema
+enum OutcomeType {
+  partial
+  changed
+  postponed
+  completed
+}
+
+model OutcomeLog {
+  id         String      @id @default(cuid())
+  userId     String
+  goalId     String
+  planStepId String?
+  outcome    OutcomeType
+  updatedAt  DateTime    @default(now())
+
+  user     User      @relation(fields: [userId], references: [id])
+  goal     Goal      @relation(fields: [goalId], references: [id])
+  planStep PlanStep? @relation(fields: [planStepId], references: [id])
 }

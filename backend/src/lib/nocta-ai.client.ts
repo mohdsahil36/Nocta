@@ -1,5 +1,5 @@
 const NOCTA_AI_URL = process.env.NOCTA_AI_URL ?? "http://localhost:8000"; // base url for nocta ai server
-const TIMEOUT_MS = 8000; // if fastapi does not respond in 8 sec, it will be a timeout
+const TIMEOUT_MS = 30000; // 30s — Groq inference can be slow on first request
 
 function withTimeout(ms: number): AbortSignal {
   return AbortSignal.timeout(ms);
@@ -44,4 +44,43 @@ export async function getReasoning(
 
   const narration = await res.text();
   return { narration };
+}
+export interface ParseLogRequest {
+  text: string;
+  goalName: string;
+}
+
+export interface ParseLogResponse {
+  outcome: "completed" | "partial" | "postponed" | "changed";
+  notes: string;
+  confidence: number;
+}
+
+export async function parseLog(
+  data: ParseLogRequest,
+): Promise<ParseLogResponse> {
+  let res: Response;
+
+  try {
+    res = await fetch(`${NOCTA_AI_URL}/ai/parse-log`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      signal: withTimeout(TIMEOUT_MS),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Ai Logging service is unreachable";
+    throw new Error(message);
+  }
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Ai service returned error: ${errorText}`);
+  }
+
+  return res.json() as Promise<ParseLogResponse>;
 }

@@ -15,6 +15,8 @@ type TopPickedGoal = {
   nextAction: string;
   total: number;
   factors: ScoringFactors;
+  deadlineDays: number;
+  neglectedDays: number;
 };
 
 /** One goal in the full ranking (name + scores for “Also scored”). */
@@ -107,4 +109,28 @@ export async function checkIn(
   if (!response.ok) throw new Error("Failed to check in");
   const json = (await response.json()) as { data: CheckInResult };
   return json.data;
+}
+
+/** outcome log by the user*/
+export type OutcomeType = "completed" | "partial" | "postponed" | "changed";
+
+export type UserOutcomelogType = {
+  userId: string;
+  goalId: string;
+  planStepId?: string | null;
+  outcome: OutcomeType;
+};
+
+export async function logOutcome(userInput: UserOutcomelogType): Promise<void> {
+  const response = await fetch(apiUrl("/api/outcomes"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: userInput.userId,
+      goalId: userInput.goalId,
+      planStepId: userInput.planStepId,
+      outcome: userInput.outcome,
+    }),
+  });
+  if (!response.ok) throw new Error("Failed to log outcome");
 }
