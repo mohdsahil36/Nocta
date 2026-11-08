@@ -24,6 +24,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { apiUrl } from "@/app/goals/functions/goals";
 import { OutcomeType, logOutcome } from "../functions/check-in";
+import { parseLog, ParseLogResponse } from "../functions/log-parser";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -164,6 +165,11 @@ export function CheckInPanel({
   const [outcomeLogged, setOutcomeLogged] = useState(false);
   const [narration, setNarration] = useState<string | null>(null);
   const bannerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [logText, setLogText] = useState("");
+  const [parsedResult, setParsedResult] = useState<ParseLogResponse | null>(
+    null,
+  );
+
   const showBanner = (title: string, type: PanelBanner["type"], ms: number) => {
     if (bannerTimer.current) clearTimeout(bannerTimer.current);
     setBanner({ title, type });
@@ -237,6 +243,19 @@ export function CheckInPanel({
     onError: () => {
       showBanner(c.toastError, "error", 3200);
     },
+  });
+
+  const outcomeMutation = useMutation({
+    mutationFn: () => parseLog({ text: logText, goalName: pick?.name ?? "" }),
+    onSuccess: (data) => {
+      if (data.confidence >= 0.7) {
+        handleOutcome(data.outcome);
+      } else {
+        setParsedResult(data);
+      }
+    },
+    onError: () =>
+      showBanner("Couldn't parse your log. Please try again!", "error", 200),
   });
 
   const liveResult = checkInMutation.data?.result ?? cachedResult;
@@ -399,31 +418,69 @@ export function CheckInPanel({
 
               {narration && (
                 <div className="flex gap-2.5 rounded-sm border border-primary/20 bg-primary/5 px-3.5 py-3">
-                  <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
-                  <p className="text-[12px] leading-relaxed text-nocta-ink/90">{narration}</p>
+                  <Sparkles
+                    className="mt-0.5 size-3.5 shrink-0 text-primary"
+                    aria-hidden
+                  />
+                  <p className="text-[12px] leading-relaxed text-nocta-ink/90">
+                    {narration}
+                  </p>
                 </div>
               )}
 
               {!outcomeLogged ? (
-                <div className="flex flex-wrap gap-2">
-                  {([
-                    { value: "completed", label: "Completed" },
-                    { value: "partial", label: "In progress" },
-                    { value: "postponed", label: "Postponed" },
-                    { value: "changed", label: "Changed" },
-                  ] as { value: OutcomeType; label: string }[]).map(({ value, label }) => (
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <textarea
+                      value={logText}
+                      onChange={(e) => setLogText(e.target.value)}
+                      placeholder="What happened tonight? (optional — or just pick below)"
+                      rows={2}
+                      className="flex-1 resize-none rounded-sm border border-border bg-card px-3 py-2 text-[12px] text-nocta-ink/80 placeholder:text-muted-foreground/50 outline-none focus:border-primary transition-colors"
+                    />
                     <button
-                      key={value}
                       type="button"
-                      onClick={() => handleOutcome(value)}
-                      className="rounded-sm border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-nocta-ink/80 transition-colors hover:border-primary hover:text-primary"
+                      disabled={!logText.trim() || outcomeMutation.isPending}
+                      onClick={() => outcomeMutation.mutate()}
+                      className="self-end rounded-sm border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-nocta-ink/80 transition-colors hover:border-primary hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      {label}
+                      {outcomeMutation.isPending ? "Parsing…" : "Parse"}
                     </button>
-                  ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(
+                      [
+                        { value: "completed", label: "Completed" },
+                        { value: "partial", label: "In progress" },
+                        { value: "postponed", label: "Postponed" },
+                        { value: "changed", label: "Changed" },
+                      ] as { value: OutcomeType; label: string }[]
+                    ).map(({ value, label }) => {
+                      const isPreSelected =
+                        parsedResult?.outcome === value &&
+                        parsedResult.confidence >= 0.7;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => handleOutcome(value)}
+                          className={cn(
+                            "rounded-sm border px-3 py-1.5 text-[12px] font-medium transition-colors",
+                            isPreSelected
+                              ? "border-primary bg-primary/5 text-primary"
+                              : "border-border bg-card text-nocta-ink/80 hover:border-primary hover:text-primary",
+                          )}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : (
-                <p className="text-[12px] text-muted-foreground">Outcome saved.</p>
+                <p className="text-[12px] text-muted-foreground">
+                  Outcome saved.
+                </p>
               )}
 
               {rankedOthers.length > 0 ? (

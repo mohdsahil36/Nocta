@@ -1,5 +1,4 @@
 import { aiReasoningService } from "../../services/ai-reasoning/ai-reasoning.service.js";
-import { ReasoningRequest } from "../../lib/nocta-ai.client.js";
 import { Request, Response } from "express";
 import { HttpError } from "../../lib/http-error.js";
 import { z } from "zod";

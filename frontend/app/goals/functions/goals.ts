@@ -11,6 +11,13 @@ export function apiUrl(path: string) {
   return `${base.replace(/\/$/, "")}${path}`;
 }
 
+export type OutcomeType = "completed" | "partial" | "postponed" | "changed";
+
+export type GoalLastOutcome = {
+  outcome: OutcomeType;
+  updatedAt: string;
+};
+
 // what one goal looks like coming from the API
 type GoalApiRow = {
   id: string;
@@ -19,17 +26,26 @@ type GoalApiRow = {
   deadline: string | null;
   nextAction: string;
   status: GoalStatus;
+  outcomeLogs: { outcome: OutcomeType; updatedAt: string }[];
+};
+
+// full goal shape used by the list (form uses GoalDraft)
+export type GoalWithOutcome = GoalDraft & {
+  lastOutcome: GoalLastOutcome | null;
 };
 
 // turn API goal into the shape the form/list uses
-function toGoalDraft(row: GoalApiRow): GoalDraft {
+function toGoalDraft(row: GoalApiRow): GoalWithOutcome {
   return {
     id: row.id,
     name: row.name,
     weight: row.weight,
-    deadline: isoToDeadlineInput(row.deadline), // long ISO date → YYYY-MM-DD
+    deadline: isoToDeadlineInput(row.deadline),
     nextAction: row.nextAction,
     status: row.status,
+    lastOutcome: row.outcomeLogs[0]
+      ? { outcome: row.outcomeLogs[0].outcome, updatedAt: row.outcomeLogs[0].updatedAt }
+      : null,
   };
 }
 
@@ -50,17 +66,17 @@ export async function getCurrentUserId(): Promise<string> {
 export async function listGoals(
   userId: string,
   status: GoalStatus = "active",
-): Promise<GoalDraft[]> {
+): Promise<GoalWithOutcome[]> {
   const res = await fetch(
     apiUrl(`/api/goals?userId=${encodeURIComponent(userId)}&status=${status}`),
   );
   if (!res.ok) throw new Error("Failed to list goals");
   const json = (await res.json()) as { data: GoalApiRow[] };
-  return json.data.map(toGoalDraft); // convert every row before giving to the page
+  return json.data.map(toGoalDraft);
 }
 
 /** Active + archived for the Goals desk (Show archived filters on the page). */
-export async function listAllGoals(userId: string): Promise<GoalDraft[]> {
+export async function listAllGoals(userId: string): Promise<GoalWithOutcome[]> {
   const [active, archived] = await Promise.all([
     listGoals(userId, "active"),
     listGoals(userId, "archived"),

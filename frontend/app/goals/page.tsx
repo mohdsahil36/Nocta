@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
 import useAuthStore from "@/app/store/authStore";
-import { cn } from "cn";
 
 import {
   emptyGoalDraft,
@@ -38,11 +37,13 @@ import {
   listAllGoals,
   unarchiveGoal as unarchiveGoalRequest,
   updateGoal,
+  type GoalWithOutcome,
 } from "./functions/goals";
 import { GoalsList } from "./ui/goals-list";
 
 export default function GoalsPage() {
   const c = goalsContent.screen;
+  const [now] = useState(() => Date.now());
   const [listFilter, setListFilter] = useState<GoalStatus>("active");
   const [editor, setEditor] = useState<"closed" | "create" | "edit">("closed");
   const [draft, setDraft] = useState<GoalDraft>(emptyGoalDraft);
@@ -52,7 +53,12 @@ export default function GoalsPage() {
   const authReady = useAuthStore((s) => s.ready);
   const userId = useAuthStore((s) => s.userId);
 
-  const { data: goals = [], isLoading: goalsLoading, error, refetch } = useQuery({
+  const {
+    data: goals = [],
+    isLoading: goalsLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["goals", userId],
     enabled: authReady && !!userId,
     queryFn: async () => listAllGoals(userId!),
@@ -61,16 +67,27 @@ export default function GoalsPage() {
   const isLoading = !authReady || (Boolean(userId) && goalsLoading);
   const signedOut = authReady && !userId;
 
-  const activeCount   = goals.filter((g) => (g.status ?? "active") === "active").length;
+  const activeCount = goals.filter(
+    (g) => (g.status ?? "active") === "active",
+  ).length;
   const archivedCount = goals.filter((g) => g.status === "archived").length;
-  const overdueCount  = goals.filter((g) => {
+  const overdueCount = goals.filter((g) => {
     if ((g.status ?? "active") !== "active" || !g.deadline) return false;
-    return new Date(g.deadline).getTime() < Date.now();
+    return new Date(g.deadline).getTime() < now;
   }).length;
 
-  const openCreate = () => { setDraft(emptyGoalDraft()); setEditor("create"); };
-  const openEdit   = (goal: GoalDraft) => { setDraft({ ...goal }); setEditor("edit"); };
-  const closeEditor = () => { setEditor("closed"); setDraft(emptyGoalDraft()); };
+  const openCreate = () => {
+    setDraft(emptyGoalDraft());
+    setEditor("create");
+  };
+  const openEdit = (goal: GoalDraft) => {
+    setDraft({ ...goal });
+    setEditor("edit");
+  };
+  const closeEditor = () => {
+    setEditor("closed");
+    setDraft(emptyGoalDraft());
+  };
 
   const saveDraft = async () => {
     if (!draft.name.trim() || !draft.nextAction.trim() || saving) return;
@@ -97,13 +114,19 @@ export default function GoalsPage() {
     setSaving(true);
     try {
       await archiveGoalRequest(goal.id);
-      queryClient.setQueryData<GoalDraft[]>(["goals"], (old = []) =>
-        old.map((g) => g.id === goal.id ? { ...g, status: "archived" as const } : g),
+      queryClient.setQueryData<GoalWithOutcome[]>(["goals"], (old = []) =>
+        old.map((g) =>
+          g.id === goal.id ? { ...g, status: "archived" as const } : g,
+        ),
       );
       if (activeCount <= 1) setListFilter("archived");
       if (draft.id === goal.id) closeEditor();
       void queryClient.invalidateQueries({ queryKey: ["goals"] });
-      toast.add({ title: c.toastArchiveSuccess, type: "success", timeout: 2200 });
+      toast.add({
+        title: c.toastArchiveSuccess,
+        type: "success",
+        timeout: 2200,
+      });
     } catch {
       toast.add({ title: c.toastArchiveError, type: "error", timeout: 3200 });
     } finally {
@@ -116,12 +139,18 @@ export default function GoalsPage() {
     setSaving(true);
     try {
       await unarchiveGoalRequest(goal.id);
-      queryClient.setQueryData<GoalDraft[]>(["goals"], (old = []) =>
-        old.map((g) => g.id === goal.id ? { ...g, status: "active" as const } : g),
+      queryClient.setQueryData<GoalWithOutcome[]>(["goals"], (old = []) =>
+        old.map((g) =>
+          g.id === goal.id ? { ...g, status: "active" as const } : g,
+        ),
       );
       if (archivedCount <= 1) setListFilter("active");
       void queryClient.invalidateQueries({ queryKey: ["goals"] });
-      toast.add({ title: c.toastActivateSuccess, type: "success", timeout: 2200 });
+      toast.add({
+        title: c.toastActivateSuccess,
+        type: "success",
+        timeout: 2200,
+      });
     } catch {
       toast.add({ title: c.toastActivateError, type: "error", timeout: 3200 });
     } finally {
@@ -131,15 +160,17 @@ export default function GoalsPage() {
 
   return (
     <section className="flex w-full flex-col gap-0">
-
       {/* ── Single card wrapping everything ── */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-
         {/* Top bar: title + add button */}
         <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-border">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary mb-0.5">Workspace</p>
-            <h1 className="text-lg font-semibold text-foreground leading-tight">{c.title}</h1>
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary mb-0.5">
+              Workspace
+            </p>
+            <h1 className="text-lg font-semibold text-foreground leading-tight">
+              {c.title}
+            </h1>
           </div>
           <button
             type="button"
@@ -154,11 +185,15 @@ export default function GoalsPage() {
         {/* Stats bar */}
         <div className="flex items-center gap-4 border-b border-border px-6 py-2.5">
           <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
-            <span className="font-semibold text-foreground">{activeCount}</span> active
+            <span className="font-semibold text-foreground">{activeCount}</span>{" "}
+            active
           </span>
           {archivedCount > 0 && (
             <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
-              <span className="font-semibold text-foreground">{archivedCount}</span> archived
+              <span className="font-semibold text-foreground">
+                {archivedCount}
+              </span>{" "}
+              archived
             </span>
           )}
           {overdueCount > 0 && (
@@ -176,7 +211,11 @@ export default function GoalsPage() {
         ) : signedOut || error ? (
           <div className="px-6 py-20 text-center">
             <p className="text-sm text-muted-foreground">{c.loadError}</p>
-            <button type="button" onClick={() => void refetch()} className="mt-3 font-mono text-[11px] text-primary hover:underline underline-offset-4 cursor-pointer">
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-3 font-mono text-[11px] text-primary hover:underline underline-offset-4 cursor-pointer"
+            >
               {c.retry} →
             </button>
           </div>
@@ -192,7 +231,12 @@ export default function GoalsPage() {
       </div>
 
       {/* ── Create / Edit dialog ── */}
-      <Dialog open={editor !== "closed"} onOpenChange={(open) => { if (!open) closeEditor(); }}>
+      <Dialog
+        open={editor !== "closed"}
+        onOpenChange={(open) => {
+          if (!open) closeEditor();
+        }}
+      >
         <DialogContent
           showCloseButton
           className="flex w-full max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-xl rounded-2xl border border-border bg-card shadow-xl"
@@ -206,13 +250,18 @@ export default function GoalsPage() {
           <div className="flex flex-col gap-5 px-6 py-5">
             {/* Name */}
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="edit-name" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+              <Label
+                htmlFor="edit-name"
+                className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+              >
                 {goalsContent.fields.name}
               </Label>
               <Input
                 id="edit-name"
                 value={draft.name}
-                onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))}
+                onChange={(e) =>
+                  setDraft((p) => ({ ...p, name: e.target.value }))
+                }
                 placeholder={goalsContent.fields.nameHint}
                 className="h-9 rounded-lg shadow-none"
                 autoComplete="off"
@@ -222,53 +271,76 @@ export default function GoalsPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Weight */}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-weight" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                <Label
+                  htmlFor="edit-weight"
+                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+                >
                   {goalsContent.fields.weight}
                 </Label>
                 <Select
                   value={String(draft.weight)}
                   onValueChange={(next) => {
                     const n = Number(next);
-                    if (n >= 1 && n <= 5) setDraft((p) => ({ ...p, weight: n }));
+                    if (n >= 1 && n <= 5)
+                      setDraft((p) => ({ ...p, weight: n }));
                   }}
                 >
-                  <SelectTrigger id="edit-weight" className="h-9 w-full rounded-lg shadow-none">
+                  <SelectTrigger
+                    id="edit-weight"
+                    className="h-9 w-full rounded-lg shadow-none"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent align="start">
                     {goalsContent.fields.weightOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={String(opt.value)}>{opt.label}</SelectItem>
+                      <SelectItem key={opt.value} value={String(opt.value)}>
+                        {opt.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="font-mono text-[10px] text-muted-foreground">{goalsContent.fields.weightHint}</p>
+                <p className="font-mono text-[10px] text-muted-foreground">
+                  {goalsContent.fields.weightHint}
+                </p>
               </div>
 
               {/* Deadline */}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-deadline" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                <Label
+                  htmlFor="edit-deadline"
+                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+                >
                   {goalsContent.fields.deadline}
                 </Label>
                 <Input
                   id="edit-deadline"
                   type="date"
                   value={draft.deadline}
-                  onChange={(e) => setDraft((p) => ({ ...p, deadline: e.target.value }))}
+                  onChange={(e) =>
+                    setDraft((p) => ({ ...p, deadline: e.target.value }))
+                  }
                   className="h-9 rounded-lg shadow-none"
                 />
-                <p className="font-mono text-[10px] text-muted-foreground">{goalsContent.fields.deadlineHint}</p>
+                <p className="font-mono text-[10px] text-muted-foreground">
+                  {goalsContent.fields.deadlineHint}
+                </p>
               </div>
             </div>
 
             {/* Next action */}
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="edit-next" className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+              <Label
+                htmlFor="edit-next"
+                className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+              >
                 {goalsContent.fields.nextAction}
               </Label>
               <Input
                 id="edit-next"
                 value={draft.nextAction}
-                onChange={(e) => setDraft((p) => ({ ...p, nextAction: e.target.value }))}
+                onChange={(e) =>
+                  setDraft((p) => ({ ...p, nextAction: e.target.value }))
+                }
                 placeholder={goalsContent.fields.nextActionHint}
                 className="h-9 rounded-lg shadow-none"
                 autoComplete="off"
@@ -279,7 +351,9 @@ export default function GoalsPage() {
               <button
                 type="button"
                 onClick={() => void saveDraft()}
-                disabled={saving || !draft.name.trim() || !draft.nextAction.trim()}
+                disabled={
+                  saving || !draft.name.trim() || !draft.nextAction.trim()
+                }
                 className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-1"
               >
                 {saving ? c.saving : c.save}

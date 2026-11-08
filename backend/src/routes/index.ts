@@ -6,6 +6,7 @@ import planStepRoutes from "./sub-plan/sub-plan.route.js";
 import useRoutes from "./user/user.route.js";
 import reasoningRoute from "./ai-reasoning/ai-reasoning.route.js";
 import outcomelogRoute from "./outcome/outcome.route.js";
+import aiParselogRoute from "./log-parser/log-parser.route.js";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use(planStepRoutes);
 router.use(useRoutes);
 router.use(reasoningRoute);
 router.use(outcomelogRoute);
+router.use(aiParselogRoute);
 
 export default router;

@@ -20,6 +20,12 @@ export async function listGoals(query: ListGoalsQuery) {
       status: query.status,
     },
     orderBy: { updatedAt: "desc" },
+    include: {
+      outcomeLogs: {
+        orderBy: { updatedAt: "desc" },
+        take: 1,
+      },
+    },
   });
 }
 
