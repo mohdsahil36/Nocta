@@ -4,20 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Activity as ActivityIcon,
-  BotMessageSquare,
+  Activity,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
-  CircleCheck,
   FlaskConical,
-  GitBranch,
-  MoonStar,
+  Gauge,
   Plus,
   RefreshCcw,
   ScrollText,
+  ShieldCheck,
   Sparkles,
-  Target,
-  TrendingUp,
+  Zap,
 } from "lucide-react";
 
 
@@ -72,17 +70,17 @@ function ComingSoonCard({
   className?: string;
 }) {
   return (
-    <div className={cn("nocta-panel flex flex-col gap-2.5 px-5 py-4 opacity-80 select-none", className)}>
-      <div className="flex items-center justify-between">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-          <Icon className="size-3.5" aria-hidden />
-        </span>
-        <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">
-          {phase}
-        </span>
+    <div className={cn("nocta-panel flex flex-col justify-between gap-6 px-6 py-5 select-none", className)}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+          <Icon className="size-4" aria-hidden />
+        </div>
+        <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest mt-1">{phase}</span>
       </div>
-      <p className="text-[13px] font-semibold text-nocta-ink leading-snug">{title}</p>
-      <p className="text-[12px] text-muted-foreground leading-relaxed">{description}</p>
+      <div className="space-y-1.5">
+        <p className="text-[14px] font-semibold text-nocta-ink leading-snug">{title}</p>
+        <p className="text-[13px] text-muted-foreground leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 }
@@ -145,11 +143,11 @@ export function DashboardPanels() {
   const nextInQueue = liveResult?.ranked?.[1];
 
   return (
-    <section className="flex w-full flex-col gap-3">
+    <section className="flex w-full flex-col gap-5">
 
       {/* ── Ticker ──────────────────────────────────────────────────────── */}
       <div className="nocta-panel flex items-stretch overflow-x-auto divide-x divide-border">
-        <div className="flex min-w-0 flex-col justify-center px-5 py-3 shrink-0">
+        <div className="flex min-w-0 flex-col justify-center px-6 py-4 shrink-0">
           <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">{dateLabel}</p>
           <p className="mt-0.5 text-[14px] font-semibold tracking-tight text-nocta-ink truncate max-w-[200px]">{greeting}</p>
         </div>
@@ -162,7 +160,7 @@ export function DashboardPanels() {
             { value: "—",                                            label: c.stats.recovery },
           ] as const
         ).map(({ value, label, positive }: any) => (
-          <div key={label} className="flex flex-1 flex-col items-center justify-center gap-0.5 py-3 min-w-0">
+          <div key={label} className="flex flex-1 flex-col items-center justify-center gap-0.5 py-4 min-w-0">
             <span className={cn("text-[13px] font-semibold tabular-nums", positive ? "text-primary" : "text-nocta-ink")}>{value}</span>
             <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</span>
           </div>
@@ -179,13 +177,12 @@ export function DashboardPanels() {
       </div>
 
       {/* ── Bento grid ──────────────────────────────────────────────────── */}
-      {/* Row 1: Check-in (2/3) | Tonight's goal + steps stacked (1/3)     */}
-      {/* Row 2: Commit chart | AI Reasoning | Log Parser                   */}
-      {/* Row 3: Plan Bootstrap | Eval Harness | Next Queue + Reflection    */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      {/* Row 1: Check-in (2/3) | Streak calendar (1/3)                    */}
+      {/* Row 2: Tonight's steps | Next in queue | Commit chart             */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
 
         {/* ── Row 1, col 1–2: Check-in (wide) ── */}
-        <div className="md:col-span-2 flex flex-col gap-3 h-full">
+        <div className="md:col-span-2 flex flex-col gap-5 h-full">
           <CheckInPanel
             selection={checkIn}
             onSelectionChange={setCheckIn}
@@ -197,8 +194,8 @@ export function DashboardPanels() {
         </div>
 
         {/* ── Row 1, col 3: Streak calendar ── */}
-        <div className="flex flex-col gap-3 h-full">
-          <div className="nocta-panel px-5 py-4 flex-1 flex flex-col">
+        <div className="flex flex-col gap-5 h-full">
+          <div className="nocta-panel px-6 py-5 flex-1 flex flex-col">
           <style>{`
             @keyframes organicFlame {
               0%,100% { transform: scale(1,1); }
@@ -318,7 +315,7 @@ export function DashboardPanels() {
         {/* ── Row 2: Tonight's steps (col 1) | Next in queue (col 2) | Commit chart (col 3) ── */}
 
         {/* Tonight's steps */}
-        <div className="nocta-panel px-5 py-4">
+        <div className="nocta-panel px-6 py-5">
           <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-2.5">Tonight's steps</p>
           {liveResult?.pick ? (
             planSteps.length > 0 ? (
@@ -351,7 +348,7 @@ export function DashboardPanels() {
         </div>
 
         {/* Next in queue */}
-        <div className="nocta-panel px-5 py-4">
+        <div className="nocta-panel px-6 py-5">
           <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-2.5">Next in queue</p>
           {nextInQueue ? (
             <>
@@ -367,7 +364,7 @@ export function DashboardPanels() {
         </div>
 
         {/* Commit chart — col 3, under streak calendar */}
-        <div className="nocta-panel px-5 py-4 md:col-start-3">
+        <div className="nocta-panel px-6 py-5 md:col-start-3">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">This week</p>
             <span className="text-[11px] tabular-nums text-muted-foreground">{weekTotal} commits</span>
@@ -388,40 +385,79 @@ export function DashboardPanels() {
           </Link>
         </div>
 
-        {/* ── Row 3: Log Parser (col 1) | Plan Bootstrap (col 2) | Recovery Gate (col 3) ── */}
 
+      </div>
+
+      {/* ── Coming up ── */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+
+        {/* Row 1: narrow | wide */}
         <ComingSoonCard
           icon={ScrollText}
           title="Quick Log Parser"
-          description="Paste free text — AI parses into structured outcome fields (few-shot). Confirm before save."
+          description="Paste free text — AI parses into structured outcome fields using few-shot prompts. Confirm before save."
           phase="Phase 1"
         />
-
         <ComingSoonCard
           icon={Sparkles}
           title="Plan Bootstrap"
-          description="Goal name + notes → LangChain drafts an ordered plan. You confirm before it saves."
+          description="Goal name + notes → LangChain drafts an ordered plan. You review and confirm before anything saves."
+          phase="Phase 1"
+          className="md:col-span-2"
+        />
+
+        {/* Row 2: wide | narrow */}
+        <ComingSoonCard
+          icon={Gauge}
+          title="Token & Cost Logging"
+          description="Capture prompt tokens, completion tokens, latency, and model per LLM call. Cost-per-check-in dashboard."
+          phase="Phase 1"
+          className="md:col-span-2"
+        />
+        <ComingSoonCard
+          icon={Zap}
+          title="AI Action Generator"
+          description="Turn a plan step into a concrete action sized to your available time — 20, 45, or 90 minutes."
           phase="Phase 1"
         />
 
-        <ComingSoonCard
-          icon={RefreshCcw}
-          title="Recovery Gate"
-          description="Intelligent eligibility from capacity, recent outcomes, and neglect — not a weekly quota."
-          phase="Phase 3"
-          className="md:col-start-3"
-        />
-
-        {/* ── Row 4: Eval Harness ── */}
-
+        {/* Row 3: equal thirds */}
         <ComingSoonCard
           icon={FlaskConical}
           title="Eval Harness"
           description="30–50 labeled cases for log parser and reasoning. Metrics run on every prompt change."
           phase="Phase 2"
         />
+        <ComingSoonCard
+          icon={CalendarDays}
+          title="Weekly Reflection"
+          description="Progressed and neglected goals, plan progress, and outcome patterns — stats-only first, RAG-narrated later."
+          phase="Phase 2"
+        />
+        <ComingSoonCard
+          icon={RefreshCcw}
+          title="Recovery Gate"
+          description="Intelligent eligibility from capacity, recent outcomes, and neglect — not a fixed weekly quota."
+          phase="Phase 3"
+        />
+
+        {/* Row 4: narrow | wide */}
+        <ComingSoonCard
+          icon={ShieldCheck}
+          title="Output Guardrails"
+          description="Validate every LLM output against the deterministic score and plan pointer. Reject or flag contradictions."
+          phase="Phase 3"
+        />
+        <ComingSoonCard
+          icon={Activity}
+          title="Observability"
+          description="Full-stack tracing across Express → nocta-ai → LLM. Prompt version tags, cost per check-in, Langfuse."
+          phase="Phase 6"
+          className="md:col-span-2"
+        />
 
       </div>
+
     </section>
   );
 }
