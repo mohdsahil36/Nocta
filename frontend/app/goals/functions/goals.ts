@@ -44,7 +44,10 @@ function toGoalDraft(row: GoalApiRow): GoalWithOutcome {
     nextAction: row.nextAction,
     status: row.status,
     lastOutcome: row.outcomeLogs[0]
-      ? { outcome: row.outcomeLogs[0].outcome, updatedAt: row.outcomeLogs[0].updatedAt }
+      ? {
+          outcome: row.outcomeLogs[0].outcome,
+          updatedAt: row.outcomeLogs[0].updatedAt,
+        }
       : null,
   };
 }
@@ -138,6 +141,15 @@ export async function updateGoal(goalId: string, goalDraft: GoalDraft) {
   });
   if (!res.ok) throw new Error("Failed to update goal");
   return res.json();
+}
+
+export async function deleteGoal(goalId: string, userId: string) {
+  const res = await fetch(apiUrl(`/api/goals/${encodeURIComponent(goalId)}`), {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId }),
+  });
+  if (!res.ok) throw new Error("Failed to delete goal");
 }
 
 /** True when the user has zero active goals (show onboarding). */

@@ -7,6 +7,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { DeskLoader } from "@/components/ui/desk-loader";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -38,6 +46,7 @@ import {
   unarchiveGoal as unarchiveGoalRequest,
   updateGoal,
   type GoalWithOutcome,
+  deleteGoal as deleteGoalRequest,
 } from "./functions/goals";
 import { GoalsList } from "./ui/goals-list";
 
@@ -48,6 +57,7 @@ export default function GoalsPage() {
   const [editor, setEditor] = useState<"closed" | "create" | "edit">("closed");
   const [draft, setDraft] = useState<GoalDraft>(emptyGoalDraft);
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<GoalDraft | null>(null);
 
   const queryClient = useQueryClient();
   const authReady = useAuthStore((s) => s.ready);
@@ -158,10 +168,34 @@ export default function GoalsPage() {
     }
   };
 
+  const handleDelete = (goal: GoalDraft) => {
+    if (!goal.id || saving) return;
+    setDeleteTarget(goal);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget?.id) return;
+    setSaving(true);
+    try {
+      const uid = await getCurrentUserId();
+      await deleteGoalRequest(deleteTarget.id, uid);
+      queryClient.setQueryData<GoalWithOutcome[]>(["goals"], (old = []) =>
+        old.filter((g) => g.id !== deleteTarget.id),
+      );
+      void queryClient.invalidateQueries({ queryKey: ["goals"] });
+      toast.add({ title: "Goal deleted", type: "success", timeout: 2200 });
+    } catch {
+      toast.add({ title: "Failed to delete goal", type: "error", timeout: 3200 });
+    } finally {
+      setSaving(false);
+      setDeleteTarget(null);
+    }
+  };
+
   return (
-    <section className="flex w-full flex-col gap-0">
+    <section className="flex w-full flex-col gap-0 h-full">
       {/* ── Single card wrapping everything ── */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm flex flex-col flex-1">
         {/* Top bar: title + add button */}
         <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-border">
           <div>
@@ -205,7 +239,7 @@ export default function GoalsPage() {
 
         {/* Body */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-24">
+          <div className="flex flex-1 items-center justify-center py-24">
             <DeskLoader size="sm" label="Loading goals…" />
           </div>
         ) : signedOut || error ? (
@@ -225,6 +259,7 @@ export default function GoalsPage() {
             onEdit={openEdit}
             onArchive={(g) => void handleArchive(g)}
             onActivate={(g) => void handleActivate(g)}
+            onDelete={(g) => void handleDelete(g)}
             onAdd={openCreate}
           />
         )}
@@ -369,6 +404,44 @@ export default function GoalsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <AlertDialogContent className="max-w-xs rounded-2xl border border-border bg-card p-0 gap-0 overflow-hidden shadow-xl">
+          <div className="flex flex-col gap-3 px-6 pt-5 pb-4">
+            <AlertDialogTitle className="text-sm font-semibold text-foreground">
+              Delete this goal?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="sr-only">
+              Confirm deleting {deleteTarget?.name}
+            </AlertDialogDescription>
+            <div className="rounded-lg border border-border bg-muted/30 px-3 py-3 flex flex-col gap-1.5">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">Goal: </span>{deleteTarget?.name}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">Importance: </span>
+                {["", "Minimal", "Low", "Medium", "High", "Critical"][deleteTarget?.weight ?? 0] ?? "—"}
+              </p>
+              {deleteTarget?.deadline && (
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Deadline: </span>{deleteTarget.deadline}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-2 border-t border-border px-5 py-3">
+            <AlertDialogCancel className="flex-1 rounded-lg border border-border bg-transparent text-sm font-medium text-foreground hover:bg-muted transition-colors">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void confirmDelete()}
+              className="flex-1 rounded-lg bg-destructive text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
+            >
+              Delete
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

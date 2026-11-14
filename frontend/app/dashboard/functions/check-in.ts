@@ -32,6 +32,7 @@ type RankedGoal = {
 export type CheckInResult = {
   pick: TopPickedGoal;
   ranked: RankedGoal[];
+  feasibilityNote?: string;
 };
 
 /** Last check-in kept in localStorage (survives tab close; cleared on Adjust). */
