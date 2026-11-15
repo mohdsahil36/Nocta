@@ -5,6 +5,7 @@ import type {
   UpdateGoalInput,
 } from "../../lib/goals/goal-schema.js";
 import { GoalStatus } from "../../generated/prisma/enums.js";
+import { HttpError } from "../../lib/http-error.js";
 
 /* Zod gives ISO strings; Prisma wants Date | null. */
 function toDeadline(value: string | null | undefined): Date | null | undefined {
@@ -69,4 +70,13 @@ export async function archiveGoal(id: string) {
       lastTouchedAt: new Date(),
     },
   });
+}
+
+export async function deleteGoal(id: string, userId: string) {
+  const goal = await prisma.goal.findUnique({ where: { id } });
+  if (!goal) throw HttpError.notFound("GOAL_NOT_FOUND", "Goal not found");
+  if (goal.userId !== userId) throw HttpError.badRequest("FORBIDDEN", "Not your goal");
+  await prisma.planStep.deleteMany({ where: { goalId: id } });
+  await prisma.outcomeLog.deleteMany({ where: { goalId: id } });
+  return prisma.goal.delete({ where: { id } });
 }
