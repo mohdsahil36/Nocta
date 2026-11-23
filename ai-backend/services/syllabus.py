@@ -20,6 +20,6 @@ def generate_syllabus(request:SyllabusRequest)->SyllabusResponse:
         max_tokens=800
     )
     raw=response.choices[0].message.content
-    data=json.load(raw)
+    data=json.loads(raw)
     steps = [SyllabusStep(**s) for s in data["steps"]]
     return SyllabusResponse(steps=steps)

@@ -1,10 +1,10 @@
 from pydantic import BaseModel
-from typing import Literal
+from typing import Literal, Optional
 
 
 class SyllabusRequest(BaseModel):
     goalName: str
-    notes: str | None = None
+    notes: Optional[str] = None
 
 
 class SyllabusStep(BaseModel):
