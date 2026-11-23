@@ -75,6 +75,16 @@ export async function listArchivedPlanSteps(
   return json.data;
 }
 
+/** Permanently delete a step via DELETE /api/plan/:id. */
+export async function deletePlanStep(stepId: string): Promise<PlanStep> {
+  const response = await fetch(
+    apiUrl(`/api/plan/${encodeURIComponent(stepId)}`),
+    { method: "DELETE" },
+  );
+  if (!response.ok) throw new Error("Failed to delete plan step");
+  return readPlanStep(response);
+}
+
 /** Restore an archived step via PATCH /api/plan/:id/restore. */
 export async function restorePlanStep(
   goalId: string,

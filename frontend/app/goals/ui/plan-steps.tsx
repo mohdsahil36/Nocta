@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Archive, ChevronDown, Plus, RotateCcw } from "lucide-react";
+import { Archive, ChevronDown, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -14,6 +14,7 @@ import { goalsContent } from "../content";
 import {
   archivePlanStep,
   createPlanStep,
+  deletePlanStep,
   listPlanSteps,
   type PlanStep,
   listArchivedPlanSteps,
@@ -117,6 +118,20 @@ export function PlanSteps({ goalId }: { goalId: string }) {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (stepId: string) => deletePlanStep(stepId),
+    onSuccess: (deleted) => {
+      queryClient.setQueryData<PlanStep[]>(
+        ["plan-steps-archived", goalId],
+        (old = []) => old.filter((s) => s.id !== deleted.id),
+      );
+      toast.add({ title: c.toastDeleteSuccess, type: "success", timeout: 2200 });
+    },
+    onError: () => {
+      toast.add({ title: c.toastDeleteError, type: "error", timeout: 3200 });
+    },
+  });
+
   const generateMutation = useMutation({
     mutationFn: () => generateGoalSyllabus(goalId),
     onSuccess: (result) => {
@@ -152,6 +167,19 @@ export function PlanSteps({ goalId }: { goalId: string }) {
     },
   });
 
+  const clearAndRegenerateMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(steps.map((s) => archivePlanStep(s.id)));
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: planKey(goalId) });
+      generateMutation.mutate();
+    },
+    onError: () => {
+      toast.add({ title: c.toastArchiveError, type: "error", timeout: 3200 });
+    },
+  });
+
   const addStep = () => {
     const next = title.trim();
     if (!next || addMutation.isPending) return;
@@ -177,14 +205,38 @@ export function PlanSteps({ goalId }: { goalId: string }) {
             </span>
           )}
         </div>
+        {steps.length > 0 && !preview && (
+          <button
+            type="button"
+            onClick={() => clearAndRegenerateMutation.mutate()}
+            disabled={clearAndRegenerateMutation.isPending || generateMutation.isPending}
+            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-mono text-[11px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {clearAndRegenerateMutation.isPending || generateMutation.isPending ? (
+              <>
+                <span className="size-3 animate-spin rounded-full border border-current border-t-transparent" />
+                {c.generating}
+              </>
+            ) : (
+              c.regeneratePlan
+            )}
+          </button>
+        )}
         {steps.length === 0 && !preview && (
           <button
             type="button"
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
-            className="font-mono text-[11px] text-primary hover:underline underline-offset-4 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 font-mono text-[11px] text-primary transition-colors hover:bg-primary/20 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {generateMutation.isPending ? c.generating : c.generatePlan}
+            {generateMutation.isPending ? (
+              <>
+                <span className="size-3 animate-spin rounded-full border border-primary border-t-transparent" />
+                {c.generating}
+              </>
+            ) : (
+              c.generatePlan
+            )}
           </button>
         )}
       </div>
@@ -206,33 +258,53 @@ export function PlanSteps({ goalId }: { goalId: string }) {
               {preview.map((step) => (
                 <li
                   key={step.title}
-                  onClick={() => {
-                    setSelected((prev) => {
-                      const next = new Set(prev);
-                      if (next.has(step.title)) {
-                        next.delete(step.title);
-                      } else {
-                        next.add(step.title);
-                      }
-                      return next;
-                    });
-                  }}
-                  className="flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
+                  className="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
                 >
                   <input
                     type="checkbox"
                     readOnly
                     checked={selected.has(step.title)}
-                    className="mt-0.5 shrink-0 accent-primary"
+                    onClick={() => {
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(step.title)) {
+                          next.delete(step.title);
+                        } else {
+                          next.add(step.title);
+                        }
+                        return next;
+                      });
+                    }}
+                    className="mt-1 shrink-0 cursor-pointer accent-primary"
                   />
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-sm text-foreground leading-snug">
-                      {step.title}
-                    </p>
-                    <span className="font-mono text-[10px] text-muted-foreground">
-                      {step.level}
-                    </span>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-foreground leading-snug">
+                        {step.title}
+                      </p>
+                      <span className="rounded-full bg-muted px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
+                        {step.level}
+                      </span>
+                    </div>
+                    {step.subtopics && step.subtopics.length > 0 && (
+                      <ul className="flex flex-col gap-0.5 pl-1">
+                        {step.subtopics.map((sub) => (
+                          <li key={sub} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                            <span className="mt-1.5 size-1 shrink-0 rounded-full bg-muted-foreground/40" />
+                            {sub}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setPreview((prev) => prev?.filter((s) => s.title !== step.title) ?? null)}
+                    className="ml-auto shrink-0 rounded-md p-1 text-muted-foreground/50 hover:bg-muted hover:text-foreground transition-colors"
+                    title="Remove from plan"
+                  >
+                    <X className="size-3.5" aria-hidden />
+                  </button>
                 </li>
               ))}
             </ol>
@@ -393,16 +465,28 @@ export function PlanSteps({ goalId }: { goalId: string }) {
                         <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground line-through decoration-muted-foreground/40">
                           {step.title}
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => restoreMutation.mutate(step.id)}
-                          disabled={busy}
-                          title={c.restore}
-                          className="inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-muted hover:text-foreground disabled:cursor-not-allowed"
-                        >
-                          <RotateCcw className="size-3" aria-hidden />
-                          {c.restore}
-                        </button>
+                        <div className="flex shrink-0 items-center gap-1 opacity-0 transition-all group-hover:opacity-100">
+                          <button
+                            type="button"
+                            onClick={() => restoreMutation.mutate(step.id)}
+                            disabled={busy || deleteMutation.isPending}
+                            title={c.restore}
+                            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:cursor-not-allowed"
+                          >
+                            <RotateCcw className="size-3" aria-hidden />
+                            {c.restore}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteMutation.mutate(step.id)}
+                            disabled={busy || deleteMutation.isPending}
+                            title={c.deleteStep}
+                            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:cursor-not-allowed"
+                          >
+                            <Trash2 className="size-3" aria-hidden />
+                            {c.deleteStep}
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ol>

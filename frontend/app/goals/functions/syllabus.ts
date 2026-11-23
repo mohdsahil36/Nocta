@@ -4,6 +4,7 @@ export interface SyllabusStep {
   title: string;
   level: "Basic" | "Intermediate" | "Advanced";
   order: number;
+  subtopics: string[];
   resources: string[];
 }
 
@@ -21,6 +22,7 @@ export async function generateGoalSyllabus(
       headers: { "Content-Type": "application/json" },
     },
   );
-  if (!response.ok) throw new Error("Failed to generate syllabus for this goal");
+  if (!response.ok)
+    throw new Error("Failed to generate syllabus for this goal");
   return response.json() as Promise<SyllabusResult>;
 }

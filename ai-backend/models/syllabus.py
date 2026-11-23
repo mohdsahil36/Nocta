@@ -11,6 +11,7 @@ class SyllabusStep(BaseModel):
     title: str
     level: Literal["Basic", "Intermediate", "Advanced"]
     order: int
+    subtopics:list[str]=[]
     resources: list[str] = []
 
 

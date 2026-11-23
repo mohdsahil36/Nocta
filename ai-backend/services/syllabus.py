@@ -6,9 +6,10 @@ from settings import settings
 def build_prompt(request:SyllabusRequest)->str:
     notes = f" Additional context: {request.notes}." if request.notes else ""
     return (
-        f"Create a structured learning syllabus for the goal: '{request.goalName}'.{notes} "
-        "Return 5 to 8 ordered steps. Each step must have: "
-        "title (short action phrase), level (Basic, Intermediate, or Advanced), order (starting from 1). "
+        f"Create a complete learning syllabus for the goal: '{request.goalName}'.{notes} "
+        "Return as many topics as needed to fully cover the subject — do not pad, do not cut. "
+        "Each topic must have: title (short action phrase), level (Basic, Intermediate, or Advanced), "
+        "order (starting from 1), subtopics (list every specific actionable step needed to fully cover this topic). "
         "Return only a JSON object with a 'steps' array. No explanation, no markdown."
     )
 
