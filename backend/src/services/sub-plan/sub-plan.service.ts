@@ -95,6 +95,11 @@ export async function restoreArchivedPlanStep(goalId: string, stepId: string) {
   });
 }
 
+// Permanently delete a step — no recovery.
+export async function deletePlanStep(stepId: string): Promise<PlanStep> {
+  return prisma.planStep.delete({ where: { id: stepId } });
+}
+
 // One step, scoped to a goal — stops returning a step that belongs to another goal.
 export async function getPlanStep(
   goalId: string,

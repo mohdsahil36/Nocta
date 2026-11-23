@@ -388,6 +388,12 @@ export function CheckInPanel({
                 <p className="text-xl font-semibold tracking-tight text-nocta-ink sm:text-2xl">
                   {pick.nextAction}
                 </p>
+                {liveResult?.feasibilityNote && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {liveResult.feasibilityNote}
+                  </p>
+                )}
+
                 <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
                   <span className="text-sm text-muted-foreground">
                     {pick.name}

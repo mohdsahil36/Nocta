@@ -7,6 +7,7 @@ import useRoutes from "./user/user.route.js";
 import reasoningRoute from "./ai-reasoning/ai-reasoning.route.js";
 import outcomelogRoute from "./outcome/outcome.route.js";
 import aiParselogRoute from "./log-parser/log-parser.route.js";
+import syllabusRoute from "./syllabus/syllabus.route.js";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use(useRoutes);
 router.use(reasoningRoute);
 router.use(outcomelogRoute);
 router.use(aiParselogRoute);
+router.use(syllabusRoute);
 
 export default router;

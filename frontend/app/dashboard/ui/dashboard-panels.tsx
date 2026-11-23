@@ -23,7 +23,7 @@ import useAuthStore from "@/app/store/authStore";
 import { listAllGoals } from "@/app/goals/functions/goals";
 import { listPlanSteps } from "@/app/goals/functions/plan-steps";
 import { fetchPlatformCommits } from "@/lib/activity-api";
-import type { Commit } from "@/app/data/activity";
+import type { Commit } from "../functions/dashboard";
 import { cn } from "cn";
 import { dashboardContent } from "../content";
 import {

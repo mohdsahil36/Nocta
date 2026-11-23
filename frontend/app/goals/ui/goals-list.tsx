@@ -8,6 +8,7 @@ import {
   Pencil,
   RotateCcw,
   Target,
+  Trash2,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "cn";
@@ -59,7 +60,6 @@ function DeadlineChip({ deadline, now }: { deadline: string; now: number }) {
   );
 }
 
-/* ─── last outcome chip ─────────────────────────────────────────────────── */
 
 const OUTCOME_LABEL: Record<OutcomeType, string> = {
   completed: "Done",
@@ -101,7 +101,6 @@ function LastOutcomeChip({
   );
 }
 
-/* ─── goal row ──────────────────────────────────────────────────────────── */
 
 function GoalRow({
   goal,
@@ -109,12 +108,14 @@ function GoalRow({
   onEdit,
   onArchive,
   onActivate,
+  onDelete,
 }: {
   goal: GoalWithOutcome;
   now: number;
   onEdit: (g: GoalDraft) => void;
   onArchive: (g: GoalDraft) => void;
   onActivate: (g: GoalDraft) => void;
+  onDelete?: (g: GoalDraft) => void;
 }) {
   const reduceMotion = useReducedMotion();
   const [expanded, setExpanded] = useState(false);
@@ -194,7 +195,7 @@ function GoalRow({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -4 }}
                     transition={{ duration: 0.1 }}
-                    className="absolute right-0 top-8 z-20 min-w-[130px] rounded-xl border border-border bg-popover py-1 shadow-lg"
+                    className="absolute right-0 bottom-8 z-20 min-w-[130px] rounded-xl border border-border bg-popover py-1 shadow-lg"
                   >
                     <button
                       type="button"
@@ -208,16 +209,30 @@ function GoalRow({
                       {c.edit}
                     </button>
                     {isArchived ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          onActivate(goal);
-                        }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-xs text-primary hover:bg-primary/10 transition-colors"
-                      >
-                        <RotateCcw className="size-3.5" /> {c.activate}
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMenuOpen(false);
+                            onActivate(goal);
+                          }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-xs text-primary hover:bg-primary/10 transition-colors"
+                        >
+                          <RotateCcw className="size-3.5" /> {c.activate}
+                        </button>
+                        {onDelete && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMenuOpen(false);
+                              onDelete(goal);
+                            }}
+                            className="flex w-full items-center gap-2 px-3 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors"
+                          >
+                            <Trash2 className="size-3.5" /> Delete
+                          </button>
+                        )}
+                      </>
                     ) : (
                       <button
                         type="button"
@@ -273,13 +288,13 @@ function GoalRow({
   );
 }
 
-/* ─── main ──────────────────────────────────────────────────────────────── */
 
 type Props = {
   goals: GoalWithOutcome[];
   onEdit: (goal: GoalDraft) => void;
   onArchive: (goal: GoalDraft) => void;
   onActivate: (goal: GoalDraft) => void;
+  onDelete: (goal: GoalDraft) => void;
   onAdd: () => void;
 };
 
@@ -288,6 +303,7 @@ export function GoalsList({
   onEdit,
   onArchive,
   onActivate,
+  onDelete,
   onAdd,
 }: Props) {
   const now = new Date().getTime();
@@ -341,6 +357,7 @@ export function GoalsList({
               onEdit={onEdit}
               onArchive={onArchive}
               onActivate={onActivate}
+              onDelete={onDelete}
             />
           ))}
         </>

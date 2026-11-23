@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   archivePlanStepController,
   createPlanStepController,
+  deletePlanStepController,
   getNextPlanStepController,
   getPlanStepController,
   listPlanStepsController,
@@ -23,6 +24,7 @@ router.get(
 router.get("/goals/:goalId/plan/next", asyncHandler(getNextPlanStepController));
 router.get("/goals/:goalId/plan/:id", asyncHandler(getPlanStepController));
 router.patch("/plan/:id", asyncHandler(updatePlanStepController));
+router.delete("/plan/:id", asyncHandler(deletePlanStepController));
 router.patch("/plan/:id/archive", asyncHandler(archivePlanStepController));
 router.patch(
   "/goals/:goalId/plan/:id/restore",

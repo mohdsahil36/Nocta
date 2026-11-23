@@ -8,6 +8,7 @@ import {
 import {
   createPlanStep,
   archivePlanStep,
+  deletePlanStep,
   getNextPlanStep,
   getPlanStep,
   listPlanSteps,
@@ -177,6 +178,17 @@ export async function listArchivedPlanStepsController(
     message: "Archived plan steps listed",
     data: listed,
   });
+}
+
+export async function deletePlanStepController(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const id = String(req.params.id ?? "");
+  if (!id)
+    throw HttpError.badRequest("STEP_ID_REQUIRED", "Plan step id is required");
+  const deleted = await deletePlanStep(id);
+  res.status(200).json({ message: "Plan step deleted", data: deleted });
 }
 
 export async function restoreArchivedPlanStepController(

@@ -1,4 +1,4 @@
-import type { Commit } from "@/app/data/activity";
+import type { Commit } from "@/app/dashboard/functions/dashboard";
 
 export type ActivityStatsResponse = {
   currentStreak: number;

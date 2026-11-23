@@ -84,3 +84,47 @@ export async function parseLog(
 
   return res.json() as Promise<ParseLogResponse>;
 }
+
+export interface SyllabusRequest {
+  goalName: string;
+  notes?: string | null;
+}
+export interface SyllabusStep {
+  title: string;
+  level: "Basic" | "Intermediate" | "Advanced";
+  order: number;
+  resources: string[];
+}
+
+export interface SyllabusResponse {
+  steps: SyllabusStep[];
+}
+
+export async function generateGoalSyllabus(
+  data: SyllabusRequest,
+): Promise<SyllabusResponse> {
+  let res: Response;
+
+  try {
+    res = await fetch(`${NOCTA_AI_URL}/ai/syllabus`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      signal: withTimeout(TIMEOUT_MS),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Generate syllabus is unreachable";
+    throw new Error(message);
+  }
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Ai service returned error: ${errorText}`);
+  }
+
+  return res.json() as Promise<SyllabusResponse>;
+}

@@ -10,6 +10,7 @@ import {
   listGoals,
   updateGoal,
   archiveGoal,
+  deleteGoal,
 } from "../../services/goals/goal.service.js";
 
 export async function listGoalsController(req: Request, res: Response) {
@@ -79,4 +80,13 @@ export async function archiveGoalController(req: Request, res: Response) {
     message: "Goal archived",
     data: goal,
   });
+}
+
+export async function deleteGoalController(req: Request, res: Response) {
+  const id = String(req.params.id ?? "");
+  const userId = String(req.body.userId ?? "");
+  if (!id) throw HttpError.badRequest("GOAL_ID_REQUIRED", "Goal id is required");
+  if (!userId) throw HttpError.badRequest("USER_ID_REQUIRED", "User id is required");
+  await deleteGoal(id, userId);
+  res.status(204).send();
 }

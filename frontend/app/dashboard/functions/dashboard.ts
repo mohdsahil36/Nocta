@@ -33,6 +33,17 @@ export function welcomeMessage(name: string): string {
   return dashboardContent.greeting.welcome(name);
 }
 
+export type Commit = {
+  id: string;
+  message: string;
+  repository: string;
+  sha: string;
+  date: string;
+  time: string;
+  url: string;
+  isMerge: boolean;
+};
+
 export type SessionProfile = {
   name: string;
   email: string | null;
