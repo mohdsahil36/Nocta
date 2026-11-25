@@ -17,14 +17,15 @@ This repo holds the Nocta web app (and supporting API as the product grows).
 - **Plan steps** — ordered steps per goal; add, archive, restore; archived steps auto-purge after 45 days
 - **Check-in** — minutes/energy input → deterministic rank → winning goal + next plan step returned to desk UI
 - **Outcome logging** — confirm completed / partial / deferred / swapped after a session; updates `lastTouchedAt` and plan step status
-- **AI log parser** — free-text outcome entry → structured outcome fields (few-shot, Groq); confirm-before-save
 - **AI recommendation reasoning** — LLM narrates the top pick from scorer numbers only; streamed to desk UI; Pydantic-validated; never changes the rank
-- **`nocta-ai` service** — FastAPI + Pydantic; `/health`, log parser, and reasoning endpoints; deployed on Render; Express proxies to it
+- **`nocta-ai` service** — FastAPI + Pydantic; `/health`, log parser, and reasoning endpoints; Express proxies to it
 - **CI** — pytest (`ai-backend`) + frontend/backend typecheck on every push (GitHub Actions)
 - **Dashboard** — activity stats (streak, longest streak, today's count) from real platform commit data
 
 ### In progress
 
+- **AI log parser** — backend + landing demo done; in-app confirm-before-save UI not yet built
+- **AI plan bootstrap** — backend + syllabus generation done; prompt quality and frontend UX being refined
 - **Token / latency / cost logging** — instrument every LLM call from first use
 - **Provider abstraction** — swap Groq → OpenAI / Anthropic / local model per feature via env config
 
@@ -72,11 +73,9 @@ nocta/   (this repo)
 
 ### Install
 
-Root install sets up **Husky** git hooks only. Frontend and backend still need their own installs:
-
 ```bash
-# repo root — Husky + root scripts
-npm install
+# Register git hooks (once after clone)
+git config core.hooksPath .husky
 
 cd frontend && npm install
 cd ../backend && npm install
@@ -175,10 +174,7 @@ npm run typecheck
 
 | Command | Description |
 |---------|-------------|
-| `npm install` | Install Husky; enable git hooks (`prepare`) |
-| `npm run typecheck` | Typecheck frontend then backend |
-| `npm run typecheck:frontend` | Frontend only |
-| `npm run typecheck:backend` | Backend only |
+| `git config core.hooksPath .husky` | Register git hooks (run once after clone) |
 
 **Frontend** (`cd frontend`)
 
